@@ -36,10 +36,10 @@ class TextStyles {
 
   // Body Text
   static TextStyle body = TextStyle(
-    fontSize: 16.sp,
+    fontSize: 16,
     fontWeight: FontWeight.normal,
     color: AppColors.textPrimary,
-    height: 1.5.h,
+    height: 1.5,
   );
 
   static TextStyle bodySecondary = TextStyle(

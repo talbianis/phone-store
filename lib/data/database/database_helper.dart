@@ -20,10 +20,21 @@ class DatabaseHelper {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    print('📁 Database path: $path'); // Debug log
+
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _createDB,
+      onOpen: (db) {
+        print('✅ Database opened successfully');
+      },
+    );
   }
 
   Future<void> _createDB(Database db, int version) async {
+    print('🔨 Creating database tables...');
+
     // Users table
     await db.execute('''
       CREATE TABLE ${Tables.users} (
@@ -35,6 +46,7 @@ class DatabaseHelper {
         created_at TEXT NOT NULL
       )
     ''');
+    print('✅ Users table created');
 
     // Categories table
     await db.execute('''
@@ -45,6 +57,7 @@ class DatabaseHelper {
         created_at TEXT NOT NULL
       )
     ''');
+    print('✅ Categories table created');
 
     // Products table
     await db.execute('''
@@ -65,6 +78,7 @@ class DatabaseHelper {
         FOREIGN KEY (category_id) REFERENCES ${Tables.categories}(id)
       )
     ''');
+    print('✅ Products table created');
 
     // Customers table
     await db.execute('''
@@ -78,6 +92,7 @@ class DatabaseHelper {
         created_at TEXT NOT NULL
       )
     ''');
+    print('✅ Customers table created');
 
     // Sales table
     await db.execute('''
@@ -98,6 +113,7 @@ class DatabaseHelper {
         FOREIGN KEY (user_id) REFERENCES ${Tables.users}(id)
       )
     ''');
+    print('✅ Sales table created');
 
     // Sale Items table
     await db.execute('''
@@ -114,6 +130,7 @@ class DatabaseHelper {
         FOREIGN KEY (product_id) REFERENCES ${Tables.products}(id)
       )
     ''');
+    print('✅ Sale Items table created');
 
     // Debts table
     await db.execute('''
@@ -130,6 +147,7 @@ class DatabaseHelper {
         FOREIGN KEY (sale_id) REFERENCES ${Tables.sales}(id)
       )
     ''');
+    print('✅ Debts table created');
 
     // Debt Payments table
     await db.execute('''
@@ -142,6 +160,7 @@ class DatabaseHelper {
         FOREIGN KEY (debt_id) REFERENCES ${Tables.debts}(id)
       )
     ''');
+    print('✅ Debt Payments table created');
 
     // Expenses table
     await db.execute('''
@@ -154,6 +173,7 @@ class DatabaseHelper {
         created_at TEXT NOT NULL
       )
     ''');
+    print('✅ Expenses table created');
 
     // Stock Adjustments table
     await db.execute('''
@@ -169,8 +189,10 @@ class DatabaseHelper {
         FOREIGN KEY (user_id) REFERENCES ${Tables.users}(id)
       )
     ''');
+    print('✅ Stock Adjustments table created');
 
     // Insert default admin user
+    print('👤 Creating default admin user...');
     await db.insert(Tables.users, {
       'username': 'admin',
       'password': 'admin123', // In production, hash this!
@@ -178,8 +200,10 @@ class DatabaseHelper {
       'role': 'admin',
       'created_at': DateTime.now().toIso8601String(),
     });
+    print('✅ Default admin user created (username: admin, password: admin123)');
 
     // Insert default categories
+    print('📂 Creating default categories...');
     final defaultCategories = [
       'Smartphones',
       'Chargers',
@@ -197,6 +221,9 @@ class DatabaseHelper {
         'created_at': DateTime.now().toIso8601String(),
       });
     }
+    print('✅ ${defaultCategories.length} default categories created');
+
+    print('🎉 Database setup complete!');
   }
 
   Future<void> close() async {
