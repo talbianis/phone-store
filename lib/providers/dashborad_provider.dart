@@ -117,7 +117,13 @@ class DashboardProvider with ChangeNotifier {
 
   // Load chart data
   Future<void> _loadChartData() async {
-    _last7DaysSales = await _saleRepo.getLast7DaysSales();
+    try {
+      _last7DaysSales = await _saleRepo.getLast7DaysSales();
+    } catch (e) {
+      // If no data, create empty list
+      _last7DaysSales = [];
+      print('No chart data available: $e');
+    }
   }
 
   // Refresh data

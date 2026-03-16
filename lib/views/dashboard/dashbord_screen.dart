@@ -1,80 +1,151 @@
 // lib/views/dashboard/dashboard_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:phone_shop/providers/dashborad_provider.dart';
+import 'package:phone_shop/views/dashboard/widgets/best_selling_product.dart';
+import 'package:phone_shop/views/dashboard/widgets/sales_chart.dart';
+import 'package:phone_shop/views/dashboard/widgets/stat_card.dart';
 import 'package:provider/provider.dart';
-import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_routes.dart';
-import '../../providers/auth_provider.dart';
 
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+import '../shared/main_layout.dart';
+
+class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({Key? key}) : super(key: key);
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Load dashboard data
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<DashboardProvider>(context, listen: false)
+          .loadDashboardData();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
+    return MainLayout(
+      currentRoute: AppRoutes.dashboard,
+      child: Consumer<DashboardProvider>(
+        builder: (context, dashboardProvider, child) {
+          if (dashboardProvider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dashboard'),
-        actions: [
-          // User Info
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Center(
-              child: Text(
-                authProvider.currentUser?.fullName ?? 'User',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Page Header
+                const Text(
+                  'Dashboard',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Overview of your phone shop performance',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                ),
 
-          // Logout Button
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await authProvider.logout();
-              if (context.mounted) {
-                Navigator.pushReplacementNamed(context, AppRoutes.login);
-              }
-            },
-            tooltip: 'Déconnexion',
-          ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.dashboard, size: 80, color: AppColors.primary),
-            const SizedBox(height: 24),
-            const Text(
-              'Bienvenue sur Magasin Pro!',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                const SizedBox(height: 32),
+
+                // Stat Cards Row
+                Row(
+                  children: [
+                    Expanded(
+                      child: StatCard(
+                        title: "Today's Sales",
+                        value: dashboardProvider.todaySales,
+                        unit: 'DA',
+                        change: '+12.5%',
+                        isPositive: true,
+                        subtitle: 'vs yesterday',
+                        color: Colors.green,
+                        icon: Icons.trending_up,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: StatCard(
+                        title: "Today's Profit",
+                        value: dashboardProvider.todayProfit,
+                        unit: 'DA',
+                        change: '+8.2%',
+                        isPositive: true,
+                        subtitle: 'vs yesterday',
+                        color: Colors.blue,
+                        icon: Icons.attach_money,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: StatCard(
+                        title: "Low Stock Items",
+                        value: dashboardProvider.lowStockCount.toDouble(),
+                        unit: 'Products',
+                        change: '+3',
+                        isPositive: false,
+                        subtitle: 'vs yesterday',
+                        color: Colors.orange,
+                        icon: Icons.warning_amber,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: StatCard(
+                        title: "Total Products",
+                        value: dashboardProvider.totalProducts.toDouble(),
+                        unit: 'Items',
+                        change: '+24',
+                        isPositive: true,
+                        subtitle: 'vs yesterday',
+                        color: Colors.purple,
+                        icon: Icons.inventory_2,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                // Charts Row
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Sales Chart
+                    Expanded(
+                      flex: 2,
+                      child: SalesChart(
+                        salesData: dashboardProvider.last7DaysSales,
+                      ),
+                    ),
+
+                    const SizedBox(width: 24),
+
+                    // Best Selling Products
+                    const Expanded(
+                      flex: 1,
+                      child: BestSellingProducts(),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            Text(
-              'Connecté en tant que: ${authProvider.currentUser?.fullName}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Rôle: ${authProvider.currentUser?.role}',
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 32),
-            const Text(
-              'Dashboard complet à venir...',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

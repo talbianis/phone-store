@@ -79,7 +79,8 @@ class SaleProvider with ChangeNotifier {
       final invoiceNumber = await _repository.generateInvoiceNumber();
 
       // Calculate profit
-      final profit = cartItems.fold(0.0, (sum, item) => sum + item.totalProfit);
+      final profit =
+          cartItems.fold<double>(0.0, (sum, item) => sum + item.totalProfit);
 
       // Calculate remaining debt
       final remainingDebt = total - paidAmount;
@@ -147,11 +148,11 @@ class SaleProvider with ChangeNotifier {
           .where(
             (sale) =>
                 sale.invoiceNumber.toLowerCase().contains(
-                  query.toLowerCase(),
-                ) ||
-                (sale.customerName?.toLowerCase().contains(
                       query.toLowerCase(),
-                    ) ??
+                    ) ||
+                (sale.customerName?.toLowerCase().contains(
+                          query.toLowerCase(),
+                        ) ??
                     false),
           )
           .toList();
@@ -206,8 +207,9 @@ class SaleProvider with ChangeNotifier {
   Future<Map<String, dynamic>> getMonthStatistics() async {
     try {
       final monthSales = await _repository.getMonthSales();
-      final totalSales = monthSales.fold(0.0, (sum, sale) => sum + sale.total);
-      final totalProfit = monthSales.fold(
+      final totalSales =
+          monthSales.fold<double>(0.0, (sum, sale) => sum + sale.total);
+      final totalProfit = monthSales.fold<double>(
         0.0,
         (sum, sale) => sum + sale.profit,
       );
