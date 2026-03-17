@@ -1,7 +1,9 @@
 // lib/routes/app_router.dart
 
 import 'package:flutter/material.dart';
+import 'package:phone_shop/views/categories/categories_Screen.dart';
 import 'package:phone_shop/views/dashboard/dashbord_screen.dart';
+import 'package:phone_shop/views/products/product_Screen.dart';
 import '../core/constants/app_routes.dart';
 import '../views/auth/splash_screen.dart';
 import '../views/auth/login_screen.dart';
@@ -22,7 +24,10 @@ class AppRouter {
 
       // Placeholder routes (we'll build these later)
       case AppRoutes.products:
+        return MaterialPageRoute(builder: (_) => const ProductsScreen());
+
       case AppRoutes.categories:
+        return MaterialPageRoute(builder: (_) => const CategoriesScreen());
       case AppRoutes.pos:
       case AppRoutes.customers:
       case AppRoutes.sales:

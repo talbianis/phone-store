@@ -1,7 +1,7 @@
 // lib/providers/category_provider.dart
 
 import 'package:flutter/material.dart';
-import 'package:phone_shop/data/models/Category_Model.dart';
+import 'package:phone_shop/data/models/category_model.dart';
 import '../data/repositories/category_repository.dart';
 
 class CategoryProvider with ChangeNotifier {

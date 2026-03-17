@@ -1,6 +1,6 @@
 // lib/data/repositories/category_repository.dart
 
-import 'package:phone_shop/data/models/Category_Model.dart';
+import 'package:phone_shop/data/models/category_model.dart';
 import 'package:sqflite/sqflite.dart';
 import '../database/database_helper.dart';
 import '../database/tables.dart';

@@ -37,7 +37,7 @@ class SidebarMenu extends StatelessWidget {
                   ),
                   child: const Icon(
                     Icons.store,
-                    color: Colors.white,
+                    color: AppColors.white,
                     size: 24,
                   ),
                 ),
