@@ -1,6 +1,7 @@
 // lib/core/utils/helpers.dart
 
 import 'package:flutter/material.dart';
+import 'package:phone_shop/core/constants/app_colors.dart';
 
 class Helpers {
   // Show snackbar
@@ -31,14 +32,24 @@ class Helpers {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(title),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         content: Text(message),
         actions: [
           TextButton(
+            style: ButtonStyle(
+              backgroundColor:
+                  WidgetStateProperty.all(AppColors.sidebarBackground),
+              foregroundColor: WidgetStateProperty.all(AppColors.white),
+            ),
             onPressed: () => Navigator.pop(context, false),
             child: Text(cancelText),
           ),
           ElevatedButton(
+            style: ButtonStyle(
+              backgroundColor:
+                  WidgetStateProperty.all(AppColors.sidebarBackground),
+              foregroundColor: WidgetStateProperty.all(AppColors.white),
+            ),
             onPressed: () => Navigator.pop(context, true),
             child: Text(confirmText),
           ),

@@ -2,6 +2,7 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:phone_shop/views/products/edit_product_screen.dart';
 import 'package:phone_shop/views/products/product_details_screen.dart';
 import 'package:provider/provider.dart';
@@ -71,34 +72,35 @@ class ProductCard extends StatelessWidget {
                       ),
 
                       if (product.brand != null) ...[
-                        const SizedBox(height: 4),
+                        SizedBox(height: 8.h),
                         Text(
                           product.brand!,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             color: Colors.grey[600],
                           ),
                         ),
                       ],
-
-                      const Spacer(),
+                      SizedBox(
+                        height: 10.h,
+                      ),
 
                       // Price
                       Text(
                         CurrencyFormatter.format(product.sellingPrice),
-                        style: const TextStyle(
-                          fontSize: 16,
+                        style: TextStyle(
+                          fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
                           color: AppColors.primary,
                         ),
                       ),
 
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8.h),
 
                       // Stock Badge
                       _buildStockBadge(),
 
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8.h),
 
                       // Actions
                       _buildActions(context),
@@ -115,7 +117,7 @@ class ProductCard extends StatelessWidget {
 
   Widget _buildProductImage() {
     return Container(
-      height: 160,
+      height: 170.h,
       decoration: BoxDecoration(
         color: Colors.grey[100],
         borderRadius: const BorderRadius.only(
@@ -132,7 +134,7 @@ class ProductCard extends StatelessWidget {
             ? Image.file(
                 File(product.imagePath!),
                 width: double.infinity,
-                height: 160,
+                height: 150.h,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return _buildPlaceholder();
@@ -147,7 +149,7 @@ class ProductCard extends StatelessWidget {
     return Center(
       child: Icon(
         Icons.image_outlined,
-        size: 48,
+        size: 60.sp,
         color: Colors.grey[400],
       ),
     );
@@ -188,7 +190,7 @@ class ProductCard extends StatelessWidget {
             child: Text(
               badgeText,
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 17.sp,
                 fontWeight: FontWeight.w600,
                 color: badgeColor,
               ),
@@ -213,23 +215,23 @@ class ProductCard extends StatelessWidget {
                 ),
               );
             },
-            icon: const Icon(Icons.edit, size: 16),
-            label: const Text('Edit', style: TextStyle(fontSize: 12)),
+            icon: Icon(Icons.edit, size: 20.sp),
+            label: Text('Edit', style: TextStyle(fontSize: 20.sp)),
             style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: EdgeInsets.symmetric(vertical: 8.h),
               minimumSize: const Size(0, 32),
             ),
           ),
         ),
-        const SizedBox(width: 8),
+        SizedBox(width: 8.w),
         IconButton(
           icon: const Icon(Icons.delete_outline, color: Colors.red),
           onPressed: () => _handleDelete(context),
           iconSize: 20,
           padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(
-            minWidth: 32,
-            minHeight: 32,
+          constraints: BoxConstraints(
+            minWidth: 32.w,
+            minHeight: 32.h,
           ),
         ),
       ],

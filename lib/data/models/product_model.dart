@@ -31,19 +31,11 @@ class ProductModel {
     required this.updatedAt,
   });
 
-  // Calculate profit per unit
   double get profitPerUnit => sellingPrice - purchasePrice;
-
-  // Calculate profit margin percentage
   double get profitMargin => ((profitPerUnit / purchasePrice) * 100);
-
-  // Check if low stock
   bool get isLowStock => quantity <= minQuantity && quantity > 0;
-
-  // Check if out of stock
   bool get isOutOfStock => quantity <= 0;
 
-  // Convert to Map for database
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -62,16 +54,15 @@ class ProductModel {
     };
   }
 
-  // Create from Map (database)
   factory ProductModel.fromMap(Map<String, dynamic> map) {
     return ProductModel(
       id: map['id'],
       name: map['name'],
       categoryId: map['category_id'],
       brand: map['brand'],
-      purchasePrice: map['purchase_price'],
-      sellingPrice: map['selling_price'],
-      quantity: map['quantity'],
+      purchasePrice: (map['purchase_price'] ?? 0.0).toDouble(),
+      sellingPrice: (map['selling_price'] ?? 0.0).toDouble(),
+      quantity: map['quantity'] ?? 0,
       minQuantity: map['min_quantity'] ?? 5,
       barcode: map['barcode'],
       imagePath: map['image_path'],
@@ -81,7 +72,7 @@ class ProductModel {
     );
   }
 
-  // Copy with method (for updates)
+  // ⬅️ FIXED copyWith method
   ProductModel copyWith({
     int? id,
     String? name,
@@ -92,7 +83,7 @@ class ProductModel {
     int? quantity,
     int? minQuantity,
     String? barcode,
-    String? imagePath,
+    Object? imagePath = _undefined, // ⬅️ Use Object? with marker
     String? notes,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -107,10 +98,19 @@ class ProductModel {
       quantity: quantity ?? this.quantity,
       minQuantity: minQuantity ?? this.minQuantity,
       barcode: barcode ?? this.barcode,
-      imagePath: imagePath ?? this.imagePath,
+      imagePath: imagePath == _undefined
+          ? this.imagePath
+          : imagePath as String?, // ⬅️ Handle null properly
       notes: notes ?? this.notes,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 }
+
+// ⬅️ Add this marker class at the bottom of the file
+class _Undefined {
+  const _Undefined();
+}
+
+const _undefined = _Undefined();

@@ -130,17 +130,19 @@ class _AddProductScreenState extends State<AddProductScreen> {
             width: 400,
             color: Colors.grey[50],
             padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSectionTitle('Product Image'),
-                const SizedBox(height: 16),
-                _buildImagePicker(),
-                const SizedBox(height: 32),
-                _buildSectionTitle('Profit Summary'),
-                const SizedBox(height: 16),
-                _buildProfitSummary(),
-              ],
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSectionTitle('Product Image'),
+                  const SizedBox(height: 16),
+                  _buildImagePicker(),
+                  const SizedBox(height: 32),
+                  _buildSectionTitle('Profit Summary'),
+                  const SizedBox(height: 16),
+                  _buildProfitSummary(),
+                ],
+              ),
             ),
           ),
         ],

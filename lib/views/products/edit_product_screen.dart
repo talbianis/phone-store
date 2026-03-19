@@ -3,6 +3,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/constants/app_colors.dart';
@@ -40,6 +41,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   bool _isLoading = false;
   double _calculatedProfit = 0.0;
   double _profitMargin = 0.0;
+  bool _isImageRemoved = false;
 
   @override
   void initState() {
@@ -115,8 +117,17 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     height: 16,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Icon(Icons.check),
-            label: const Text('Update'),
+                : const Icon(
+                    Icons.check,
+                    color: AppColors.white,
+                  ),
+            label: const Text(
+              'Update',
+              style: TextStyle(color: AppColors.white),
+            ),
+            style: TextButton.styleFrom(
+              backgroundColor: AppColors.sidebarBackground,
+            ),
           ),
           const SizedBox(width: 8),
         ],
@@ -135,19 +146,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildSectionTitle('Basic Information'),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 20.h),
                     _buildBasicInfo(),
-                    const SizedBox(height: 32),
+                    SizedBox(height: 38.h),
                     _buildSectionTitle('Pricing'),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 22.h),
                     _buildPricing(),
-                    const SizedBox(height: 32),
+                    SizedBox(height: 38.h),
                     _buildSectionTitle('Inventory'),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 22.h),
                     _buildInventory(),
-                    const SizedBox(height: 32),
+                    SizedBox(height: 38.h),
                     _buildSectionTitle('Additional Information'),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 22.h),
                     _buildAdditionalInfo(),
                   ],
                 ),
@@ -157,20 +168,22 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
           // Image Section
           Container(
-            width: 400,
+            width: 600.w,
             color: Colors.grey[50],
             padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSectionTitle('Product Image'),
-                const SizedBox(height: 16),
-                _buildImagePicker(),
-                const SizedBox(height: 32),
-                _buildSectionTitle('Profit Summary'),
-                const SizedBox(height: 16),
-                _buildProfitSummary(),
-              ],
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSectionTitle('Product Image'),
+                  SizedBox(height: 20.h),
+                  _buildImagePicker(),
+                  SizedBox(height: 40.h),
+                  _buildSectionTitle('Profit Summary'),
+                  SizedBox(height: 22.h),
+                  _buildProfitSummary(),
+                ],
+              ),
             ),
           ),
         ],
@@ -335,38 +348,58 @@ class _EditProductScreenState extends State<EditProductScreen> {
     );
   }
 
+  // lib/views/products/edit_product_screen.dart
+
   Widget _buildImagePicker() {
-    // Show existing image or new selection
+    // Determine which image to display
+    Widget imageWidget;
+
+    if (_selectedImage != null) {
+      // Priority 1: Show newly selected image
+      imageWidget = Image.file(_selectedImage!, fit: BoxFit.cover);
+    } else if (_isImageRemoved) {
+      // Priority 2: Image was removed, show placeholder
+      imageWidget = _buildPlaceholder();
+    } else if (widget.product.imagePath != null &&
+        widget.product.imagePath!.isNotEmpty) {
+      // Priority 3: Show existing image
+      imageWidget = Image.file(
+        File(widget.product.imagePath!),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return _buildPlaceholder();
+        },
+      );
+    } else {
+      // Priority 4: No image at all
+      imageWidget = _buildPlaceholder();
+    }
+
+    // Check if we have any image to show "Remove" button
     final hasImage = _selectedImage != null ||
-        (widget.product.imagePath != null &&
+        (!_isImageRemoved &&
+            widget.product.imagePath != null &&
             widget.product.imagePath!.isNotEmpty);
 
     return Column(
       children: [
         Container(
           width: double.infinity,
-          height: 300,
+          height: 400.h,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.grey[300]!),
           ),
-          child: hasImage
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: _selectedImage != null
-                      ? Image.file(_selectedImage!, fit: BoxFit.cover)
-                      : Image.file(
-                          File(widget.product.imagePath!),
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return _buildPlaceholder();
-                          },
-                        ),
-                )
-              : _buildPlaceholder(),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: imageWidget,
+          ),
         ),
-        const SizedBox(height: 16),
+
+        SizedBox(height: 16.h),
+
+        // Image picker buttons
         Row(
           children: [
             Expanded(
@@ -386,11 +419,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
             ),
           ],
         ),
+
+        // Remove button (only show if there's an image)
         if (hasImage) ...[
           const SizedBox(height: 12),
           TextButton.icon(
             onPressed: () {
-              setState(() => _selectedImage = null);
+              setState(() {
+                _selectedImage = null;
+                _isImageRemoved = true;
+              });
             },
             icon: const Icon(Icons.delete, color: Colors.red),
             label: const Text(
@@ -459,18 +497,24 @@ class _EditProductScreenState extends State<EditProductScreen> {
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(
         source: source,
-        maxWidth: 1024,
-        maxHeight: 1024,
+        maxWidth: 1024.w,
+        maxHeight: 1024.h,
         imageQuality: 85,
       );
 
       if (image != null) {
-        setState(() => _selectedImage = File(image.path));
+        setState(() {
+          _selectedImage = File(image.path);
+          _isImageRemoved = false; // ⬅️ ADD THIS LINE
+        });
       }
     } catch (e) {
       if (mounted) {
-        Helpers.showSnackBar(context, 'Failed to pick image: $e',
-            isError: true);
+        Helpers.showSnackBar(
+          context,
+          'Failed to pick image: $e',
+          isError: true,
+        );
       }
     }
   }
@@ -479,6 +523,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
+
+    // Determine the final image path
+    String? finalImagePath;
+
+    if (_selectedImage != null) {
+      // User selected a new image
+      finalImagePath = _selectedImage!.path;
+    } else if (_isImageRemoved) {
+      // User removed the image
+      finalImagePath = null;
+    } else {
+      // Keep the existing image
+      finalImagePath = widget.product.imagePath;
+    }
 
     final updatedProduct = widget.product.copyWith(
       name: _nameController.text.trim(),
@@ -493,7 +551,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       barcode: _barcodeController.text.trim().isEmpty
           ? null
           : _barcodeController.text.trim(),
-      imagePath: _selectedImage?.path ?? widget.product.imagePath,
+      imagePath: finalImagePath, // ⬅️ Use the determined path
       notes: _notesController.text.trim().isEmpty
           ? null
           : _notesController.text.trim(),
