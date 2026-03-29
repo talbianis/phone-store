@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:phone_shop/views/categories/categories_Screen.dart';
 import 'package:phone_shop/views/dashboard/dashbord_screen.dart';
+import 'package:phone_shop/views/pos/pos_screen.dart';
 import 'package:phone_shop/views/products/product_Screen.dart';
 import '../core/constants/app_routes.dart';
 import '../views/auth/splash_screen.dart';
@@ -29,6 +30,7 @@ class AppRouter {
       case AppRoutes.categories:
         return MaterialPageRoute(builder: (_) => const CategoriesScreen());
       case AppRoutes.pos:
+        return MaterialPageRoute(builder: (_) => const PosScreen());
       case AppRoutes.customers:
       case AppRoutes.sales:
       case AppRoutes.debts:

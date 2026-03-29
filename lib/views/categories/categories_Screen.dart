@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:phone_shop/core/constants/app_colors.dart';
 import 'package:phone_shop/views/categories/widgets/add_category_dialog.dart';
 import 'package:phone_shop/views/categories/widgets/category_card.dart';
 import 'package:phone_shop/views/categories/widgets/edit_category_dialog.dart';
@@ -70,9 +71,13 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     // Add Category Button
                     ElevatedButton.icon(
                       onPressed: () => _showAddCategoryDialog(context),
-                      icon: const Icon(Icons.add),
-                      label: const Text('Add Category'),
+                      icon: const Icon(Icons.add, color: AppColors.white),
+                      label: const Text(
+                        'Add Category',
+                        style: TextStyle(color: AppColors.white),
+                      ),
                       style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.sidebarBackground,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,
                           vertical: 16,

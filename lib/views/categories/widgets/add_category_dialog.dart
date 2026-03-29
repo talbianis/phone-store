@@ -122,6 +122,16 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                 ),
                 const SizedBox(width: 12),
                 ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (states) {
+                        if (states.contains(MaterialState.disabled)) {
+                          return AppColors.sidebarBackground.withOpacity(0.5);
+                        }
+                        return AppColors.sidebarBackground;
+                      },
+                    ),
+                  ),
                   onPressed: _isLoading ? null : _handleSubmit,
                   child: _isLoading
                       ? const SizedBox(
@@ -133,7 +143,10 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                                 AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         )
-                      : const Text('Add Category'),
+                      : const Text(
+                          'Add Category',
+                          style: TextStyle(color: AppColors.white),
+                        ),
                 ),
               ],
             ),
