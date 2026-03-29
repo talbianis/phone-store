@@ -22,7 +22,22 @@ class CartSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      decoration: BoxDecoration(
+        border: BoxBorder.all(
+            color: AppColors.sidebarBackground, width: 1), // Subtle border
+        color: AppColors.white,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
       child: Column(
         children: [
           // Cart Header
@@ -209,21 +224,22 @@ class CartSection extends StatelessWidget {
               // Checkout Button
               SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: 75.h,
                 child: ElevatedButton.icon(
                   onPressed: cartProvider.isEmpty
                       ? null
                       : () => _showPaymentDialog(context),
-                  icon: const Icon(Icons.payment),
+                  icon: const Icon(Icons.payment, color: AppColors.white),
                   label: const Text(
                     'Complete Sale',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      color: AppColors.white,
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
+                    backgroundColor: AppColors.sidebarBackground,
                     disabledBackgroundColor: Colors.grey[300],
                   ),
                 ),

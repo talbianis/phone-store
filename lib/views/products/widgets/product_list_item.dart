@@ -2,6 +2,7 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:phone_shop/views/products/edit_product_screen.dart';
 import 'package:phone_shop/views/products/product_details_screen.dart';
 import 'package:provider/provider.dart';
@@ -214,7 +215,7 @@ class ProductListItem extends StatelessWidget {
           Text(
             badgeText,
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 16.sp,
               fontWeight: FontWeight.w600,
               color: badgeColor,
             ),
