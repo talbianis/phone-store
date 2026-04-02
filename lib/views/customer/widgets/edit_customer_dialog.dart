@@ -24,7 +24,7 @@ class _EditCustomerDialogState extends State<EditCustomerDialog> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _phoneController;
-  late TextEditingController _emailController;
+
   late TextEditingController _addressController;
   bool _isLoading = false;
 
@@ -42,7 +42,7 @@ class _EditCustomerDialogState extends State<EditCustomerDialog> {
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
-    _emailController.dispose();
+
     _addressController.dispose();
     super.dispose();
   }
@@ -126,18 +126,6 @@ class _EditCustomerDialogState extends State<EditCustomerDialog> {
 
                   const SizedBox(height: 16),
 
-                  // Email
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'Email (Optional)',
-                      prefixIcon: Icon(Icons.email),
-                    ),
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-
-                  const SizedBox(height: 16),
-
                   // Address
                   TextFormField(
                     controller: _addressController,
@@ -165,6 +153,9 @@ class _EditCustomerDialogState extends State<EditCustomerDialog> {
                 ),
                 const SizedBox(width: 12),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.sidebarBackground,
+                  ),
                   onPressed: _isLoading ? null : _handleSubmit,
                   child: _isLoading
                       ? const SizedBox(
@@ -176,7 +167,10 @@ class _EditCustomerDialogState extends State<EditCustomerDialog> {
                                 AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         )
-                      : const Text('Update Customer'),
+                      : const Text(
+                          'Update Customer',
+                          style: TextStyle(color: AppColors.white),
+                        ),
                 ),
               ],
             ),

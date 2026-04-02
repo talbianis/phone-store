@@ -6,6 +6,7 @@ import 'package:phone_shop/views/customer/customers_screen.dart';
 import 'package:phone_shop/views/dashboard/dashbord_screen.dart';
 import 'package:phone_shop/views/pos/pos_screen.dart';
 import 'package:phone_shop/views/products/product_Screen.dart';
+import 'package:phone_shop/views/sales/sales_screens.dart';
 import '../core/constants/app_routes.dart';
 import '../views/auth/splash_screen.dart';
 import '../views/auth/login_screen.dart';
@@ -35,6 +36,7 @@ class AppRouter {
       case AppRoutes.customers:
         return MaterialPageRoute(builder: (_) => const CustomersScreen());
       case AppRoutes.sales:
+        return MaterialPageRoute(builder: (_) => const SalesScreen());
       case AppRoutes.debts:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

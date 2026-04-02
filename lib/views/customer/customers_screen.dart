@@ -1,9 +1,6 @@
 // lib/views/customers/customers_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:phone_shop/views/customer/customer_details_screen.dart';
-import 'package:phone_shop/views/customer/widgets/add_customer_dialog.dart';
-import 'package:phone_shop/views/customer/widgets/edit_customer_dialog.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_routes.dart';
@@ -12,6 +9,9 @@ import '../../providers/customer_provider.dart';
 import '../shared/main_layout.dart';
 import 'widgets/customer_card.dart';
 import 'widgets/customer_list_item.dart';
+import 'widgets/add_customer_dialog.dart';
+import 'widgets/edit_customer_dialog.dart';
+import 'customer_details_screen.dart';
 
 class CustomersScreen extends StatefulWidget {
   const CustomersScreen({Key? key}) : super(key: key);
@@ -112,13 +112,20 @@ class _CustomersScreenState extends State<CustomersScreen> {
           // Add Customer Button
           ElevatedButton.icon(
             onPressed: () => _showAddCustomerDialog(),
-            icon: const Icon(Icons.add),
-            label: const Text('Add Customer'),
+            icon: const Icon(
+              Icons.add,
+              color: AppColors.white,
+            ),
+            label: const Text(
+              'Add Customer',
+              style: TextStyle(color: AppColors.white),
+            ),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(
                 horizontal: 24,
                 vertical: 16,
               ),
+              backgroundColor: AppColors.sidebarBackground,
             ),
           ),
         ],
@@ -321,8 +328,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
   }
 
   void _handleFilter(String filter) {
-    Provider.of<CustomerProvider>(context, listen: false)
-        .filterCustomersWithDebt();
+    Provider.of<CustomerProvider>(context, listen: false).filterByDebt(filter);
   }
 
   void _showAddCustomerDialog() {

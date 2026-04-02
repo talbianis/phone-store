@@ -11,12 +11,10 @@ class CustomerProvider with ChangeNotifier {
   List<CustomerModel> _filteredCustomers = [];
   bool _isLoading = false;
   String? _errorMessage;
-  CustomerModel? _selectedCustomer;
 
   List<CustomerModel> get customers => _filteredCustomers;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
-  CustomerModel? get selectedCustomer => _selectedCustomer;
 
   // Load all customers
   Future<void> loadCustomers() async {
@@ -36,20 +34,29 @@ class CustomerProvider with ChangeNotifier {
     }
   }
 
+  /// Update customer debt (for recording payments)
+  Future<bool> updateCustomerDebt(int customerId, double newDebt) async {
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _repository.updateCustomerDebt(customerId, newDebt);
+      await loadCustomers();
+      return true;
+    } catch (e) {
+      _errorMessage = 'Failed to update debt: $e';
+      notifyListeners();
+      return false;
+    }
+  }
+
   // Add customer
   Future<bool> addCustomer(CustomerModel customer) async {
     _errorMessage = null;
+    notifyListeners();
 
     try {
-      // Check if phone already exists
-      final exists = await _repository.phoneExists(customer.phone);
-      if (exists) {
-        _errorMessage = 'Phone number already exists';
-        notifyListeners();
-        return false;
-      }
-
-      await _repository.createCustomer(customer);
+      await _repository.addCustomer(customer);
       await loadCustomers();
       return true;
     } catch (e) {
@@ -62,19 +69,9 @@ class CustomerProvider with ChangeNotifier {
   // Update customer
   Future<bool> updateCustomer(CustomerModel customer) async {
     _errorMessage = null;
+    notifyListeners();
 
     try {
-      // Check if phone already exists (excluding current customer)
-      final exists = await _repository.phoneExists(
-        customer.phone,
-        excludeCustomerId: customer.id,
-      );
-      if (exists) {
-        _errorMessage = 'Phone number already exists';
-        notifyListeners();
-        return false;
-      }
-
       await _repository.updateCustomer(customer);
       await loadCustomers();
       return true;
@@ -86,66 +83,68 @@ class CustomerProvider with ChangeNotifier {
   }
 
   // Delete customer
-  Future<bool> deleteCustomer(int id) async {
+  Future<bool> deleteCustomer(int customerId) async {
     _errorMessage = null;
+    notifyListeners();
 
     try {
-      await _repository.deleteCustomer(id);
+      await _repository.deleteCustomer(customerId);
       await loadCustomers();
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = 'Failed to delete customer: $e';
       notifyListeners();
       return false;
     }
   }
 
-  // Search customers
+  // ⬅️ ADD THIS METHOD: Search customers
   void searchCustomers(String query) {
     if (query.isEmpty) {
       _filteredCustomers = _customers;
     } else {
-      _filteredCustomers = _customers
-          .where(
-            (customer) =>
-                customer.name.toLowerCase().contains(query.toLowerCase()) ||
-                customer.phone.contains(query),
-          )
-          .toList();
+      _filteredCustomers = _customers.where((customer) {
+        final nameLower = customer.name.toLowerCase();
+        final phoneLower = customer.phone.toLowerCase();
+
+        final queryLower = query.toLowerCase();
+
+        return nameLower.contains(queryLower) ||
+            phoneLower.contains(queryLower);
+      }).toList();
     }
     notifyListeners();
   }
 
-  // Filter customers with debt
-  void filterCustomersWithDebt() {
-    _filteredCustomers = _customers.where((c) => c.hasDebt).toList();
-    notifyListeners();
-  }
-
-  // Reset filter
-  void resetFilter() {
-    _filteredCustomers = _customers;
-    notifyListeners();
-  }
-
-  // Select customer
-  void selectCustomer(CustomerModel? customer) {
-    _selectedCustomer = customer;
+  // ⬅️ ADD THIS METHOD: Filter by debt status
+  void filterByDebt(String filter) {
+    switch (filter) {
+      case 'has_debt':
+        _filteredCustomers = _customers.where((c) => c.totalDebt > 0).toList();
+        break;
+      case 'no_debt':
+        _filteredCustomers = _customers.where((c) => c.totalDebt == 0).toList();
+        break;
+      case 'all':
+      default:
+        _filteredCustomers = _customers;
+        break;
+    }
     notifyListeners();
   }
 
   // Get customer by ID
   CustomerModel? getCustomerById(int id) {
     try {
-      return _customers.firstWhere((c) => c.id == id);
+      return _customers.firstWhere((customer) => customer.id == id);
     } catch (e) {
       return null;
     }
   }
 
-  // Get total debt
-  double getTotalDebt() {
-    return _customers.fold(0.0, (sum, customer) => sum + customer.totalDebt);
+  // Get top customers
+  Future<List<CustomerModel>> getTopCustomers({int limit = 5}) async {
+    return await _repository.getTopCustomers(limit: limit);
   }
 
   // Clear error

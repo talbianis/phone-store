@@ -19,7 +19,7 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _emailController = TextEditingController();
+
   final _addressController = TextEditingController();
   bool _isLoading = false;
 
@@ -27,7 +27,7 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
-    _emailController.dispose();
+
     _addressController.dispose();
     super.dispose();
   }
@@ -109,19 +109,6 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                     ),
                     keyboardType: TextInputType.phone,
                     validator: Validators.phone,
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Email (Optional)
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'Email (Optional)',
-                      hintText: 'e.g., ahmed@example.com',
-                      prefixIcon: Icon(Icons.email),
-                    ),
-                    keyboardType: TextInputType.emailAddress,
                   ),
 
                   const SizedBox(height: 16),

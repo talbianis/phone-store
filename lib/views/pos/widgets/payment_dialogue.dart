@@ -533,12 +533,18 @@ class _PaymentDialogState extends State<PaymentDialog> {
         Expanded(
           child: OutlinedButton(
             onPressed: _isProcessing ? null : () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.black),
+            ),
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.sidebarBackground,
+            ),
             onPressed: _isProcessing ? null : _completeSale,
             child: _isProcessing
                 ? const SizedBox(
@@ -549,7 +555,10 @@ class _PaymentDialogState extends State<PaymentDialog> {
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   )
-                : const Text('Complete Sale'),
+                : const Text(
+                    'Complete Sale',
+                    style: TextStyle(color: AppColors.white),
+                  ),
           ),
         ),
       ],
