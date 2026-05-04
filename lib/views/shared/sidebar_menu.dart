@@ -129,6 +129,10 @@ class SidebarMenu extends StatelessWidget {
                   label: 'Debts',
                   route: AppRoutes.debts,
                 ),
+                _buildMenuItem(context,
+                    icon: Icons.outbond,
+                    label: 'Expenses',
+                    route: AppRoutes.expenses)
               ],
             ),
           ),

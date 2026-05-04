@@ -35,7 +35,7 @@ class ExpenseProvider with ChangeNotifier {
   }
 
   // Load month expenses
-  Future<void> loadMonthExpenses() async {
+  Future<void> loadMonthExpensess() async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -102,9 +102,8 @@ class ExpenseProvider with ChangeNotifier {
     if (category == 'All') {
       _filteredExpenses = _expenses;
     } else {
-      _filteredExpenses = _expenses
-          .where((e) => e.category == category)
-          .toList();
+      _filteredExpenses =
+          _expenses.where((e) => e.category == category).toList();
     }
     notifyListeners();
   }
@@ -132,7 +131,7 @@ class ExpenseProvider with ChangeNotifier {
   }
 
   // Get month total
-  Future<double> getMonthTotal() async {
+  Future<double> getMonthTotall() async {
     try {
       return await _repository.getMonthExpensesAmount();
     } catch (e) {
@@ -143,6 +142,52 @@ class ExpenseProvider with ChangeNotifier {
   // Clear error
   void clearError() {
     _errorMessage = null;
+    notifyListeners();
+  }
+
+  //add mising
+  double getMonthTotal() {
+    final now = DateTime.now();
+    final monthStart = DateTime(now.year, now.month, 1);
+
+    return _expenses
+        .where((expense) => expense.expenseDate
+            .isAfter(monthStart.subtract(const Duration(days: 1))))
+        .fold<double>(0.0, (sum, expense) => sum + expense.amount);
+  }
+
+// Load today's expenses
+  Future<void> loadTodayExpenses() async {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = today.add(const Duration(days: 1));
+
+    await filterByDateRange(today, tomorrow);
+  }
+
+// Load this month's expenses
+  Future<void> loadMonthExpenses() async {
+    final now = DateTime.now();
+    final monthStart = DateTime(now.year, now.month, 1);
+    final monthEnd = DateTime(now.year, now.month + 1, 0);
+
+    await filterByDateRange(monthStart, monthEnd);
+  }
+
+  // add search expenses
+  void searchExpenses(String query) {
+    if (query.isEmpty) {
+      _filteredExpenses = _expenses;
+    } else {
+      _filteredExpenses = _expenses
+          .where((expense) =>
+              expense.category.toLowerCase().contains(query.toLowerCase()) ||
+              (expense.description != null &&
+                  expense.description!
+                      .toLowerCase()
+                      .contains(query.toLowerCase())))
+          .toList();
+    }
     notifyListeners();
   }
 }

@@ -37,7 +37,8 @@ class ExpenseModel {
       amount: (map['amount'] ?? 0.0).toDouble(),
       description: map['description'],
       expenseDate: DateTime.parse(map['expense_date']),
-      createdAt: DateTime.parse(map['created_at']),
+      createdAt:
+          DateTime.parse(map['created_at'] ?? DateTime.now().toIso8601String()),
     );
   }
 
@@ -80,15 +81,15 @@ class ExpenseCategories {
   static const String other = 'Other';
 
   static List<String> get all => [
-    rent,
-    electricity,
-    water,
-    internet,
-    salaries,
-    transportation,
-    maintenance,
-    supplies,
-    marketing,
-    other,
-  ];
+        rent,
+        electricity,
+        water,
+        internet,
+        salaries,
+        transportation,
+        maintenance,
+        supplies,
+        marketing,
+        other,
+      ];
 }

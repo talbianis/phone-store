@@ -5,6 +5,7 @@ import 'package:phone_shop/views/categories/categories_Screen.dart';
 import 'package:phone_shop/views/customer/customers_screen.dart';
 import 'package:phone_shop/views/dashboard/dashbord_screen.dart';
 import 'package:phone_shop/views/debts/debts_screen.dart';
+import 'package:phone_shop/views/expenses/expenses_screen.dart';
 import 'package:phone_shop/views/pos/pos_screen.dart';
 import 'package:phone_shop/views/products/product_Screen.dart';
 import 'package:phone_shop/views/sales/sales_screens.dart';
@@ -40,6 +41,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const SalesScreen());
       case AppRoutes.debts:
         return MaterialPageRoute(builder: (_) => const DebtsScreen());
+      case AppRoutes.expenses:
+        return MaterialPageRoute(builder: (_) => const ExpensesScreen());
 
       // Default (404)
       default:

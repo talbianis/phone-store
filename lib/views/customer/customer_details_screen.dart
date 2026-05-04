@@ -9,7 +9,6 @@ import '../../core/utils/currency_formatter.dart';
 import '../../data/models/customer_model.dart';
 import '../../providers/customer_provider.dart';
 import 'widgets/edit_customer_dialog.dart';
-import 'widgets/record_payment_dialog.dart'; // ⬅️ NEW
 
 class CustomerDetailsScreen extends StatefulWidget {
   final CustomerModel customer;
@@ -83,13 +82,6 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
             const SizedBox(height: 24),
 
             // Debt Section (if has debt)
-            if (_currentCustomer.totalDebt > 0)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: _buildDebtSection(),
-              ),
-
-            if (_currentCustomer.totalDebt > 0) const SizedBox(height: 24),
 
             // Customer Info
             Padding(
@@ -114,10 +106,9 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
 
   Widget _buildCustomerHeader() {
     return Container(
-      padding: const EdgeInsets.all(24),
-      color: AppColors.primary.withOpacity(0.05),
-      child: Row(
-        children: [
+        padding: const EdgeInsets.all(24),
+        color: AppColors.primary.withOpacity(0.05),
+        child: Row(children: [
           // Avatar
           CircleAvatar(
             radius: 40,
@@ -157,177 +148,10 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
               ],
             ),
           ),
-
-          // Debt Status Badge
-          if (_currentCustomer.totalDebt > 0)
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.error),
-              ),
-              child: Column(
-                children: [
-                  const Text(
-                    'Total Debt',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.error,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    CurrencyFormatter.format(_currentCustomer.totalDebt),
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.error,
-                    ),
-                  ),
-                ],
-              ),
-            )
-          else
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.success.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.success),
-              ),
-              child: const Row(
-                children: [
-                  Icon(Icons.check_circle, color: AppColors.success, size: 20),
-                  SizedBox(width: 8),
-                  Text(
-                    'No Debt',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.success,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-        ],
-      ),
-    );
+        ]));
   }
 
   // ⬅️ NEW: Debt Section with Payment Button
-  Widget _buildDebtSection() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.error.withOpacity(0.3)),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.error.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.account_balance_wallet,
-                color: AppColors.error,
-                size: 24,
-              ),
-              const SizedBox(width: 12),
-              const Text(
-                'Outstanding Debt',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Spacer(),
-              // Record Payment Button
-              ElevatedButton.icon(
-                onPressed: () => _showRecordPaymentDialog(),
-                icon: const Icon(Icons.payment, size: 18),
-                label: const Text('Record Payment'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.success,
-                  foregroundColor: Colors.white,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // Debt Amount
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.error.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Amount Owed',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Text(
-                  CurrencyFormatter.format(_currentCustomer.totalDebt),
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.error,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          // Info message
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.orange[50],
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: Colors.orange[200]!),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.info_outline, color: Colors.orange[700], size: 20),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: Text(
-                    'Click "Record Payment" when customer makes a payment',
-                    style: TextStyle(fontSize: 13),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildStatsCards() {
     return Row(
@@ -536,17 +360,4 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
   }
 
   // ⬅️ NEW: Show Record Payment Dialog
-  void _showRecordPaymentDialog() async {
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (context) => RecordPaymentDialog(
-        customer: _currentCustomer,
-      ),
-    );
-
-    if (result == true) {
-      // Reload customer data after payment
-      _loadCustomerData();
-    }
-  }
 }
