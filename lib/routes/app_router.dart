@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:phone_shop/views/categories/categories_Screen.dart';
 import 'package:phone_shop/views/customer/customers_screen.dart';
 import 'package:phone_shop/views/dashboard/dashbord_screen.dart';
+import 'package:phone_shop/views/debts/debts_screen.dart';
 import 'package:phone_shop/views/pos/pos_screen.dart';
 import 'package:phone_shop/views/products/product_Screen.dart';
 import 'package:phone_shop/views/sales/sales_screens.dart';
@@ -38,17 +39,7 @@ class AppRouter {
       case AppRoutes.sales:
         return MaterialPageRoute(builder: (_) => const SalesScreen());
       case AppRoutes.debts:
-        return MaterialPageRoute(
-          builder: (_) => Scaffold(
-            appBar: AppBar(
-              title: Text(_getPageTitle(settings.name ?? '')),
-            ),
-            body: Center(
-              child:
-                  Text('${_getPageTitle(settings.name ?? '')} - Coming Soon'),
-            ),
-          ),
-        );
+        return MaterialPageRoute(builder: (_) => const DebtsScreen());
 
       // Default (404)
       default:

@@ -29,6 +29,9 @@ class DebtModel {
     this.invoiceNumber,
   });
 
+  // ⬅️ ADD THIS: Alias for UI compatibility
+  DateTime get debtDate => createdAt;
+
   // Check if fully paid
   bool get isFullyPaid => status == 'paid' || remainingAmount == 0;
 
@@ -64,7 +67,7 @@ class DebtModel {
       totalAmount: (map['total_amount'] ?? 0.0).toDouble(),
       paidAmount: (map['paid_amount'] ?? 0.0).toDouble(),
       remainingAmount: (map['remaining_amount'] ?? 0.0).toDouble(),
-      status: map['status'],
+      status: map['status'] ?? 'unpaid',
       createdAt: DateTime.parse(map['created_at']),
       customerName: map['customer_name'],
       customerPhone: map['customer_phone'],

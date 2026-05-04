@@ -79,6 +79,10 @@ class DebtRepository {
   }
 
   // Add payment to debt
+  // lib/data/repositories/debt_repository.dart
+
+// Fix the addPayment method:
+
   Future<int> addPayment(DebtPaymentModel payment, int debtId) async {
     final db = await _dbHelper.database;
 
@@ -86,19 +90,37 @@ class DebtRepository {
       // 1. Insert payment
       final paymentId = await txn.insert(Tables.debtPayments, payment.toMap());
 
-      // 2. Update debt
+      print('✅ Payment inserted: $paymentId');
+
+      // 2. Get debt info BEFORE the transaction (or use txn.query)
+      final debtResult = await txn.query(
+        Tables.debts,
+        where: 'id = ?',
+        whereArgs: [debtId],
+      );
+
+      if (debtResult.isEmpty) {
+        throw Exception('Debt not found: $debtId');
+      }
+
+      final debtData = debtResult.first;
+      final customerId = debtData['customer_id'] as int;
+
+      print('✅ Found customer: $customerId');
+
+      // 3. Update debt amounts and status
       await txn.rawUpdate(
         '''
-        UPDATE ${Tables.debts}
-        SET 
-          paid_amount = paid_amount + ?,
-          remaining_amount = remaining_amount - ?,
-          status = CASE 
-            WHEN remaining_amount - ? <= 0 THEN 'paid'
-            WHEN paid_amount + ? > 0 THEN 'partial'
-            ELSE 'unpaid'
-          END
-        WHERE id = ?
+      UPDATE ${Tables.debts}
+      SET 
+        paid_amount = paid_amount + ?,
+        remaining_amount = remaining_amount - ?,
+        status = CASE 
+          WHEN remaining_amount - ? <= 0 THEN 'paid'
+          WHEN paid_amount + ? > 0 THEN 'partial'
+          ELSE 'unpaid'
+        END
+      WHERE id = ?
       ''',
         [
           payment.amount,
@@ -109,14 +131,15 @@ class DebtRepository {
         ],
       );
 
-      // 3. Update customer total debt
-      final debt = await getDebtById(debtId);
-      if (debt != null) {
-        await txn.rawUpdate(
-          'UPDATE ${Tables.customers} SET total_debt = total_debt - ? WHERE id = ?',
-          [payment.amount, debt.customerId],
-        );
-      }
+      print('✅ Debt updated');
+
+      // 4. Update customer total debt
+      await txn.rawUpdate(
+        'UPDATE ${Tables.customers} SET total_debt = total_debt - ? WHERE id = ?',
+        [payment.amount, customerId],
+      );
+
+      print('✅ Customer debt updated');
 
       return paymentId;
     });
@@ -161,6 +184,15 @@ class DebtRepository {
       'SELECT COUNT(*) as count FROM ${Tables.debts} WHERE remaining_amount > 0',
     );
     return Sqflite.firstIntValue(result) ?? 0;
+  }
+
+// Get total outstanding debt
+  Future<double> getTotalOutstandingDebt() async {
+    final db = await _dbHelper.database;
+    final result = await db.rawQuery(
+      'SELECT SUM(remaining_amount) as total FROM ${Tables.debts}',
+    );
+    return (result.first['total'] as num?)?.toDouble() ?? 0.0;
   }
 
   // Delete debt (rarely used)

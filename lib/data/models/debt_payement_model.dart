@@ -4,6 +4,7 @@ class DebtPaymentModel {
   final int? id;
   final int debtId;
   final double amount;
+  final String paymentMethod; // ⬅️ ADD THIS FIELD
   final DateTime paymentDate;
   final String? notes;
 
@@ -11,6 +12,7 @@ class DebtPaymentModel {
     this.id,
     required this.debtId,
     required this.amount,
+    required this.paymentMethod, // ⬅️ ADD THIS
     required this.paymentDate,
     this.notes,
   });
@@ -21,6 +23,7 @@ class DebtPaymentModel {
       'id': id,
       'debt_id': debtId,
       'amount': amount,
+      'payment_method': paymentMethod, // ⬅️ ADD THIS
       'payment_date': paymentDate.toIso8601String(),
       'notes': notes,
     };
@@ -32,6 +35,7 @@ class DebtPaymentModel {
       id: map['id'],
       debtId: map['debt_id'],
       amount: (map['amount'] ?? 0.0).toDouble(),
+      paymentMethod: map['payment_method'] ?? 'cash', // ⬅️ ADD THIS
       paymentDate: DateTime.parse(map['payment_date']),
       notes: map['notes'],
     );
@@ -42,6 +46,7 @@ class DebtPaymentModel {
     int? id,
     int? debtId,
     double? amount,
+    String? paymentMethod, // ⬅️ ADD THIS
     DateTime? paymentDate,
     String? notes,
   }) {
@@ -49,6 +54,7 @@ class DebtPaymentModel {
       id: id ?? this.id,
       debtId: debtId ?? this.debtId,
       amount: amount ?? this.amount,
+      paymentMethod: paymentMethod ?? this.paymentMethod, // ⬅️ ADD THIS
       paymentDate: paymentDate ?? this.paymentDate,
       notes: notes ?? this.notes,
     );
@@ -56,6 +62,6 @@ class DebtPaymentModel {
 
   @override
   String toString() {
-    return 'DebtPaymentModel(amount: $amount DA, date: $paymentDate)';
+    return 'DebtPaymentModel(debt: $debtId, amount: $amount DA, method: $paymentMethod)';
   }
 }

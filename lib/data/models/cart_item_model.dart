@@ -61,4 +61,6 @@ class CartItemModel {
 
   @override
   int get hashCode => product.id.hashCode;
+
+  num? get profit => null;
 }

@@ -155,6 +155,7 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         debt_id INTEGER NOT NULL,
         amount REAL NOT NULL,
+        payment_method TEXT NOT NULL,
         payment_date TEXT NOT NULL,
         notes TEXT,
         FOREIGN KEY (debt_id) REFERENCES ${Tables.debts}(id)
