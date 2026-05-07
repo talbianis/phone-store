@@ -132,7 +132,11 @@ class SidebarMenu extends StatelessWidget {
                 _buildMenuItem(context,
                     icon: Icons.outbond,
                     label: 'Expenses',
-                    route: AppRoutes.expenses)
+                    route: AppRoutes.expenses),
+                _buildMenuItem(context,
+                    icon: Icons.store_outlined,
+                    label: 'Stock',
+                    route: AppRoutes.stock)
               ],
             ),
           ),

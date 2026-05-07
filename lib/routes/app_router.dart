@@ -9,6 +9,7 @@ import 'package:phone_shop/views/expenses/expenses_screen.dart';
 import 'package:phone_shop/views/pos/pos_screen.dart';
 import 'package:phone_shop/views/products/product_Screen.dart';
 import 'package:phone_shop/views/sales/sales_screens.dart';
+import 'package:phone_shop/views/stock/stock_screen.dart';
 import '../core/constants/app_routes.dart';
 import '../views/auth/splash_screen.dart';
 import '../views/auth/login_screen.dart';
@@ -43,6 +44,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const DebtsScreen());
       case AppRoutes.expenses:
         return MaterialPageRoute(builder: (_) => const ExpensesScreen());
+      case AppRoutes.stock:
+        return MaterialPageRoute(builder: (_) => const StockScreen());
 
       // Default (404)
       default:

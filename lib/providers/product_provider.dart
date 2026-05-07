@@ -96,10 +96,30 @@ class ProductProvider with ChangeNotifier {
     if (categoryId == null) {
       _filteredProducts = _products;
     } else {
-      _filteredProducts = _products
-          .where((p) => p.categoryId == categoryId)
-          .toList();
+      _filteredProducts =
+          _products.where((p) => p.categoryId == categoryId).toList();
     }
+    notifyListeners();
+  }
+
+  void filterLowStock() {
+    _filteredProducts = _products
+        .where((product) => product.quantity > 0 && product.quantity <= 10)
+        .toList();
+    notifyListeners();
+  }
+
+  /// Filter out of stock products (quantity == 0)
+  void filterOutOfStock() {
+    _filteredProducts =
+        _products.where((product) => product.quantity == 0).toList();
+    notifyListeners();
+  }
+
+  /// Filter normal stock products (quantity > 10)
+  void filterNormalStock() {
+    _filteredProducts =
+        _products.where((product) => product.quantity > 10).toList();
     notifyListeners();
   }
 
