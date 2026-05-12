@@ -1,18 +1,18 @@
 // lib/views/auth/login_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:phone_shop/core/localization/app_localizations.dart';
 import 'package:phone_shop/core/themes/text_styles.dart';
 import 'package:phone_shop/views/auth/widgets/login_form.dart';
 
 import '../../core/constants/app_colors.dart';
-
-import '../../core/constants/app_strings.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width > 600;
 
@@ -62,13 +62,13 @@ class LoginScreen extends StatelessWidget {
                       const SizedBox(height: 24),
 
                       // Title
-                      Text('Magasin Pro', style: TextStyles.body),
+                      Text(l10n.login, style: TextStyles.body),
 
                       const SizedBox(height: 8),
 
                       // Subtitle
                       Text(
-                        AppStrings.login,
+                        l10n.loginSubtitle,
                         style: TextStyle(
                           fontSize: 16,
                           color: AppColors.textSecondary,
@@ -84,7 +84,7 @@ class LoginScreen extends StatelessWidget {
 
                       // Footer
                       Text(
-                        'Version 1.0.0',
+                        l10n.version,
                         style: TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,

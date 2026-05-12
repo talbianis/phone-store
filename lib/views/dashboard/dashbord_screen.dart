@@ -7,7 +7,7 @@ import 'package:phone_shop/views/dashboard/widgets/sales_chart.dart';
 import 'package:phone_shop/views/dashboard/widgets/stat_card.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_routes.dart';
-
+import '../../core/localization/app_localizations.dart';
 import '../shared/main_layout.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -21,7 +21,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    // Load dashboard data
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<DashboardProvider>(context, listen: false)
           .loadDashboardData();
@@ -30,6 +29,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context); // ✅ get translations
+
     return MainLayout(
       currentRoute: AppRoutes.dashboard,
       child: Consumer<DashboardProvider>(
@@ -44,16 +45,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Page Header
-                const Text(
-                  'Dashboard',
-                  style: TextStyle(
+                Text(
+                  l10n.dashboard, // ✅
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Overview of your phone shop performance',
+                  l10n.dashboardSubtitle, // ✅ was: 'Overview of your phone shop performance'
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
@@ -67,12 +68,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   children: [
                     Expanded(
                       child: StatCard(
-                        title: "Today's Sales",
+                        title: l10n.todaySales, // ✅ was: "Today's Sales"
                         value: dashboardProvider.todaySales,
-                        unit: 'DA',
+                        unit: l10n.currency, // ✅ was: 'DA'
                         change: '+12.5%',
                         isPositive: true,
-                        subtitle: 'vs yesterday',
+                        subtitle: l10n.vsYesterday, // ✅ was: 'vs yesterday'
                         color: Colors.green,
                         icon: Icons.trending_up,
                       ),
@@ -80,12 +81,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: StatCard(
-                        title: "Today's Profit",
+                        title: l10n.todayProfit, // ✅ was: "Today's Profit"
                         value: dashboardProvider.todayProfit,
-                        unit: 'DA',
+                        unit: l10n.currency, // ✅ was: 'DA'
                         change: '+8.2%',
                         isPositive: true,
-                        subtitle: 'vs yesterday',
+                        subtitle: l10n.vsYesterday, // ✅ was: 'vs yesterday'
                         color: Colors.blue,
                         icon: Icons.attach_money,
                       ),
@@ -93,12 +94,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: StatCard(
-                        title: "Low Stock Items",
+                        title: l10n.lowStockAlerts, // ✅ was: "Low Stock Items"
                         value: dashboardProvider.lowStockCount.toDouble(),
-                        unit: 'Products',
+                        unit: l10n.products, // ✅ was: 'Products'
                         change: '+3',
                         isPositive: false,
-                        subtitle: 'vs yesterday',
+                        subtitle: l10n.vsYesterday, // ✅ was: 'vs yesterday'
                         color: Colors.orange,
                         icon: Icons.warning_amber,
                       ),
@@ -106,12 +107,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: StatCard(
-                        title: "Total Products",
+                        title: l10n.totalProducts, // ✅ was: "Total Products"
                         value: dashboardProvider.totalProducts.toDouble(),
-                        unit: 'Items',
+                        unit: l10n.items, // ✅ was: 'Items'
                         change: '+24',
                         isPositive: true,
-                        subtitle: 'vs yesterday',
+                        subtitle: l10n.vsYesterday, // ✅ was: 'vs yesterday'
                         color: Colors.purple,
                         icon: Icons.inventory_2,
                       ),
@@ -125,17 +126,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Sales Chart
                     Expanded(
                       flex: 2,
                       child: SalesChart(
                         salesData: dashboardProvider.last7DaysSales,
                       ),
                     ),
-
                     const SizedBox(width: 24),
-
-                    // Best Selling Products
                     const Expanded(
                       flex: 1,
                       child: BestSellingProducts(),

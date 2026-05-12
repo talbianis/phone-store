@@ -3,8 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
-
+import '../../core/localization/app_localizations.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/locale_provider.dart';
 import 'sidebar_menu.dart';
 
 class MainLayout extends StatelessWidget {
@@ -45,6 +46,10 @@ class MainLayout extends StatelessWidget {
   }
 
   Widget _buildTopBar(BuildContext context, AuthProvider authProvider) {
+    final l10n = AppLocalizations.of(context);
+    final localeProvider = Provider.of<LocaleProvider>(context);
+    final isFrench = localeProvider.locale.languageCode == 'fr';
+
     return Container(
       height: 70,
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -62,7 +67,7 @@ class MainLayout extends StatelessWidget {
               constraints: const BoxConstraints(maxWidth: 400),
               child: TextField(
                 decoration: InputDecoration(
-                  hintText: 'Search products, customers, invoices...',
+                  hintText: l10n.searchProduct,
                   hintStyle: TextStyle(
                     color: Colors.grey[400],
                     fontSize: 14,
@@ -103,10 +108,34 @@ class MainLayout extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   'Fri, Mar 6, 2026',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[700],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(width: 16),
+
+          // ✅ Language Switcher
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.grey[200]!),
+            ),
+            child: Row(
+              children: [
+                _buildLangButton(
+                  label: 'EN',
+                  isSelected: !isFrench,
+                  onTap: () => localeProvider.setLocale(const Locale('en')),
+                  isLeft: true,
+                ),
+                _buildLangButton(
+                  label: 'FR',
+                  isSelected: isFrench,
+                  onTap: () => localeProvider.setLocale(const Locale('fr')),
+                  isLeft: false,
                 ),
               ],
             ),
@@ -175,10 +204,7 @@ class MainLayout extends StatelessWidget {
                   ),
                   Text(
                     authProvider.currentUser?.role ?? 'Admin',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                 ],
               ),
@@ -187,6 +213,37 @@ class MainLayout extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  // ✅ Individual language button
+  Widget _buildLangButton({
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+    required bool isLeft,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary : Colors.transparent,
+          borderRadius: BorderRadius.horizontal(
+            left: isLeft ? const Radius.circular(7) : Radius.zero,
+            right: !isLeft ? const Radius.circular(7) : Radius.zero,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: isSelected ? Colors.white : Colors.grey[600],
+          ),
+        ),
       ),
     );
   }

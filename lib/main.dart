@@ -2,14 +2,17 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart'; // ⬅️ ADD THIS
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:phone_shop/core/localization/app_localizations.dart';
+
 import 'package:phone_shop/providers/dashborad_provider.dart';
+import 'package:phone_shop/providers/locale_provider.dart';
 import 'package:phone_shop/providers/stock_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'core/constants/app_routes.dart';
-// ⬅️ ADD THIS
 import 'data/database/database_helper.dart';
 import 'providers/auth_provider.dart';
 import 'providers/product_provider.dart';
@@ -23,10 +26,8 @@ import 'providers/theme_provider.dart';
 import 'routes/app_router.dart';
 
 void main() async {
-  // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize database factory for desktop platforms
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
@@ -35,13 +36,11 @@ void main() async {
     print('📱 Mobile platform detected - using standard sqflite');
   }
 
-  // Initialize database
   await _initializeDatabase();
 
   runApp(const MyApp());
 }
 
-// Database initialization function
 Future<void> _initializeDatabase() async {
   try {
     final db = await DatabaseHelper.instance.database;
@@ -71,30 +70,33 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ExpenseProvider()),
         ChangeNotifierProvider(create: (_) => DashboardProvider()),
         ChangeNotifierProvider(create: (_) => StockProvider()),
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
       ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
-          // ⬅️ WRAP MaterialApp with ScreenUtilInit
+      child: Consumer2<ThemeProvider, LocaleProvider>(
+        builder: (context, themeProvider, localeProvider, child) {
           return ScreenUtilInit(
-            // Design size (reference design dimensions)
-            // Use your design's dimensions (Figma/Adobe XD)
-            // Common sizes: 375x812 (iPhone), 1920x1080 (Desktop)
-            designSize: const Size(1920, 1080), // ⬅️ Desktop design size
-
-            // Minimum text adapt size
+            designSize: const Size(1920, 1080),
             minTextAdapt: true,
-
-            // Split screen mode support
             splitScreenMode: true,
-
-            // Builder
             builder: (context, child) {
               return MaterialApp(
                 title: 'Magasin Pro',
                 debugShowCheckedModeBanner: false,
 
-                // Theme
+                // ✅ Locale
+                locale: localeProvider.locale,
+                supportedLocales: const [
+                  Locale('en'),
+                  Locale('fr'),
+                ],
+                localizationsDelegates: [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
 
+                // Theme
                 themeMode: themeProvider.themeMode,
 
                 // Routes

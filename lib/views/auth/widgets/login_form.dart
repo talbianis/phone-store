@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_routes.dart';
-import '../../../core/constants/app_strings.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../providers/auth_provider.dart';
@@ -32,9 +32,7 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Future<void> _handleLogin() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
@@ -51,10 +49,8 @@ class _LoginFormState extends State<LoginForm> {
     if (!mounted) return;
 
     if (success) {
-      // Navigate to dashboard
       Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
     } else {
-      // Show error
       Helpers.showSnackBar(
         context,
         authProvider.errorMessage ?? 'Login failed',
@@ -65,6 +61,8 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context); // ✅
+
     return Form(
       key: _formKey,
       child: Column(
@@ -74,12 +72,11 @@ class _LoginFormState extends State<LoginForm> {
           TextFormField(
             controller: _usernameController,
             enabled: !_isLoading,
-
             decoration: InputDecoration(
-              labelText: AppStrings.username,
+              labelText: l10n.username, // ✅ was: AppStrings.username
+              hintText:
+                  l10n.usernameHint, // ✅ was: 'Entrez votre nom d\'utilisateur'
               border: const OutlineInputBorder(),
-
-              hintText: 'Entrez votre nom d\'utilisateur',
               prefixIcon: const Icon(Icons.person),
             ),
             textInputAction: TextInputAction.next,
@@ -95,8 +92,8 @@ class _LoginFormState extends State<LoginForm> {
             obscureText: _obscurePassword,
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
-              labelText: AppStrings.password,
-              hintText: 'Entrez votre mot de passe',
+              labelText: l10n.password, // ✅ was: AppStrings.password
+              hintText: l10n.passwordHint, // ✅ was: 'Entrez votre mot de passe'
               prefixIcon: const Icon(Icons.lock),
               suffixIcon: IconButton(
                 icon: Icon(
@@ -119,11 +116,9 @@ class _LoginFormState extends State<LoginForm> {
             value: _rememberMe,
             onChanged: _isLoading
                 ? null
-                : (value) {
-                    setState(() => _rememberMe = value ?? false);
-                  },
+                : (value) => setState(() => _rememberMe = value ?? false),
             title: Text(
-              AppStrings.rememberMe,
+              l10n.rememberMe, // ✅ was: AppStrings.rememberMe
               style: const TextStyle(fontSize: 14),
             ),
             controlAffinity: ListTileControlAffinity.leading,
@@ -157,7 +152,8 @@ class _LoginFormState extends State<LoginForm> {
                       ),
                     )
                   : Text(
-                      AppStrings.login.toUpperCase(),
+                      l10n.loginButton
+                          .toUpperCase(), // ✅ was: AppStrings.login.toUpperCase()
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -169,7 +165,7 @@ class _LoginFormState extends State<LoginForm> {
 
           const SizedBox(height: 16),
 
-          // Default Credentials Info (For Testing)
+          // Default Credentials Info
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -181,12 +177,13 @@ class _LoginFormState extends State<LoginForm> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  children: const [
-                    Icon(Icons.info_outline, size: 16, color: AppColors.info),
-                    SizedBox(width: 8),
+                  children: [
+                    const Icon(Icons.info_outline,
+                        size: 16, color: AppColors.info),
+                    const SizedBox(width: 8),
                     Text(
-                      'Identifiants par défaut:',
-                      style: TextStyle(
+                      l10n.defaultCredentials, // ✅ was: 'Identifiants par défaut:'
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: AppColors.info,
@@ -195,13 +192,13 @@ class _LoginFormState extends State<LoginForm> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Utilisateur: admin',
-                  style: TextStyle(fontSize: 12),
+                Text(
+                  l10n.defaultUser, // ✅ was: 'Utilisateur: admin'
+                  style: const TextStyle(fontSize: 12),
                 ),
-                const Text(
-                  'Mot de passe: admin123',
-                  style: TextStyle(fontSize: 12),
+                Text(
+                  l10n.defaultPassword, // ✅ was: 'Mot de passe: admin123'
+                  style: const TextStyle(fontSize: 12),
                 ),
               ],
             ),

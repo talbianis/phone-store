@@ -111,10 +111,11 @@ class _StockScreenState extends State<StockScreen> {
           ),
           ElevatedButton.icon(
             onPressed: _showStockHistory,
-            icon: const Icon(Icons.history, size: 20),
-            label: const Text('View History'),
+            icon: const Icon(Icons.history, size: 20, color: AppColors.white),
+            label: const Text('View History',
+                style: TextStyle(color: AppColors.white)),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
+              backgroundColor: AppColors.sidebarBackground,
               padding: const EdgeInsets.symmetric(
                 horizontal: 24,
                 vertical: 16,
