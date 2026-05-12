@@ -31,9 +31,9 @@ void main() async {
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
-    print('🖥️ Desktop platform detected - using sqflite_ffi');
+    debugPrint('🖥️ Desktop platform detected - using sqflite_ffi');
   } else {
-    print('📱 Mobile platform detected - using standard sqflite');
+    debugPrint('📱 Mobile platform detected - using standard sqflite');
   }
 
   await _initializeDatabase();
@@ -44,10 +44,10 @@ void main() async {
 Future<void> _initializeDatabase() async {
   try {
     final db = await DatabaseHelper.instance.database;
-    print('✅ Database initialized successfully');
-    print('📁 Database path: ${await db.path}');
+    debugPrint('✅ Database initialized successfully');
+    debugPrint('📁 Database path: ${db.path}');
   } catch (e) {
-    print('❌ Error initializing database: $e');
+    debugPrint('❌ Error initializing database: $e');
     rethrow;
   }
 }

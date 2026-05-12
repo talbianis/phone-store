@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:phone_shop/core/utils/date_formater.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/layout/desktop_adaptive.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/utils/currency_formatter.dart';
 
@@ -46,35 +47,35 @@ class ProductDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Product Image Section
-            _buildImageSection(),
+            _buildImageSection(context),
 
             // Product Info
             Padding(
-              padding: const EdgeInsets.all(24),
+              padding: desktopPagePadding(context),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Name and Brand
                   Text(
                     product.name,
-                    style: const TextStyle(
-                      fontSize: 28,
+                    style: TextStyle(
+                      fontSize: desktopPageTitleFontSize(context),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
 
                   if (product.brand != null) ...[
-                    const SizedBox(height: 8),
+                    SizedBox(height: desktopViewportHeight(context) * 0.01),
                     Text(
                       product.brand!,
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: desktopSectionTitleFontSize(context),
                         color: Colors.grey[600],
                       ),
                     ),
                   ],
 
-                  const SizedBox(height: 8),
+                  SizedBox(height: desktopViewportHeight(context) * 0.01),
 
                   // Category
                   Consumer<CategoryProvider>(
@@ -103,22 +104,22 @@ class ProductDetailsScreen extends StatelessWidget {
                     },
                   ),
 
-                  const SizedBox(height: 32),
+                  SizedBox(height: desktopViewportHeight(context) * 0.028),
 
                   // Info Cards
-                  _buildInfoCards(l10n),
+                  _buildInfoCards(context, l10n),
 
-                  const SizedBox(height: 24),
+                  SizedBox(height: desktopViewportHeight(context) * 0.022),
 
                   // Details Section
-                  _buildDetailsSection(l10n),
+                  _buildDetailsSection(context, l10n),
 
                   if (product.notes != null && product.notes!.isNotEmpty) ...[
-                    const SizedBox(height: 24),
+                    SizedBox(height: desktopViewportHeight(context) * 0.022),
                     _buildNotesSection(l10n),
                   ],
 
-                  const SizedBox(height: 24),
+                  SizedBox(height: desktopViewportHeight(context) * 0.022),
 
                   // Timestamps
                   _buildTimestamps(l10n),
@@ -131,20 +132,24 @@ class ProductDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildImageSection() {
-    return Container(
+  Widget _buildImageSection(BuildContext context) {
+    final imgHeight =
+        (desktopViewportHeight(context) * 0.34).clamp(220.0, 520.0);
+    return SizedBox(
       width: double.infinity,
-      height: 400,
-      color: Colors.grey[100],
-      child: product.imagePath != null && product.imagePath!.isNotEmpty
-          ? Image.file(
-              File(product.imagePath!),
-              fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) {
-                return _buildImagePlaceholder();
-              },
-            )
-          : _buildImagePlaceholder(),
+      height: imgHeight,
+      child: ColoredBox(
+        color: Colors.grey[100]!,
+        child: product.imagePath != null && product.imagePath!.isNotEmpty
+            ? Image.file(
+                File(product.imagePath!),
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  return _buildImagePlaceholder();
+                },
+              )
+            : _buildImagePlaceholder(),
+      ),
     );
   }
 
@@ -158,45 +163,58 @@ class ProductDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoCards(AppLocalizations l10n) {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildInfoCard(
-            l10n.sellingPrice,
-            CurrencyFormatter.format(product.sellingPrice),
-            AppColors.primary,
-            Icons.sell,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _buildInfoCard(
-            l10n.buyingPrice,
-            CurrencyFormatter.format(product.purchasePrice),
-            Colors.orange,
-            Icons.shopping_cart,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _buildInfoCard(
-            l10n.profit,
-            CurrencyFormatter.format(product.profitPerUnit),
-            AppColors.success,
-            Icons.trending_up,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _buildInfoCard(
-            l10n.stock,
-            l10n.unitsCountLabel(product.quantity),
-            _getStockColor(),
-            Icons.inventory,
-          ),
-        ),
-      ],
+  Widget _buildInfoCards(BuildContext context, AppLocalizations l10n) {
+    final cards = <Widget>[
+      _buildInfoCard(
+        l10n.sellingPrice,
+        CurrencyFormatter.format(product.sellingPrice),
+        AppColors.primary,
+        Icons.sell,
+      ),
+      _buildInfoCard(
+        l10n.buyingPrice,
+        CurrencyFormatter.format(product.purchasePrice),
+        Colors.orange,
+        Icons.shopping_cart,
+      ),
+      _buildInfoCard(
+        l10n.profit,
+        CurrencyFormatter.format(product.profitPerUnit),
+        AppColors.success,
+        Icons.trending_up,
+      ),
+      _buildInfoCard(
+        l10n.stock,
+        l10n.unitsCountLabel(product.quantity),
+        _getStockColor(),
+        Icons.inventory,
+      ),
+    ];
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final w = constraints.maxWidth;
+        const gap = 16.0;
+        if (w >= 1100) {
+          return Row(
+            children: [
+              for (var i = 0; i < cards.length; i++) ...[
+                if (i > 0) const SizedBox(width: gap),
+                Expanded(child: cards[i]),
+              ],
+            ],
+          );
+        }
+        final cols = w >= 640 ? 2 : 1;
+        final tileW = cols == 1 ? w : (w - gap) / 2;
+        return Wrap(
+          spacing: gap,
+          runSpacing: gap,
+          children: cards
+              .map((c) => SizedBox(width: tileW, child: c))
+              .toList(),
+        );
+      },
     );
   }
 
@@ -255,9 +273,11 @@ class ProductDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailsSection(AppLocalizations l10n) {
+  Widget _buildDetailsSection(BuildContext context, AppLocalizations l10n) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(
+        desktopPagePadding(context).left.clamp(16.0, 24.0),
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -268,8 +288,8 @@ class ProductDetailsScreen extends StatelessWidget {
         children: [
           Text(
             l10n.productDetails,
-            style: const TextStyle(
-              fontSize: 18,
+            style: TextStyle(
+              fontSize: desktopSectionTitleFontSize(context),
               fontWeight: FontWeight.bold,
             ),
           ),

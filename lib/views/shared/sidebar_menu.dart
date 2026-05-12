@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/layout/desktop_adaptive.dart';
 import '../../core/constants/app_routes.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../providers/auth_provider.dart';
@@ -21,12 +22,12 @@ class SidebarMenu extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
 
     return Container(
-      width: 250,
+      width: double.infinity,
       color: AppColors.sidebarBackground,
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(24),
+            padding: desktopSidebarInset(context),
             child: Row(
               children: [
                 Container(

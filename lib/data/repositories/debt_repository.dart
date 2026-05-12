@@ -1,5 +1,6 @@
 // lib/data/repositories/debt_repository.dart
 
+import 'package:flutter/foundation.dart';
 import 'package:phone_shop/data/models/debt_payement_model.dart';
 import 'package:sqflite/sqflite.dart';
 import '../database/database_helper.dart';
@@ -90,7 +91,7 @@ class DebtRepository {
       // 1. Insert payment
       final paymentId = await txn.insert(Tables.debtPayments, payment.toMap());
 
-      print('✅ Payment inserted: $paymentId');
+      debugPrint('✅ Payment inserted: $paymentId');
 
       // 2. Get debt info BEFORE the transaction (or use txn.query)
       final debtResult = await txn.query(
@@ -106,7 +107,7 @@ class DebtRepository {
       final debtData = debtResult.first;
       final customerId = debtData['customer_id'] as int;
 
-      print('✅ Found customer: $customerId');
+      debugPrint('✅ Found customer: $customerId');
 
       // 3. Update debt amounts and status
       await txn.rawUpdate(
@@ -131,7 +132,7 @@ class DebtRepository {
         ],
       );
 
-      print('✅ Debt updated');
+      debugPrint('✅ Debt updated');
 
       // 4. Update customer total debt
       await txn.rawUpdate(
@@ -139,7 +140,7 @@ class DebtRepository {
         [payment.amount, customerId],
       );
 
-      print('✅ Customer debt updated');
+      debugPrint('✅ Customer debt updated');
 
       return paymentId;
     });

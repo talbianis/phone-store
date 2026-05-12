@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/layout/desktop_adaptive.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/constants/app_routes.dart';
 import '../../providers/product_provider.dart';
@@ -46,43 +47,50 @@ class _PosScreenState extends State<PosScreen> {
 
           // Main Content
           Expanded(
-            child: Row(
-              children: [
-                // Left Side - Product Selection (60%)
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    color: Colors.grey[50],
-                    child: Column(
-                      children: [
-                        // Search Bar
-                        Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: ProductSearchBar(
-                            onProductSelected: _addProductToCart,
-                          ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final stackVertical = constraints.maxWidth < 780;
+                final leftPane = Container(
+                  color: Colors.grey[50],
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: desktopPagePadding(context).copyWith(
+                          bottom: 12,
+                          top: 12,
                         ),
-
-                        // Category Filter
-                        _buildCategoryFilter(),
-
-                        // Product Grid
-                        Expanded(
-                          child: _buildProductGrid(),
+                        child: ProductSearchBar(
+                          onProductSelected: _addProductToCart,
                         ),
-                      ],
-                    ),
+                      ),
+                      _buildCategoryFilter(),
+                      Expanded(
+                        child: _buildProductGrid(),
+                      ),
+                    ],
                   ),
-                ),
-
-                // Right Side - Cart (40%)
-                Expanded(
-                  flex: 2,
-                  child: CartSection(
-                    onCheckout: _handleCheckout,
-                  ),
-                ),
-              ],
+                );
+                final cartPane = CartSection(
+                  onCheckout: _handleCheckout,
+                );
+                if (stackVertical) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(flex: 3, child: leftPane),
+                      const Divider(height: 1),
+                      Expanded(flex: 2, child: cartPane),
+                    ],
+                  );
+                }
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(flex: 3, child: leftPane),
+                    Expanded(flex: 2, child: cartPane),
+                  ],
+                );
+              },
             ),
           ),
         ],
@@ -93,7 +101,7 @@ class _PosScreenState extends State<PosScreen> {
   Widget _buildHeader() {
     final l10n = AppLocalizations.of(context);
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: desktopPagePadding(context),
       color: Colors.white,
       child: Row(
         children: [
@@ -103,16 +111,16 @@ class _PosScreenState extends State<PosScreen> {
               children: [
                 Text(
                   l10n.pos,
-                  style: const TextStyle(
-                    fontSize: 28,
+                  style: TextStyle(
+                    fontSize: desktopPageTitleFontSize(context),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: desktopViewportHeight(context) * 0.005),
                 Text(
                   l10n.posSubtitle,
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: TextStyle(
+                    fontSize: desktopPageSubtitleFontSize(context),
                     color: Colors.grey,
                   ),
                 ),
@@ -269,20 +277,39 @@ class _PosScreenState extends State<PosScreen> {
           );
         }
 
-        return GridView.builder(
-          padding: const EdgeInsets.all(16),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 0.85,
-          ),
-          itemCount: availableProducts.length,
-          itemBuilder: (context, index) {
-            final product = availableProducts[index];
-            return ProductGridItem(
-              product: product,
-              onTap: () => _addProductToCart(product),
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final w = constraints.maxWidth;
+            int crossCount = 3;
+            if (w >= 1100) {
+              crossCount = 5;
+            } else if (w >= 820) {
+              crossCount = 4;
+            } else if (w >= 520) {
+              crossCount = 3;
+            } else if (w >= 340) {
+              crossCount = 2;
+            } else {
+              crossCount = 1;
+            }
+            final aspect = crossCount >= 4 ? 0.82 : 0.85;
+
+            return GridView.builder(
+              padding: desktopPagePadding(context).copyWith(top: 8, bottom: 16),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossCount,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: aspect,
+              ),
+              itemCount: availableProducts.length,
+              itemBuilder: (context, index) {
+                final product = availableProducts[index];
+                return ProductGridItem(
+                  product: product,
+                  onTap: () => _addProductToCart(product),
+                );
+              },
             );
           },
         );
@@ -309,12 +336,13 @@ class _PosScreenState extends State<PosScreen> {
     cartProvider.addProduct(product);
 
     // Show brief feedback
+    final mq = MediaQuery.sizeOf(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(l10n.productAddedToCartName(product.name)),
         duration: const Duration(milliseconds: 800),
         behavior: SnackBarBehavior.floating,
-        width: 300,
+        width: (mq.width * 0.28).clamp(260.0, 440.0),
       ),
     );
   }

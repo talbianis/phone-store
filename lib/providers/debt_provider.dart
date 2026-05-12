@@ -186,7 +186,7 @@ class DebtProvider with ChangeNotifier {
       _filteredDebts = _debts;
       _isLoading = false;
       notifyListeners();
-      print("Loaded debts: ${_debts.length}");
+      debugPrint('Loaded debts: ${_debts.length}');
     } catch (e) {
       _errorMessage = 'Failed to load debts: $e';
       _isLoading = false;

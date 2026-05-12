@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/layout/desktop_adaptive.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/locale_provider.dart';
@@ -23,37 +24,50 @@ class MainLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
 
-    return Scaffold(
-      body: Row(
-        children: [
-          // Sidebar
-          SidebarMenu(currentRoute: currentRoute),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final sidebarW = desktopSidebarWidth(constraints.maxWidth);
+        final contentW =
+            (constraints.maxWidth - sidebarW).clamp(200.0, double.infinity);
 
-          // Main Content
-          Expanded(
-            child: Column(
-              children: [
-                // Top Bar
-                _buildTopBar(context, authProvider),
-
-                // Content
-                Expanded(child: child),
-              ],
-            ),
+        return Scaffold(
+          body: Row(
+            children: [
+              SizedBox(
+                width: sidebarW,
+                child: SidebarMenu(currentRoute: currentRoute),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    _buildTopBar(context, authProvider, contentW),
+                    Expanded(child: child),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildTopBar(BuildContext context, AuthProvider authProvider) {
+  Widget _buildTopBar(
+    BuildContext context,
+    AuthProvider authProvider,
+    double contentAreaWidth,
+  ) {
     final l10n = AppLocalizations.of(context);
     final localeProvider = Provider.of<LocaleProvider>(context);
     final isFrench = localeProvider.locale.languageCode == 'fr';
+    final barHeight = desktopTopBarHeight(context);
+    final tight = contentAreaWidth < 780;
+    final padH = tight ? 12.0 : 24.0;
+    final hintSize = tight ? 13.0 : 14.0;
 
     return Container(
-      height: 70,
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      height: barHeight,
+      padding: EdgeInsets.symmetric(horizontal: padH),
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
@@ -62,158 +76,192 @@ class MainLayout extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Search Bar
-          Expanded(
-            child: Container(
-              constraints: const BoxConstraints(maxWidth: 400),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: l10n.searchProduct,
-                  hintStyle: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: 14,
-                  ),
-                  prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
-                  suffixText: l10n.searchShortcut,
-                  suffixStyle: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: 12,
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[50],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
+          Flexible(
+            flex: 3,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: desktopTopSearchMaxWidth(contentAreaWidth),
+                ),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: l10n.searchProduct,
+                    hintStyle: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: hintSize,
+                    ),
+                    prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
+                    suffixText: tight ? null : l10n.searchShortcut,
+                    suffixStyle: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 12,
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[50],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-
-          const Spacer(),
-
-          // Date Display
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.grey[50],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.calendar_today, size: 16, color: Colors.grey[600]),
-                const SizedBox(width: 8),
-                Text(
-                  DateFormat.yMMMEd(
-                    Localizations.localeOf(context).toString(),
-                  ).format(DateTime.now()),
-                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(width: 16),
-
-          // ✅ Language Switcher
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey[50],
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey[200]!),
-            ),
-            child: Row(
-              children: [
-                _buildLangButton(
-                  label: l10n.langCodeEn,
-                  isSelected: !isFrench,
-                  onTap: () => localeProvider.setLocale(const Locale('en')),
-                  isLeft: true,
-                ),
-                _buildLangButton(
-                  label: l10n.langCodeFr,
-                  isSelected: isFrench,
-                  onTap: () => localeProvider.setLocale(const Locale('fr')),
-                  isLeft: false,
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(width: 16),
-
-          // Notifications
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications_outlined),
-                onPressed: () {},
-              ),
-              Positioned(
-                right: 8,
-                top: 8,
-                child: Container(
-                  width: 18,
-                  height: 18,
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Center(
-                    child: Text(
-                      '3',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
+          Flexible(
+            flex: 2,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              reverse: true,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    // Date Display
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: tight ? 10 : 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.calendar_today,
+                              size: 16, color: Colors.grey[600]),
+                          if (!tight) ...[
+                            const SizedBox(width: 8),
+                            Text(
+                              DateFormat.yMMMEd(
+                                Localizations.localeOf(context).toString(),
+                              ).format(DateTime.now()),
+                              style: TextStyle(
+                                  fontSize: 14, color: Colors.grey[700]),
+                            ),
+                          ],
+                        ],
                       ),
                     ),
-                  ),
-                ),
-              ),
-            ],
-          ),
 
-          const SizedBox(width: 16),
+                    SizedBox(width: tight ? 8 : 16),
 
-          // User Profile
-          Row(
-            children: [
-              CircleAvatar(
-                backgroundColor: AppColors.primary,
-                child: Text(
-                  authProvider.currentUser?.fullName[0].toUpperCase() ?? 'A',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    authProvider.currentUser?.fullName ?? l10n.guestUser,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                    // Language Switcher
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey[200]!),
+                      ),
+                      child: Row(
+                        children: [
+                          _buildLangButton(
+                            label: l10n.langCodeEn,
+                            isSelected: !isFrench,
+                            onTap: () =>
+                                localeProvider.setLocale(const Locale('en')),
+                            isLeft: true,
+                          ),
+                          _buildLangButton(
+                            label: l10n.langCodeFr,
+                            isSelected: isFrench,
+                            onTap: () =>
+                                localeProvider.setLocale(const Locale('fr')),
+                            isLeft: false,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Text(
-                    authProvider.currentUser?.role ?? l10n.admin,
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                  ),
-                ],
+
+                    SizedBox(width: tight ? 8 : 16),
+
+                    // Notifications
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.notifications_outlined),
+                          onPressed: () {},
+                        ),
+                        Positioned(
+                          right: 8,
+                          top: 8,
+                          child: Container(
+                            width: 18,
+                            height: 18,
+                            decoration: const BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Center(
+                              child: Text(
+                                '3',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(width: tight ? 8 : 16),
+
+                    // User Profile
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: AppColors.primary,
+                          child: Text(
+                            authProvider.currentUser?.fullName[0]
+                                    .toUpperCase() ??
+                                'A',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        if (!tight) ...[
+                          const SizedBox(width: 12),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                authProvider.currentUser?.fullName ??
+                                    l10n.guestUser,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                authProvider.currentUser?.role ?? l10n.admin,
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.grey[600]),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(width: 8),
+                          Icon(Icons.keyboard_arrow_down,
+                              color: Colors.grey[600]),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(width: 8),
-              Icon(Icons.keyboard_arrow_down, color: Colors.grey[600]),
-            ],
+            ),
           ),
         ],
       ),

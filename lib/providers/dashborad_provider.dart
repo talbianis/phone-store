@@ -122,7 +122,7 @@ class DashboardProvider with ChangeNotifier {
     } catch (e) {
       // If no data, create empty list
       _last7DaysSales = [];
-      print('No chart data available: $e');
+      debugPrint('No chart data available: $e');
     }
   }
 

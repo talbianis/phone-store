@@ -9,6 +9,7 @@ import 'package:phone_shop/views/stock/widgets/stock_item_card.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_routes.dart';
+import '../../core/layout/desktop_adaptive.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../../providers/product_provider.dart';
 import '../shared/main_layout.dart';
@@ -81,9 +82,10 @@ class _StockScreenState extends State<StockScreen> {
   Widget _buildHeader() {
     final l10n = AppLocalizations.of(context);
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: desktopPagePadding(context),
       color: Colors.white,
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             child: Column(
@@ -91,18 +93,18 @@ class _StockScreenState extends State<StockScreen> {
               children: [
                 Text(
                   l10n.stock,
-                  style: const TextStyle(
-                    fontSize: 28,
+                  style: TextStyle(
+                    fontSize: desktopPageTitleFontSize(context),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: desktopViewportHeight(context) * 0.005),
                 Consumer<ProductProvider>(
                   builder: (context, provider, child) {
                     return Text(
                       l10n.productsCountInventory(provider.products.length),
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: desktopPageSubtitleFontSize(context),
                         color: Colors.grey[600],
                       ),
                     );
@@ -111,16 +113,19 @@ class _StockScreenState extends State<StockScreen> {
               ],
             ),
           ),
-          ElevatedButton.icon(
-            onPressed: _showStockHistory,
-            icon: const Icon(Icons.history, size: 20, color: AppColors.white),
-            label: Text(l10n.viewHistory,
-                style: const TextStyle(color: AppColors.white)),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.sidebarBackground,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 16,
+          Flexible(
+            child: ElevatedButton.icon(
+              onPressed: _showStockHistory,
+              icon:
+                  const Icon(Icons.history, size: 20, color: AppColors.white),
+              label: Text(l10n.viewHistory,
+                  style: const TextStyle(color: AppColors.white)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.sidebarBackground,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
               ),
             ),
           ),
@@ -132,7 +137,12 @@ class _StockScreenState extends State<StockScreen> {
   Widget _buildFilters() {
     final l10n = AppLocalizations.of(context);
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.fromLTRB(
+        desktopPagePadding(context).left,
+        12,
+        desktopPagePadding(context).right,
+        12,
+      ),
       color: Colors.white,
       child: Row(
         children: [
@@ -215,7 +225,12 @@ class _StockScreenState extends State<StockScreen> {
         );
 
         return Container(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.fromLTRB(
+            desktopPagePadding(context).left,
+            16,
+            desktopPagePadding(context).right,
+            16,
+          ),
           color: Colors.blue[50],
           child: Row(
             children: [
@@ -345,7 +360,7 @@ class _StockScreenState extends State<StockScreen> {
 
   Widget _buildProductsList(ProductProvider productProvider) {
     return ListView.separated(
-      padding: const EdgeInsets.all(24),
+      padding: desktopPagePadding(context),
       itemCount: productProvider.products.length,
       separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) {

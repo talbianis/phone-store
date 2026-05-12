@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/layout/desktop_adaptive.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/utils/validators.dart';
 import '../../core/utils/helpers.dart';
@@ -93,70 +94,100 @@ class _AddProductScreenState extends State<AddProductScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Form Section
-          Expanded(
-            flex: 2,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildSectionTitle(l10n.basicInformation),
-                    const SizedBox(height: 16),
-                    _buildBasicInfo(l10n),
-                    const SizedBox(height: 32),
-                    _buildSectionTitle(l10n.pricingSection),
-                    const SizedBox(height: 16),
-                    _buildPricing(l10n),
-                    const SizedBox(height: 32),
-                    _buildSectionTitle(l10n.inventorySection),
-                    const SizedBox(height: 16),
-                    _buildInventory(l10n),
-                    const SizedBox(height: 32),
-                    _buildSectionTitle(l10n.additionalInformation),
-                    const SizedBox(height: 16),
-                    _buildAdditionalInfo(l10n),
-                  ],
-                ),
-              ),
-            ),
-          ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final l10n = AppLocalizations.of(context);
+          final narrow = constraints.maxWidth < 1040;
+          final formBody = _buildFormBody(l10n);
+          final imageBody = _buildImageSideContent(l10n);
 
-          // Image Section
-          Container(
-            width: 400,
-            color: Colors.grey[50],
-            padding: const EdgeInsets.all(24),
-            child: SingleChildScrollView(
+          if (narrow) {
+            return SingleChildScrollView(
+              padding: desktopPagePadding(context),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildSectionTitle(l10n.productImage),
-                  const SizedBox(height: 16),
-                  _buildImagePicker(l10n),
-                  const SizedBox(height: 32),
-                  _buildSectionTitle(l10n.profitSummary),
-                  const SizedBox(height: 16),
-                  _buildProfitSummary(l10n),
+                  formBody,
+                  const Divider(height: 40),
+                  imageBody,
                 ],
               ),
-            ),
-          ),
+            );
+          }
+
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 3,
+                child: SingleChildScrollView(
+                  padding: desktopPagePadding(context),
+                  child: formBody,
+                ),
+              ),
+              Expanded(
+                flex: 2,
+                child: Container(
+                  color: Colors.grey[50],
+                  child: SingleChildScrollView(
+                    padding: desktopPagePadding(context),
+                    child: imageBody,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildFormBody(AppLocalizations l10n) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSectionTitle(l10n, l10n.basicInformation),
+          const SizedBox(height: 16),
+          _buildBasicInfo(l10n),
+          const SizedBox(height: 32),
+          _buildSectionTitle(l10n, l10n.pricingSection),
+          const SizedBox(height: 16),
+          _buildPricing(l10n),
+          const SizedBox(height: 32),
+          _buildSectionTitle(l10n, l10n.inventorySection),
+          const SizedBox(height: 16),
+          _buildInventory(l10n),
+          const SizedBox(height: 32),
+          _buildSectionTitle(l10n, l10n.additionalInformation),
+          const SizedBox(height: 16),
+          _buildAdditionalInfo(l10n),
         ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildImageSideContent(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionTitle(l10n, l10n.productImage),
+        const SizedBox(height: 16),
+        _buildImagePicker(l10n),
+        const SizedBox(height: 32),
+        _buildSectionTitle(l10n, l10n.profitSummary),
+        const SizedBox(height: 16),
+        _buildProfitSummary(l10n),
+      ],
+    );
+  }
+
+  Widget _buildSectionTitle(AppLocalizations l10n, String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 18,
+      style: TextStyle(
+        fontSize: desktopSectionTitleFontSize(context),
         fontWeight: FontWeight.bold,
       ),
     );
@@ -339,40 +370,46 @@ class _AddProductScreenState extends State<AddProductScreen> {
   Widget _buildImagePicker(AppLocalizations l10n) {
     return Column(
       children: [
-        Container(
-          width: double.infinity,
-          height: 300,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[300]!),
-          ),
-          child: _selectedImage != null
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.file(
-                    _selectedImage!,
-                    fit: BoxFit.cover,
-                  ),
-                )
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.image_outlined,
-                      size: 64,
-                      color: Colors.grey[400],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      l10n.noImageSelected,
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 14,
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final previewHeight =
+                (constraints.maxWidth * 0.72).clamp(180.0, 420.0);
+            return Container(
+              width: double.infinity,
+              height: previewHeight,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey[300]!),
+              ),
+              child: _selectedImage != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.file(
+                        _selectedImage!,
+                        fit: BoxFit.cover,
                       ),
+                    )
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.image_outlined,
+                          size: 64,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          l10n.noImageSelected,
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+            );
+          },
         ),
         const SizedBox(height: 16),
         Row(

@@ -82,7 +82,7 @@ class SaleProvider with ChangeNotifier {
       // Create sale with items
       final saleId = await _repository.createSale(sale, saleItems);
 
-      print('✅ Sale created with ID: $saleId');
+      debugPrint('✅ Sale created with ID: $saleId');
 
       // ⬅️ NEW: If payment is on credit/debt, create debt record
       if (paymentMethod.toLowerCase() == 'debt' &&
@@ -99,18 +99,18 @@ class SaleProvider with ChangeNotifier {
         );
 
         await _debtRepository.createDebt(debt);
-        print('✅ Debt created for customer $customerId: $remainingDebt DA');
+        debugPrint('✅ Debt created for customer $customerId: $remainingDebt DA');
 
         // Update customer's total debt
         await _customerRepository.addToCustomerDebt(customerId, remainingDebt);
-        print('✅ Customer debt updated');
+        debugPrint('✅ Customer debt updated');
       }
 
       await loadSales();
       return true;
     } catch (e) {
       _errorMessage = 'Failed to create sale: $e';
-      print('❌ Error creating sale: $e');
+      debugPrint('❌ Error creating sale: $e');
       notifyListeners();
       return false;
     }
