@@ -1,9 +1,11 @@
 // lib/views/pos/widgets/payment_dialog.dart
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../data/models/payment_method.dart';
@@ -40,6 +42,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SingleChildScrollView(
       child: Dialog(
         shape: RoundedRectangleBorder(
@@ -68,10 +71,10 @@ class _PaymentDialogState extends State<PaymentDialog> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Complete Payment',
-                      style: TextStyle(
+                      l10n.completePayment,
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
@@ -95,16 +98,16 @@ class _PaymentDialogState extends State<PaymentDialog> {
               const SizedBox(height: 24),
 
               // Payment Method Selection
-              const Text(
-                'Payment Method',
-                style: TextStyle(
+              Text(
+                l10n.paymentMethod,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 12),
 
-              _buildPaymentMethodOptions(),
+              _buildPaymentMethodOptions(l10n),
 
               const SizedBox(height: 24),
 
@@ -125,6 +128,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
   Widget _buildOrderSummary() {
     return Consumer<CartProvider>(
       builder: (context, cartProvider, child) {
+        final l10n = AppLocalizations.of(context);
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -134,30 +138,30 @@ class _PaymentDialogState extends State<PaymentDialog> {
           ),
           child: Column(
             children: [
-              _buildSummaryRow('Items', '${cartProvider.itemCount}'),
+              _buildSummaryRow(l10n.orderItems, '${cartProvider.itemCount}'),
               const SizedBox(height: 8),
               _buildSummaryRow(
-                'Subtotal',
+                l10n.orderSubtotal,
                 CurrencyFormatter.format(cartProvider.subtotal),
               ),
               if (cartProvider.discount > 0) ...[
                 const SizedBox(height: 8),
                 _buildSummaryRow(
-                  'Discount',
+                  l10n.orderDiscount,
                   '-${CurrencyFormatter.format(cartProvider.discount)}',
                   valueColor: AppColors.error,
                 ),
               ],
               const Divider(height: 24),
               _buildSummaryRow(
-                'Total',
+                l10n.orderTotal,
                 CurrencyFormatter.format(cartProvider.total),
                 isBold: true,
                 valueColor: AppColors.primary,
               ),
               const SizedBox(height: 8),
               _buildSummaryRow(
-                'Profit',
+                l10n.orderProfit,
                 CurrencyFormatter.format(cartProvider.totalProfit),
                 valueColor: AppColors.success,
               ),
@@ -196,31 +200,31 @@ class _PaymentDialogState extends State<PaymentDialog> {
     );
   }
 
-  Widget _buildPaymentMethodOptions() {
+  Widget _buildPaymentMethodOptions(AppLocalizations l10n) {
     return Column(
       children: [
         _buildPaymentMethodTile(
           method: PaymentMethod.cash,
           icon: Icons.money,
-          label: 'Cash',
+          label: l10n.cash,
         ),
         const SizedBox(height: 8),
         _buildPaymentMethodTile(
           method: PaymentMethod.card,
           icon: Icons.credit_card,
-          label: 'Card',
+          label: l10n.card,
         ),
         const SizedBox(height: 8),
         _buildPaymentMethodTile(
           method: PaymentMethod.debt,
           icon: Icons.schedule,
-          label: 'On Credit (Debt)',
+          label: l10n.paymentOnCredit,
         ),
         const SizedBox(height: 8),
         _buildPaymentMethodTile(
           method: PaymentMethod.mixed,
           icon: Icons.payments,
-          label: 'Mixed (Cash + Card)',
+          label: l10n.paymentMixedDetail,
         ),
       ],
     );
@@ -276,24 +280,25 @@ class _PaymentDialogState extends State<PaymentDialog> {
   Widget _buildPaymentInputs() {
     return Consumer<CartProvider>(
       builder: (context, cartProvider, child) {
+        final l10n = AppLocalizations.of(context);
         switch (_selectedPaymentMethod) {
           case PaymentMethod.cash:
-            return _buildCashInput(cartProvider.total);
+            return _buildCashInput(cartProvider.total, l10n);
 
           case PaymentMethod.card:
-            return _buildCardInput(cartProvider.total);
+            return _buildCardInput(cartProvider.total, l10n);
 
           case PaymentMethod.debt:
-            return _buildDebtInfo(cartProvider);
+            return _buildDebtInfo(cartProvider, l10n);
 
           case PaymentMethod.mixed:
-            return _buildMixedInput(cartProvider.total);
+            return _buildMixedInput(cartProvider.total, l10n);
         }
       },
     );
   }
 
-  Widget _buildCashInput(double total) {
+  Widget _buildCashInput(double total, AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -305,34 +310,34 @@ class _PaymentDialogState extends State<PaymentDialog> {
             FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
           ],
           decoration: InputDecoration(
-            labelText: 'Cash Received',
+            labelText: l10n.cashReceived,
             hintText: total.toStringAsFixed(2),
             prefixIcon: const Icon(Icons.attach_money),
-            suffixText: 'DA',
+            suffixText: l10n.currency,
             border: const OutlineInputBorder(),
           ),
         ),
         const SizedBox(height: 12),
-        _buildChangeDisplay(total),
+        _buildChangeDisplay(total, l10n),
       ],
     );
   }
 
-  Widget _buildCardInput(double total) {
+  Widget _buildCardInput(double total, AppLocalizations l10n) {
     return TextField(
       controller: _cardController,
       enabled: false,
       decoration: InputDecoration(
-        labelText: 'Card Payment',
+        labelText: l10n.cardPayment,
         hintText: total.toStringAsFixed(2),
         prefixIcon: const Icon(Icons.credit_card),
-        suffixText: 'DA',
+        suffixText: l10n.currency,
         border: const OutlineInputBorder(),
       ),
     );
   }
 
-  Widget _buildDebtInfo(CartProvider cartProvider) {
+  Widget _buildDebtInfo(CartProvider cartProvider, AppLocalizations l10n) {
     if (cartProvider.selectedCustomer == null) {
       return Container(
         padding: const EdgeInsets.all(16),
@@ -345,10 +350,10 @@ class _PaymentDialogState extends State<PaymentDialog> {
           children: [
             Icon(Icons.warning_amber, color: Colors.orange[700]),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Text(
-                'Please select a customer to use credit payment',
-                style: TextStyle(fontSize: 13),
+                l10n.selectCustomerCreditWarning,
+                style: const TextStyle(fontSize: 13),
               ),
             ),
           ],
@@ -381,7 +386,8 @@ class _PaymentDialogState extends State<PaymentDialog> {
           ),
           const SizedBox(height: 12),
           Text(
-            'Amount to be added to debt: ${CurrencyFormatter.format(cartProvider.total)}',
+            l10n.amountAddedToDebtFormatted(
+                CurrencyFormatter.format(cartProvider.total)),
             style: TextStyle(
               fontSize: 13,
               color: Colors.grey[700],
@@ -392,7 +398,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
     );
   }
 
-  Widget _buildMixedInput(double total) {
+  Widget _buildMixedInput(double total, AppLocalizations l10n) {
     return Column(
       children: [
         TextField(
@@ -402,11 +408,11 @@ class _PaymentDialogState extends State<PaymentDialog> {
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
           ],
-          decoration: const InputDecoration(
-            labelText: 'Cash Amount',
-            prefixIcon: Icon(Icons.money),
-            suffixText: 'DA',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            labelText: l10n.cashAmount,
+            prefixIcon: const Icon(Icons.money),
+            suffixText: l10n.currency,
+            border: const OutlineInputBorder(),
           ),
           onChanged: (_) => setState(() {}),
         ),
@@ -417,21 +423,21 @@ class _PaymentDialogState extends State<PaymentDialog> {
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
           ],
-          decoration: const InputDecoration(
-            labelText: 'Card Amount',
-            prefixIcon: Icon(Icons.credit_card),
-            suffixText: 'DA',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            labelText: l10n.cardAmount,
+            prefixIcon: const Icon(Icons.credit_card),
+            suffixText: l10n.currency,
+            border: const OutlineInputBorder(),
           ),
           onChanged: (_) => setState(() {}),
         ),
         const SizedBox(height: 12),
-        _buildMixedSummary(total),
+        _buildMixedSummary(total, l10n),
       ],
     );
   }
 
-  Widget _buildChangeDisplay(double total) {
+  Widget _buildChangeDisplay(double total, AppLocalizations l10n) {
     final cashReceived = double.tryParse(_cashController.text) ?? 0;
     final change = cashReceived - total;
 
@@ -447,7 +453,8 @@ class _PaymentDialogState extends State<PaymentDialog> {
             const Icon(Icons.error_outline, color: AppColors.error, size: 20),
             const SizedBox(width: 8),
             Text(
-              'Insufficient: ${CurrencyFormatter.format(change.abs())} DA short',
+              l10n.insufficientCashAmount(
+                  CurrencyFormatter.format(change.abs())),
               style: const TextStyle(
                 color: AppColors.error,
                 fontWeight: FontWeight.w600,
@@ -467,9 +474,9 @@ class _PaymentDialogState extends State<PaymentDialog> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            'Change',
-            style: TextStyle(fontWeight: FontWeight.w600),
+          Text(
+            l10n.change,
+            style: const TextStyle(fontWeight: FontWeight.w600),
           ),
           Text(
             CurrencyFormatter.format(change),
@@ -484,7 +491,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
     );
   }
 
-  Widget _buildMixedSummary(double total) {
+  Widget _buildMixedSummary(double total, AppLocalizations l10n) {
     final cash = double.tryParse(_cashController.text) ?? 0;
     final card = double.tryParse(_cardController.text) ?? 0;
     final totalPaid = cash + card;
@@ -501,7 +508,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Total Payment:'),
+              Text(l10n.totalPaymentLabel),
               Text(
                 CurrencyFormatter.format(totalPaid),
                 style: const TextStyle(fontWeight: FontWeight.w600),
@@ -512,7 +519,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Remaining:'),
+              Text(l10n.remainingLabel),
               Text(
                 CurrencyFormatter.format(remaining),
                 style: TextStyle(
@@ -528,14 +535,15 @@ class _PaymentDialogState extends State<PaymentDialog> {
   }
 
   Widget _buildActionButtons() {
+    final l10n = AppLocalizations.of(context);
     return Row(
       children: [
         Expanded(
           child: OutlinedButton(
             onPressed: _isProcessing ? null : () => Navigator.pop(context),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.black),
+            child: Text(
+              l10n.cancel,
+              style: const TextStyle(color: AppColors.black),
             ),
           ),
         ),
@@ -555,9 +563,9 @@ class _PaymentDialogState extends State<PaymentDialog> {
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   )
-                : const Text(
-                    'Complete Sale',
-                    style: TextStyle(color: AppColors.white),
+                : Text(
+                    l10n.completeSale,
+                    style: const TextStyle(color: AppColors.white),
                   ),
           ),
         ),
@@ -568,13 +576,14 @@ class _PaymentDialogState extends State<PaymentDialog> {
   Future<void> _completeSale() async {
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final l10n = AppLocalizations.of(context);
 
     // Validation
     if (_selectedPaymentMethod == PaymentMethod.debt &&
         cartProvider.selectedCustomer == null) {
       Helpers.showSnackBar(
         context,
-        'Please select a customer for credit payment',
+        l10n.pleaseSelectCustomerCredit,
         isError: true,
       );
       return;
@@ -588,7 +597,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
       if (cashReceived < cartProvider.total) {
         Helpers.showSnackBar(
           context,
-          'Insufficient cash received',
+          l10n.insufficientCashReceived,
           isError: true,
         );
         return;
@@ -602,7 +611,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
       if (paidAmount < cartProvider.total) {
         Helpers.showSnackBar(
           context,
-          'Total payment is less than order total',
+          l10n.totalPaymentLessThanOrder,
           isError: true,
         );
         return;
@@ -639,7 +648,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
         // Show success message
         Helpers.showSnackBar(
           context,
-          'Sale completed successfully!',
+          l10n.saleSuccess,
         );
 
         // Show change if cash payment
@@ -650,9 +659,10 @@ class _PaymentDialogState extends State<PaymentDialog> {
           }
         }
       } else {
+        debugPrint('completeSale error: ${saleProvider.errorMessage}');
         Helpers.showSnackBar(
           context,
-          saleProvider.errorMessage ?? 'Failed to complete sale',
+          l10n.operationFailed,
           isError: true,
         );
       }
@@ -662,39 +672,42 @@ class _PaymentDialogState extends State<PaymentDialog> {
   void _showChangeDialog(BuildContext context, double change) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Change'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.attach_money,
-              size: 64,
-              color: AppColors.success,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              CurrencyFormatter.format(change),
-              style: const TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
+      builder: (context) {
+        final loc = AppLocalizations.of(context);
+        return AlertDialog(
+          title: Text(loc.change),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.attach_money,
+                size: 64,
                 color: AppColors.success,
               ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Change to return',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
+              const SizedBox(height: 16),
+              Text(
+                CurrencyFormatter.format(change),
+                style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.success,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                loc.changeToReturn,
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
+              ),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(loc.ok),
             ),
           ],
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

@@ -9,6 +9,7 @@ import 'package:phone_shop/views/categories/widgets/edit_category_dialog.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_routes.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/utils/helpers.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/product_provider.dart';
@@ -37,6 +38,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       currentRoute: AppRoutes.categories,
       child: Consumer<CategoryProvider>(
         builder: (context, categoryProvider, child) {
+          final l10n = AppLocalizations.of(context);
           return Column(
             children: [
               // Header Section
@@ -49,16 +51,16 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Categories',
-                            style: TextStyle(
+                          Text(
+                            l10n.categories,
+                            style: const TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Manage product categories',
+                            l10n.categoriesSubtitle,
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],
@@ -72,9 +74,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     ElevatedButton.icon(
                       onPressed: () => _showAddCategoryDialog(context),
                       icon: const Icon(Icons.add, color: AppColors.white),
-                      label: const Text(
-                        'Add Category',
-                        style: TextStyle(color: AppColors.white),
+                      label: Text(
+                        l10n.addCategory,
+                        style: const TextStyle(color: AppColors.white),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.sidebarBackground,
@@ -106,6 +108,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   }
 
   Widget _buildEmptyState(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -117,7 +120,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No categories yet',
+            l10n.noCategoriesYet,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -126,7 +129,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Add your first category to get started',
+            l10n.addFirstCategoryHint,
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[500],
@@ -136,7 +139,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           ElevatedButton.icon(
             onPressed: () => _showAddCategoryDialog(context),
             icon: const Icon(Icons.add),
-            label: const Text('Add Category'),
+            label: Text(l10n.addCategory),
           ),
         ],
       ),
@@ -194,10 +197,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     final hasProducts = productProvider.products
         .any((product) => product.categoryId == categoryId);
 
+    final l10n = AppLocalizations.of(context);
     if (hasProducts) {
       Helpers.showSnackBar(
         context,
-        'Cannot delete category with existing products',
+        l10n.cannotDeleteCategoryHasProducts,
         isError: true,
       );
       return;
@@ -205,10 +209,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
     final confirm = await Helpers.showConfirmDialog(
       context,
-      title: 'Delete Category',
-      message: 'Are you sure you want to delete this category?',
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      title: l10n.deleteCategory,
+      message: l10n.deleteCategoryMessage,
+      confirmText: l10n.delete,
+      cancelText: l10n.cancel,
     );
 
     if (confirm && context.mounted) {
@@ -220,12 +224,16 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       final success = await categoryProvider.deleteCategory(categoryId);
 
       if (context.mounted) {
+        final loc = AppLocalizations.of(context);
         if (success) {
-          Helpers.showSnackBar(context, 'Category deleted successfully');
+          Helpers.showSnackBar(context, loc.categoryDeleteSuccess);
         } else {
+          if (categoryProvider.errorMessage != null) {
+            debugPrint(categoryProvider.errorMessage);
+          }
           Helpers.showSnackBar(
             context,
-            categoryProvider.errorMessage ?? 'Failed to delete category',
+            loc.failedDeleteCategory,
             isError: true,
           );
         }

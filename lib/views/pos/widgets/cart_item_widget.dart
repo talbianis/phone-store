@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../data/models/cart_item_model.dart';
 import '../../../providers/cart_provider.dart';
@@ -19,6 +20,7 @@ class CartItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -160,7 +162,8 @@ class CartItemWidget extends StatelessWidget {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  'Only ${cartItem.product.quantity} available in stock',
+                                  l10n.onlyAvailableInStockCount(
+                                      cartItem.product.quantity),
                                 ),
                                 backgroundColor: Colors.orange,
                               ),
@@ -183,7 +186,8 @@ class CartItemWidget extends StatelessWidget {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                'Only ${cartItem.product.quantity} available in stock',
+                                l10n.onlyAvailableInStockCount(
+                                    cartItem.product.quantity),
                               ),
                               backgroundColor: Colors.orange,
                             ),
@@ -203,7 +207,7 @@ class CartItemWidget extends StatelessWidget {
 
               // Stock Info
               Text(
-                'of ${cartItem.product.quantity}',
+                l10n.ofMaxStockCount(cartItem.product.quantity),
                 style: TextStyle(
                   fontSize: 11,
                   color: Colors.grey[600],
@@ -225,7 +229,8 @@ class CartItemWidget extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Profit: ${CurrencyFormatter.format(cartItem.totalProfit)}',
+                    l10n.cartItemProfitFormatted(
+                        CurrencyFormatter.format(cartItem.totalProfit)),
                     style: TextStyle(
                       fontSize: 11,
                       color: Colors.grey[600],

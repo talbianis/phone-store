@@ -7,6 +7,7 @@ import 'package:phone_shop/views/products/widgets/product_list_item.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_routes.dart';
+import '../../core/localization/app_localizations.dart';
 
 import '../../providers/product_provider.dart';
 import '../../providers/category_provider.dart';
@@ -77,6 +78,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   Widget _buildHeader() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(24),
       color: Colors.white,
@@ -86,9 +88,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Products',
-                  style: TextStyle(
+                Text(
+                  l10n.products,
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
@@ -97,7 +99,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 Consumer<ProductProvider>(
                   builder: (context, provider, child) {
                     return Text(
-                      '${provider.products.length} products in inventory',
+                      l10n.productsCountInventory(provider.products.length),
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -123,9 +125,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
               Icons.add,
               color: AppColors.white,
             ),
-            label: const Text(
-              'Add Product',
-              style: TextStyle(
+            label: Text(
+              l10n.addProduct,
+              style: const TextStyle(
                 color: AppColors.white,
                 fontWeight: FontWeight.w600,
               ),
@@ -144,6 +146,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   Widget _buildFilters() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       color: Colors.white,
@@ -155,7 +158,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search by name, brand, or barcode...',
+                hintText: l10n.searchProductListHint,
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
@@ -187,16 +190,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 return DropdownButtonFormField<int>(
                   value: _selectedCategoryId,
                   decoration: InputDecoration(
-                    labelText: 'Category',
+                    labelText: l10n.categoryFilter,
                     prefixIcon: const Icon(Icons.category),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                   items: [
-                    const DropdownMenuItem(
+                    DropdownMenuItem(
                       value: null,
-                      child: Text('All Categories'),
+                      child: Text(l10n.allCategories),
                     ),
                     ...categoryProvider.categories.map(
                       (category) => DropdownMenuItem(
@@ -230,7 +233,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     color: _isGridView ? AppColors.primary : Colors.grey,
                   ),
                   onPressed: () => setState(() => _isGridView = true),
-                  tooltip: 'Grid View',
+                  tooltip: l10n.gridView,
                 ),
                 Container(
                   width: 1,
@@ -243,7 +246,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     color: !_isGridView ? AppColors.primary : Colors.grey,
                   ),
                   onPressed: () => setState(() => _isGridView = false),
-                  tooltip: 'List View',
+                  tooltip: l10n.listView,
                 ),
               ],
             ),
@@ -254,6 +257,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -265,7 +269,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No products yet',
+            l10n.noProductsYet,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -274,7 +278,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Add your first product to get started',
+            l10n.addFirstProductHint,
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[500],
@@ -291,7 +295,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
               );
             },
             icon: const Icon(Icons.add),
-            label: const Text('Add Product'),
+            label: Text(l10n.addProduct),
           ),
         ],
       ),

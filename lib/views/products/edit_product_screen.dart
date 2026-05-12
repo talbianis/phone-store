@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/utils/validators.dart';
 import '../../core/utils/helpers.dart';
 import '../../data/models/product_model.dart';
@@ -105,9 +106,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Product'),
+        title: Text(l10n.editProduct),
         actions: [
           TextButton.icon(
             onPressed: _isLoading ? null : _handleSubmit,
@@ -121,9 +123,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     Icons.check,
                     color: AppColors.white,
                   ),
-            label: const Text(
-              'Update',
-              style: TextStyle(color: AppColors.white),
+            label: Text(
+              l10n.updateButton,
+              style: const TextStyle(color: AppColors.white),
             ),
             style: TextButton.styleFrom(
               backgroundColor: AppColors.sidebarBackground,
@@ -145,21 +147,21 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSectionTitle('Basic Information'),
+                    _buildSectionTitle(l10n.basicInformation),
                     SizedBox(height: 20.h),
-                    _buildBasicInfo(),
+                    _buildBasicInfo(l10n),
                     SizedBox(height: 38.h),
-                    _buildSectionTitle('Pricing'),
+                    _buildSectionTitle(l10n.pricingSection),
                     SizedBox(height: 22.h),
-                    _buildPricing(),
+                    _buildPricing(l10n),
                     SizedBox(height: 38.h),
-                    _buildSectionTitle('Inventory'),
+                    _buildSectionTitle(l10n.inventorySection),
                     SizedBox(height: 22.h),
-                    _buildInventory(),
+                    _buildInventory(l10n),
                     SizedBox(height: 38.h),
-                    _buildSectionTitle('Additional Information'),
+                    _buildSectionTitle(l10n.additionalInformation),
                     SizedBox(height: 22.h),
-                    _buildAdditionalInfo(),
+                    _buildAdditionalInfo(l10n),
                   ],
                 ),
               ),
@@ -175,13 +177,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionTitle('Product Image'),
+                  _buildSectionTitle(l10n.productImage),
                   SizedBox(height: 20.h),
-                  _buildImagePicker(),
+                  _buildImagePicker(l10n),
                   SizedBox(height: 40.h),
-                  _buildSectionTitle('Profit Summary'),
+                  _buildSectionTitle(l10n.profitSummary),
                   SizedBox(height: 22.h),
-                  _buildProfitSummary(),
+                  _buildProfitSummary(l10n),
                 ],
               ),
             ),
@@ -202,27 +204,30 @@ class _EditProductScreenState extends State<EditProductScreen> {
     );
   }
 
-  Widget _buildBasicInfo() {
+  Widget _buildBasicInfo(AppLocalizations l10n) {
     return Column(
       children: [
         TextFormField(
           controller: _nameController,
-          decoration: const InputDecoration(
-            labelText: 'Product Name *',
-            prefixIcon: Icon(Icons.inventory_2),
+          decoration: InputDecoration(
+            labelText: l10n.productNameRequired,
+            prefixIcon: const Icon(Icons.inventory_2),
           ),
           textCapitalization: TextCapitalization.words,
-          validator: (value) =>
-              Validators.required(value, fieldName: 'Product name'),
+          validator: (value) => Validators.required(
+            value,
+            l10n,
+            fieldName: l10n.productName,
+          ),
         ),
         const SizedBox(height: 16),
         Consumer<CategoryProvider>(
           builder: (context, categoryProvider, child) {
             return DropdownButtonFormField<int>(
               value: _selectedCategoryId,
-              decoration: const InputDecoration(
-                labelText: 'Category *',
-                prefixIcon: Icon(Icons.category),
+              decoration: InputDecoration(
+                labelText: l10n.selectCategory,
+                prefixIcon: const Icon(Icons.category),
               ),
               items: categoryProvider.categories.map((category) {
                 return DropdownMenuItem(
@@ -234,7 +239,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 setState(() => _selectedCategoryId = value);
               },
               validator: (value) {
-                if (value == null) return 'Please select a category';
+                if (value == null) return l10n.pleaseSelectCategory;
                 return null;
               },
             );
@@ -243,9 +248,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
         const SizedBox(height: 16),
         TextFormField(
           controller: _brandController,
-          decoration: const InputDecoration(
-            labelText: 'Brand',
-            prefixIcon: Icon(Icons.branding_watermark),
+          decoration: InputDecoration(
+            labelText: l10n.brand,
+            prefixIcon: const Icon(Icons.branding_watermark),
           ),
           textCapitalization: TextCapitalization.words,
         ),
@@ -253,93 +258,93 @@ class _EditProductScreenState extends State<EditProductScreen> {
     );
   }
 
-  Widget _buildPricing() {
+  Widget _buildPricing(AppLocalizations l10n) {
     return Row(
       children: [
         Expanded(
           child: TextFormField(
             controller: _purchasePriceController,
-            decoration: const InputDecoration(
-              labelText: 'Purchase Price *',
-              prefixIcon: Icon(Icons.shopping_cart),
-              suffixText: 'DA',
+            decoration: InputDecoration(
+              labelText: '${l10n.buyingPrice} *',
+              prefixIcon: const Icon(Icons.shopping_cart),
+              suffixText: l10n.currency,
             ),
             keyboardType: TextInputType.number,
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
             ],
-            validator: Validators.price,
+            validator: (v) => Validators.price(v, l10n),
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
           child: TextFormField(
             controller: _sellingPriceController,
-            decoration: const InputDecoration(
-              labelText: 'Selling Price *',
-              prefixIcon: Icon(Icons.sell),
-              suffixText: 'DA',
+            decoration: InputDecoration(
+              labelText: '${l10n.sellingPrice} *',
+              prefixIcon: const Icon(Icons.sell),
+              suffixText: l10n.currency,
             ),
             keyboardType: TextInputType.number,
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
             ],
-            validator: Validators.price,
+            validator: (v) => Validators.price(v, l10n),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildInventory() {
+  Widget _buildInventory(AppLocalizations l10n) {
     return Row(
       children: [
         Expanded(
           child: TextFormField(
             controller: _quantityController,
-            decoration: const InputDecoration(
-              labelText: 'Quantity *',
-              prefixIcon: Icon(Icons.inventory),
+            decoration: InputDecoration(
+              labelText: l10n.quantityLabel,
+              prefixIcon: const Icon(Icons.inventory),
             ),
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            validator: Validators.quantity,
+            validator: (v) => Validators.quantity(v, l10n),
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
           child: TextFormField(
             controller: _minQuantityController,
-            decoration: const InputDecoration(
-              labelText: 'Min Quantity',
-              prefixIcon: Icon(Icons.warning_amber),
+            decoration: InputDecoration(
+              labelText: l10n.minQuantityLabel,
+              prefixIcon: const Icon(Icons.warning_amber),
             ),
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            validator: Validators.quantity,
+            validator: (v) => Validators.quantity(v, l10n),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildAdditionalInfo() {
+  Widget _buildAdditionalInfo(AppLocalizations l10n) {
     return Column(
       children: [
         TextFormField(
           controller: _barcodeController,
-          decoration: const InputDecoration(
-            labelText: 'Barcode',
-            prefixIcon: Icon(Icons.qr_code),
+          decoration: InputDecoration(
+            labelText: l10n.barcode,
+            prefixIcon: const Icon(Icons.qr_code),
           ),
-          validator: Validators.barcode,
+          validator: (v) => Validators.barcode(v, l10n),
         ),
         const SizedBox(height: 16),
         TextFormField(
           controller: _notesController,
-          decoration: const InputDecoration(
-            labelText: 'Notes',
-            prefixIcon: Icon(Icons.note),
+          decoration: InputDecoration(
+            labelText: l10n.notes,
+            prefixIcon: const Icon(Icons.note),
             alignLabelWithHint: true,
           ),
           maxLines: 3,
@@ -348,9 +353,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     );
   }
 
-  // lib/views/products/edit_product_screen.dart
-
-  Widget _buildImagePicker() {
+  Widget _buildImagePicker(AppLocalizations l10n) {
     // Determine which image to display
     Widget imageWidget;
 
@@ -359,7 +362,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       imageWidget = Image.file(_selectedImage!, fit: BoxFit.cover);
     } else if (_isImageRemoved) {
       // Priority 2: Image was removed, show placeholder
-      imageWidget = _buildPlaceholder();
+      imageWidget = _buildPlaceholder(l10n);
     } else if (widget.product.imagePath != null &&
         widget.product.imagePath!.isNotEmpty) {
       // Priority 3: Show existing image
@@ -367,12 +370,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
         File(widget.product.imagePath!),
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
-          return _buildPlaceholder();
+          return _buildPlaceholder(l10n);
         },
       );
     } else {
       // Priority 4: No image at all
-      imageWidget = _buildPlaceholder();
+      imageWidget = _buildPlaceholder(l10n);
     }
 
     // Check if we have any image to show "Remove" button
@@ -406,7 +409,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               child: OutlinedButton.icon(
                 onPressed: () => _pickImage(ImageSource.gallery),
                 icon: const Icon(Icons.photo_library),
-                label: const Text('Gallery'),
+                label: Text(l10n.gallery),
               ),
             ),
             const SizedBox(width: 12),
@@ -414,7 +417,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               child: OutlinedButton.icon(
                 onPressed: () => _pickImage(ImageSource.camera),
                 icon: const Icon(Icons.camera_alt),
-                label: const Text('Camera'),
+                label: Text(l10n.camera),
               ),
             ),
           ],
@@ -431,9 +434,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
               });
             },
             icon: const Icon(Icons.delete, color: Colors.red),
-            label: const Text(
-              'Remove Image',
-              style: TextStyle(color: Colors.red),
+            label: Text(
+              l10n.removeImage,
+              style: const TextStyle(color: Colors.red),
             ),
           ),
         ],
@@ -441,21 +444,21 @@ class _EditProductScreenState extends State<EditProductScreen> {
     );
   }
 
-  Widget _buildPlaceholder() {
+  Widget _buildPlaceholder(AppLocalizations l10n) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(Icons.image_outlined, size: 64, color: Colors.grey[400]),
         const SizedBox(height: 16),
         Text(
-          'No image',
+          l10n.noImageShort,
           style: TextStyle(color: Colors.grey[600], fontSize: 14),
         ),
       ],
     );
   }
 
-  Widget _buildProfitSummary() {
+  Widget _buildProfitSummary(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -466,16 +469,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
       child: Column(
         children: [
           _buildProfitRow(
-              'Profit per Unit', _calculatedProfit, AppColors.success),
+              l10n.profitPerUnit, _calculatedProfit, AppColors.success, l10n),
           const Divider(height: 24),
-          _buildProfitRow('Profit Margin', _profitMargin, AppColors.primary,
+          _buildProfitRow(l10n.profitMarginLabel, _profitMargin,
+              AppColors.primary, l10n,
               isPercentage: true),
         ],
       ),
     );
   }
 
-  Widget _buildProfitRow(String label, double value, Color color,
+  Widget _buildProfitRow(
+      String label, double value, Color color, AppLocalizations l10n,
       {bool isPercentage = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -484,7 +489,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         Text(
           isPercentage
               ? '${value.toStringAsFixed(1)}%'
-              : '${value.toStringAsFixed(2)} DA',
+              : '${value.toStringAsFixed(2)} ${l10n.currency}',
           style: TextStyle(
               fontSize: 18, fontWeight: FontWeight.bold, color: color),
         ),
@@ -510,9 +515,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
+        debugPrint('$e');
         Helpers.showSnackBar(
           context,
-          'Failed to pick image: $e',
+          l10n.failedPickImage,
           isError: true,
         );
       }
@@ -565,13 +572,17 @@ class _EditProductScreenState extends State<EditProductScreen> {
     setState(() => _isLoading = false);
 
     if (mounted) {
+      final l10n = AppLocalizations.of(context);
       if (success) {
-        Helpers.showSnackBar(context, 'Product updated successfully');
+        Helpers.showSnackBar(context, l10n.productUpdateSuccess);
         Navigator.pop(context);
       } else {
+        if (productProvider.errorMessage != null) {
+          debugPrint(productProvider.errorMessage);
+        }
         Helpers.showSnackBar(
           context,
-          productProvider.errorMessage ?? 'Failed to update product',
+          l10n.failedUpdateProduct,
           isError: true,
         );
       }

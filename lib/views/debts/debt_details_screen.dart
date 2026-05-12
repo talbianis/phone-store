@@ -5,6 +5,7 @@ import 'package:phone_shop/core/utils/date_formater.dart';
 import 'package:phone_shop/data/models/debt_payement_model.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/utils/currency_formatter.dart';
 
 import '../../data/models/debt_model.dart';
@@ -56,15 +57,16 @@ class _DebtDetailsScreenState extends State<DebtDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Debt Details'),
+        title: Text(l10n.debtDetails),
         actions: [
           if (_currentDebt.status != 'paid')
             IconButton(
               icon: const Icon(Icons.payment),
               onPressed: _showAddPaymentDialog,
-              tooltip: 'Add Payment',
+              tooltip: l10n.addPayment,
             ),
         ],
       ),
@@ -109,6 +111,7 @@ class _DebtDetailsScreenState extends State<DebtDetailsScreen> {
   }
 
   Widget _buildDebtHeader() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -144,7 +147,7 @@ class _DebtDetailsScreenState extends State<DebtDetailsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _currentDebt.customerName ?? 'Unknown Customer',
+                      _currentDebt.customerName ?? l10n.unknownCustomer,
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -152,7 +155,9 @@ class _DebtDetailsScreenState extends State<DebtDetailsScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Invoice: ${_currentDebt.invoiceNumber}',
+                      l10n.invoiceColon(
+                        _currentDebt.invoiceNumber ?? l10n.notApplicable,
+                      ),
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -160,7 +165,7 @@ class _DebtDetailsScreenState extends State<DebtDetailsScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Date: ${DateFormatter.formatDate(DateTime.now())}',
+                      '${l10n.date}: ${DateFormatter.formatDate(DateTime.now())}',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -193,7 +198,7 @@ class _DebtDetailsScreenState extends State<DebtDetailsScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      _getStatusLabel(),
+                      _statusLabel(l10n),
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -211,11 +216,12 @@ class _DebtDetailsScreenState extends State<DebtDetailsScreen> {
   }
 
   Widget _buildSummaryCards() {
+    final l10n = AppLocalizations.of(context);
     return Row(
       children: [
         Expanded(
           child: _buildSummaryCard(
-            'Total Debt',
+            l10n.totalDebt,
             CurrencyFormatter.format(_currentDebt.totalAmount),
             Icons.account_balance_wallet,
             AppColors.error,
@@ -224,7 +230,7 @@ class _DebtDetailsScreenState extends State<DebtDetailsScreen> {
         const SizedBox(width: 16),
         Expanded(
           child: _buildSummaryCard(
-            'Amount Paid',
+            l10n.paidAmount,
             CurrencyFormatter.format(_currentDebt.paidAmount),
             Icons.payment,
             AppColors.success,
@@ -233,7 +239,7 @@ class _DebtDetailsScreenState extends State<DebtDetailsScreen> {
         const SizedBox(width: 16),
         Expanded(
           child: _buildSummaryCard(
-            'Remaining',
+            l10n.remainingAmount,
             CurrencyFormatter.format(_currentDebt.remainingAmount),
             Icons.pending_actions,
             Colors.orange,
@@ -299,6 +305,7 @@ class _DebtDetailsScreenState extends State<DebtDetailsScreen> {
   }
 
   Widget _buildDebtInfo() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -309,30 +316,35 @@ class _DebtDetailsScreenState extends State<DebtDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Debt Information',
-            style: TextStyle(
+          Text(
+            l10n.debtInformationSection,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 16),
-          _buildInfoRow('Debt ID', '#${_currentDebt.id}'),
+          _buildInfoRow(l10n.debtIdLabel, '#${_currentDebt.id}'),
           const Divider(height: 24),
           _buildInfoRow(
-              'Customer', _currentDebt.customerName ?? 'Unknown Customer'),
-          const Divider(height: 24),
-          _buildInfoRow('Invoice Number', _currentDebt.invoiceNumber ?? 'N/A'),
+            l10n.customerLabelDetail,
+            _currentDebt.customerName ?? l10n.unknownCustomer,
+          ),
           const Divider(height: 24),
           _buildInfoRow(
-            'Created Date',
+            l10n.invoiceNumberLabel,
+            _currentDebt.invoiceNumber ?? l10n.notApplicable,
+          ),
+          const Divider(height: 24),
+          _buildInfoRow(
+            l10n.createdDateLabel,
             DateFormatter.formatDateTime(_currentDebt.debtDate),
           ),
           const Divider(height: 24),
-          _buildInfoRow('Status', _getStatusLabel()),
+          _buildInfoRow(l10n.statusField, _statusLabel(l10n)),
           const Divider(height: 24),
           _buildInfoRow(
-            'Payments Made',
+            l10n.paymentsMadeLabel,
             '${_payments.length}',
           ),
         ],
@@ -366,6 +378,7 @@ class _DebtDetailsScreenState extends State<DebtDetailsScreen> {
   }
 
   Widget _buildPaymentHistory() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -382,9 +395,9 @@ class _DebtDetailsScreenState extends State<DebtDetailsScreen> {
               children: [
                 const Icon(Icons.history, color: AppColors.primary),
                 const SizedBox(width: 12),
-                const Text(
-                  'Payment History',
-                  style: TextStyle(
+                Text(
+                  l10n.paymentHistory,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -394,7 +407,7 @@ class _DebtDetailsScreenState extends State<DebtDetailsScreen> {
                   ElevatedButton.icon(
                     onPressed: _showAddPaymentDialog,
                     icon: const Icon(Icons.add, size: 18),
-                    label: const Text('Add Payment'),
+                    label: Text(l10n.addPayment),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.success,
                     ),
@@ -419,7 +432,7 @@ class _DebtDetailsScreenState extends State<DebtDetailsScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'No payments yet',
+                      l10n.noPaymentsYetDebt,
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.grey[600],
@@ -544,15 +557,15 @@ class _DebtDetailsScreenState extends State<DebtDetailsScreen> {
     }
   }
 
-  String _getStatusLabel() {
+  String _statusLabel(AppLocalizations l10n) {
     switch (_currentDebt.status) {
       case 'paid':
-        return 'Paid';
+        return l10n.paid;
       case 'partial':
-        return 'Partial';
+        return l10n.partial;
       case 'unpaid':
       default:
-        return 'Unpaid';
+        return l10n.unpaid;
     }
   }
 

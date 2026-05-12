@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_routes.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 
 class SidebarMenu extends StatelessWidget {
@@ -17,13 +18,13 @@ class SidebarMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       width: 250,
       color: AppColors.sidebarBackground,
       child: Column(
         children: [
-          // Logo
           Container(
             padding: const EdgeInsets.all(24),
             child: Row(
@@ -42,20 +43,20 @@ class SidebarMenu extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Column(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Magasin',
-                      style: TextStyle(
+                      l10n.sidebarTitleShort,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      'Phone Shop Manager',
-                      style: TextStyle(
+                      l10n.sidebarSubtitle,
+                      style: const TextStyle(
                         color: Colors.white60,
                         fontSize: 11,
                       ),
@@ -68,11 +69,10 @@ class SidebarMenu extends StatelessWidget {
 
           const Divider(color: Colors.white12, height: 1),
 
-          // Menu Header
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
             child: Text(
-              'MAIN MENU',
+              l10n.mainMenu,
               style: TextStyle(
                 color: Colors.white.withOpacity(0.5),
                 fontSize: 11,
@@ -82,7 +82,6 @@ class SidebarMenu extends StatelessWidget {
             ),
           ),
 
-          // Menu Items
           Expanded(
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -90,64 +89,67 @@ class SidebarMenu extends StatelessWidget {
                 _buildMenuItem(
                   context,
                   icon: Icons.dashboard,
-                  label: 'Dashboard',
+                  label: l10n.dashboard,
                   route: AppRoutes.dashboard,
                 ),
                 _buildMenuItem(
                   context,
                   icon: Icons.inventory_2_outlined,
-                  label: 'Products',
+                  label: l10n.products,
                   route: AppRoutes.products,
                 ),
                 _buildMenuItem(
                   context,
                   icon: Icons.category_outlined,
-                  label: 'Categories',
+                  label: l10n.categories,
                   route: AppRoutes.categories,
                 ),
                 _buildMenuItem(
                   context,
                   icon: Icons.shopping_cart_outlined,
-                  label: 'Point of Sale',
+                  label: l10n.pos,
                   route: AppRoutes.pos,
                 ),
                 _buildMenuItem(
                   context,
                   icon: Icons.people_outline,
-                  label: 'Customers',
+                  label: l10n.customers,
                   route: AppRoutes.customers,
                 ),
                 _buildMenuItem(
                   context,
                   icon: Icons.receipt_long_outlined,
-                  label: 'Sales History',
+                  label: l10n.sales,
                   route: AppRoutes.sales,
                 ),
                 _buildMenuItem(
                   context,
                   icon: Icons.credit_card_outlined,
-                  label: 'Debts',
+                  label: l10n.debts,
                   route: AppRoutes.debts,
                 ),
-                _buildMenuItem(context,
-                    icon: Icons.outbond,
-                    label: 'Expenses',
-                    route: AppRoutes.expenses),
-                _buildMenuItem(context,
-                    icon: Icons.store_outlined,
-                    label: 'Stock',
-                    route: AppRoutes.stock)
+                _buildMenuItem(
+                  context,
+                  icon: Icons.outbond,
+                  label: l10n.expenses,
+                  route: AppRoutes.expenses,
+                ),
+                _buildMenuItem(
+                  context,
+                  icon: Icons.store_outlined,
+                  label: l10n.stock,
+                  route: AppRoutes.stock,
+                ),
               ],
             ),
           ),
 
-          // Logout
           Padding(
             padding: const EdgeInsets.all(12),
             child: _buildMenuItem(
               context,
               icon: Icons.logout,
-              label: 'Logout',
+              label: l10n.logout,
               route: 'logout',
               onTap: () async {
                 await authProvider.logout();
@@ -158,7 +160,6 @@ class SidebarMenu extends StatelessWidget {
             ),
           ),
 
-          // User Info at Bottom
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -185,7 +186,7 @@ class SidebarMenu extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        authProvider.currentUser?.fullName ?? 'User',
+                        authProvider.currentUser?.fullName ?? l10n.guestUser,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 14,
@@ -194,7 +195,7 @@ class SidebarMenu extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        authProvider.currentUser?.role ?? 'Administrator',
+                        authProvider.currentUser?.role ?? l10n.admin,
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.6),
                           fontSize: 12,

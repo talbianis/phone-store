@@ -1,8 +1,10 @@
 // lib/views/expenses/expenses_screen.dart
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/constants/app_routes.dart';
 import '../../core/utils/currency_formatter.dart';
 
@@ -109,6 +111,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   }
 
   Widget _buildHeader() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(24),
       color: Colors.white,
@@ -118,9 +121,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Expenses Management',
-                  style: TextStyle(
+                Text(
+                  l10n.expensesManagement,
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
@@ -129,7 +132,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 Consumer<ExpenseProvider>(
                   builder: (context, provider, child) {
                     return Text(
-                      '${provider.expenses.length} expenses recorded',
+                      l10n.expensesRecordedCount(provider.expenses.length),
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -147,9 +150,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
               size: 20,
               color: AppColors.white,
             ),
-            label: const Text(
-              'Add Expense',
-              style: TextStyle(color: AppColors.white),
+            label: Text(
+              l10n.addExpenseFab,
+              style: const TextStyle(color: AppColors.white),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.sidebarBackground,
@@ -165,6 +168,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   }
 
   Widget _buildFilters() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       color: Colors.white,
@@ -176,7 +180,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search by description or category...',
+                hintText: l10n.searchExpenseHint,
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
@@ -206,18 +210,18 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             child: DropdownButtonFormField<String>(
               value: _selectedFilter,
               decoration: InputDecoration(
-                labelText: 'Period',
+                labelText: l10n.period,
                 prefixIcon: const Icon(Icons.calendar_today),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              items: const [
-                DropdownMenuItem(value: 'today', child: Text('Today')),
-                DropdownMenuItem(value: 'week', child: Text('This Week')),
-                DropdownMenuItem(value: 'month', child: Text('This Month')),
-                DropdownMenuItem(value: 'all', child: Text('All Time')),
-                DropdownMenuItem(value: 'custom', child: Text('Custom Range')),
+              items: [
+                DropdownMenuItem(value: 'today', child: Text(l10n.today)),
+                DropdownMenuItem(value: 'week', child: Text(l10n.thisWeek)),
+                DropdownMenuItem(value: 'month', child: Text(l10n.thisMonth)),
+                DropdownMenuItem(value: 'all', child: Text(l10n.allTime)),
+                DropdownMenuItem(value: 'custom', child: Text(l10n.customRange)),
               ],
               onChanged: (value) {
                 setState(() => _selectedFilter = value!);
@@ -237,6 +241,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   Widget _buildStatsSummary() {
     return Consumer<ExpenseProvider>(
       builder: (context, expenseProvider, child) {
+        final l10n = AppLocalizations.of(context);
         final totalExpenses = expenseProvider.expenses.fold<double>(
           0.0,
           (sum, expense) => sum + expense.amount,
@@ -250,7 +255,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         }
 
         final mostCommonCategory = categoryCount.entries.isEmpty
-            ? 'N/A'
+            ? l10n.notApplicable
             : categoryCount.entries
                 .reduce((a, b) => a.value > b.value ? a : b)
                 .key;
@@ -262,7 +267,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             children: [
               Expanded(
                 child: _buildStatCard(
-                  'Total Expenses',
+                  l10n.totalExpenses,
                   CurrencyFormatter.format(totalExpenses),
                   Icons.receipt_long,
                   AppColors.error,
@@ -271,7 +276,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
               const SizedBox(width: 16),
               Expanded(
                 child: _buildStatCard(
-                  'This Month',
+                  l10n.thisMonthLabel,
                   CurrencyFormatter.format(
                     expenseProvider.getMonthTotal(),
                   ),
@@ -282,7 +287,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
               const SizedBox(width: 16),
               Expanded(
                 child: _buildStatCard(
-                  'Avg. Expense',
+                  l10n.avgExpense,
                   CurrencyFormatter.format(
                     expenseProvider.expenses.isEmpty
                         ? 0
@@ -295,7 +300,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
               const SizedBox(width: 16),
               Expanded(
                 child: _buildStatCard(
-                  'Top Category',
+                  l10n.topCategory,
                   mostCommonCategory,
                   Icons.category,
                   AppColors.primary,
@@ -358,6 +363,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -369,7 +375,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No expenses found',
+            l10n.noExpenses,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -378,7 +384,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Start tracking your business expenses',
+            l10n.noExpensesHint,
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[500],
@@ -388,7 +394,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           ElevatedButton.icon(
             onPressed: _showAddExpenseDialog,
             icon: const Icon(Icons.add),
-            label: const Text('Add First Expense'),
+            label: Text(l10n.addFirstExpense),
           ),
         ],
       ),
@@ -461,26 +467,29 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   void _confirmDelete(expense) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Expense'),
-        content: Text(
-          'Are you sure you want to delete this expense?\n\n'
-          '${expense.category}: ${CurrencyFormatter.format(expense.amount)}',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+      builder: (context) {
+        final l10n = AppLocalizations.of(context);
+        return AlertDialog(
+          title: Text(l10n.deleteExpense),
+          content: Text(
+            '${l10n.deleteExpenseConfirmIntro}\n\n'
+            '${expense.category}: ${CurrencyFormatter.format(expense.amount)}',
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(l10n.cancel),
             ),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.error,
+              ),
+              child: Text(l10n.delete),
+            ),
+          ],
+        );
+      },
     );
 
     if (confirmed == true) {
@@ -492,12 +501,14 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       final success = await expenseProvider.deleteExpense(expense.id!);
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
+        if (!success) {
+          debugPrint('deleteExpense error: ${expenseProvider.errorMessage}');
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              success
-                  ? 'Expense deleted successfully'
-                  : 'Failed to delete expense',
+              success ? l10n.expenseDeleteSuccess : l10n.failedDeleteExpense,
             ),
             backgroundColor: success ? AppColors.success : AppColors.error,
           ),

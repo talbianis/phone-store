@@ -7,6 +7,7 @@ import 'package:phone_shop/views/pos/widgets/discount_dialog.dart';
 import 'package:phone_shop/views/pos/widgets/payment_dialogue.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../providers/cart_provider.dart';
 import '../../../providers/customer_provider.dart';
@@ -59,6 +60,7 @@ class CartSection extends StatelessWidget {
   Widget _buildCartHeader(BuildContext context) {
     return Consumer<CartProvider>(
       builder: (context, cartProvider, child) {
+        final l10n = AppLocalizations.of(context);
         return Container(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -66,7 +68,7 @@ class CartSection extends StatelessWidget {
               const Icon(Icons.shopping_cart, color: AppColors.primary),
               const SizedBox(width: 8),
               Text(
-                'Cart (${cartProvider.itemCount} items)',
+                l10n.cartWithItemsCount(cartProvider.itemCount),
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -82,6 +84,7 @@ class CartSection extends StatelessWidget {
   Widget _buildCartItems(BuildContext context) {
     return Consumer<CartProvider>(
       builder: (context, cartProvider, child) {
+        final l10n = AppLocalizations.of(context);
         if (cartProvider.isEmpty) {
           return Center(
             child: Column(
@@ -94,7 +97,7 @@ class CartSection extends StatelessWidget {
                 ),
                 SizedBox(height: 16.h),
                 Text(
-                  'Cart is empty',
+                  l10n.cartIsEmptyTitle,
                   style: TextStyle(
                     fontSize: 18,
                     color: Colors.grey[600],
@@ -102,7 +105,7 @@ class CartSection extends StatelessWidget {
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  'Add products to get started',
+                  l10n.cartGetStartedSubtitle,
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[500],
@@ -129,6 +132,7 @@ class CartSection extends StatelessWidget {
   Widget _buildCartSummary(BuildContext context) {
     return Consumer<CartProvider>(
       builder: (context, cartProvider, child) {
+        final l10n = AppLocalizations.of(context);
         return Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
@@ -148,7 +152,7 @@ class CartSection extends StatelessWidget {
 
               // Subtotal
               _buildSummaryRow(
-                'Subtotal',
+                l10n.subtotal,
                 CurrencyFormatter.format(cartProvider.subtotal),
                 isBold: false,
               ),
@@ -159,9 +163,9 @@ class CartSection extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Discount',
-                    style: TextStyle(fontSize: 14),
+                  Text(
+                    l10n.discount,
+                    style: const TextStyle(fontSize: 14),
                   ),
                   Row(
                     children: [
@@ -186,7 +190,7 @@ class CartSection extends StatelessWidget {
                           minimumSize: const Size(0, 0),
                         ),
                         child: Text(
-                          cartProvider.discount > 0 ? 'Edit' : 'Add',
+                          cartProvider.discount > 0 ? l10n.edit : l10n.add,
                           style: const TextStyle(fontSize: 13),
                         ),
                       ),
@@ -201,7 +205,7 @@ class CartSection extends StatelessWidget {
 
               // Total
               _buildSummaryRow(
-                'Total',
+                l10n.total,
                 CurrencyFormatter.format(cartProvider.total),
                 isBold: true,
                 valueColor: AppColors.primary,
@@ -212,7 +216,7 @@ class CartSection extends StatelessWidget {
 
               // Profit
               _buildSummaryRow(
-                'Profit',
+                l10n.profit,
                 CurrencyFormatter.format(cartProvider.totalProfit),
                 isBold: false,
                 valueColor: AppColors.success,
@@ -230,9 +234,9 @@ class CartSection extends StatelessWidget {
                       ? null
                       : () => _showPaymentDialog(context),
                   icon: const Icon(Icons.payment, color: AppColors.white),
-                  label: const Text(
-                    'Complete Sale',
-                    style: TextStyle(
+                  label: Text(
+                    l10n.completeSale,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: AppColors.white,
@@ -253,6 +257,7 @@ class CartSection extends StatelessWidget {
 
   Widget _buildCustomerSelector(
       BuildContext context, CartProvider cartProvider) {
+    final l10n = AppLocalizations.of(context);
     return Consumer<CustomerProvider>(
       builder: (context, customerProvider, child) {
         return InkWell(
@@ -276,7 +281,7 @@ class CartSection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Customer',
+                        l10n.customerSectionLabel,
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.grey[600],
@@ -285,7 +290,7 @@ class CartSection extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         cartProvider.selectedCustomer?.name ??
-                            'Walk-in Customer',
+                            l10n.walkInCustomer,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -357,8 +362,10 @@ class CartSection extends StatelessWidget {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Select Customer'),
+      builder: (context) {
+        final l10n = AppLocalizations.of(context);
+        return AlertDialog(
+        title: Text(l10n.selectCustomerTitle),
         content: SizedBox(
           width: 400,
           child: Column(
@@ -367,8 +374,8 @@ class CartSection extends StatelessWidget {
               // Walk-in customer option
               ListTile(
                 leading: const Icon(Icons.person_outline),
-                title: const Text('Walk-in Customer'),
-                subtitle: const Text('No customer record'),
+                title: Text(l10n.walkInCustomer),
+                subtitle: Text(l10n.noCustomerRecord),
                 trailing: cartProvider.selectedCustomer == null
                     ? const Icon(Icons.check, color: AppColors.primary)
                     : null,
@@ -420,10 +427,11 @@ class CartSection extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(l10n.close),
           ),
         ],
-      ),
+      );
+      },
     );
   }
 }

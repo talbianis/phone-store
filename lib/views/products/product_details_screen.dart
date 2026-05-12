@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:phone_shop/core/utils/date_formater.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/utils/currency_formatter.dart';
 
 import '../../data/models/product_model.dart';
@@ -21,9 +22,10 @@ class ProductDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Product Details'),
+        title: Text(l10n.productDetails),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
@@ -35,7 +37,7 @@ class ProductDetailsScreen extends StatelessWidget {
                 ),
               );
             },
-            tooltip: 'Edit Product',
+            tooltip: l10n.editProduct,
           ),
         ],
       ),
@@ -90,7 +92,7 @@ class ProductDetailsScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
-                          category?.name ?? 'Unknown Category',
+                          category?.name ?? l10n.unknownCategory,
                           style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -104,22 +106,22 @@ class ProductDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 32),
 
                   // Info Cards
-                  _buildInfoCards(),
+                  _buildInfoCards(l10n),
 
                   const SizedBox(height: 24),
 
                   // Details Section
-                  _buildDetailsSection(),
+                  _buildDetailsSection(l10n),
 
                   if (product.notes != null && product.notes!.isNotEmpty) ...[
                     const SizedBox(height: 24),
-                    _buildNotesSection(),
+                    _buildNotesSection(l10n),
                   ],
 
                   const SizedBox(height: 24),
 
                   // Timestamps
-                  _buildTimestamps(),
+                  _buildTimestamps(l10n),
                 ],
               ),
             ),
@@ -156,12 +158,12 @@ class ProductDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoCards() {
+  Widget _buildInfoCards(AppLocalizations l10n) {
     return Row(
       children: [
         Expanded(
           child: _buildInfoCard(
-            'Selling Price',
+            l10n.sellingPrice,
             CurrencyFormatter.format(product.sellingPrice),
             AppColors.primary,
             Icons.sell,
@@ -170,7 +172,7 @@ class ProductDetailsScreen extends StatelessWidget {
         const SizedBox(width: 16),
         Expanded(
           child: _buildInfoCard(
-            'Purchase Price',
+            l10n.buyingPrice,
             CurrencyFormatter.format(product.purchasePrice),
             Colors.orange,
             Icons.shopping_cart,
@@ -179,7 +181,7 @@ class ProductDetailsScreen extends StatelessWidget {
         const SizedBox(width: 16),
         Expanded(
           child: _buildInfoCard(
-            'Profit',
+            l10n.profit,
             CurrencyFormatter.format(product.profitPerUnit),
             AppColors.success,
             Icons.trending_up,
@@ -188,8 +190,8 @@ class ProductDetailsScreen extends StatelessWidget {
         const SizedBox(width: 16),
         Expanded(
           child: _buildInfoCard(
-            'Stock',
-            '${product.quantity} units',
+            l10n.stock,
+            l10n.unitsCountLabel(product.quantity),
             _getStockColor(),
             Icons.inventory,
           ),
@@ -253,7 +255,7 @@ class ProductDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailsSection() {
+  Widget _buildDetailsSection(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -264,32 +266,32 @@ class ProductDetailsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Product Details',
-            style: TextStyle(
+          Text(
+            l10n.productDetails,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 20),
-          _buildDetailRow('Product ID', '#${product.id}'),
+          _buildDetailRow(l10n.productIdLabel, '#${product.id}'),
           const Divider(height: 24),
           if (product.barcode != null)
-            _buildDetailRow('Barcode', product.barcode!),
+            _buildDetailRow(l10n.barcode, product.barcode!),
           if (product.barcode != null) const Divider(height: 24),
           _buildDetailRow(
-            'Profit Margin',
+            l10n.profitMarginLabel,
             '${product.profitMargin.toStringAsFixed(1)}%',
           ),
           const Divider(height: 24),
           _buildDetailRow(
-            'Min Stock Level',
-            '${product.minQuantity} units',
+            l10n.minStockLevel,
+            l10n.unitsCountLabel(product.minQuantity),
           ),
           const Divider(height: 24),
           _buildDetailRow(
-            'Stock Status',
-            _getStockStatus(),
+            l10n.stockStatus,
+            _getStockStatus(l10n),
             statusColor: _getStockColor(),
           ),
         ],
@@ -320,7 +322,7 @@ class ProductDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNotesSection() {
+  Widget _buildNotesSection(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -336,7 +338,7 @@ class ProductDetailsScreen extends StatelessWidget {
               Icon(Icons.note, color: Colors.amber[700], size: 20),
               const SizedBox(width: 8),
               Text(
-                'Notes',
+                l10n.notes,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -358,7 +360,7 @@ class ProductDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTimestamps() {
+  Widget _buildTimestamps(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -371,7 +373,7 @@ class ProductDetailsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Created',
+                l10n.timestampsCreated,
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey[600],
@@ -391,7 +393,7 @@ class ProductDetailsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Last Updated',
+                l10n.timestampsLastUpdated,
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey[600],
@@ -417,9 +419,9 @@ class ProductDetailsScreen extends StatelessWidget {
     return AppColors.success;
   }
 
-  String _getStockStatus() {
-    if (product.isOutOfStock) return 'Out of Stock';
-    if (product.isLowStock) return 'Low Stock';
-    return 'In Stock';
+  String _getStockStatus(AppLocalizations l10n) {
+    if (product.isOutOfStock) return l10n.outOfStock;
+    if (product.isLowStock) return l10n.lowStock;
+    return l10n.inStock;
   }
 }

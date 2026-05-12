@@ -81,24 +81,24 @@ class AppRouter {
     }
   }
 
-  static String _getPageTitle(String route) {
-    switch (route) {
-      case AppRoutes.dashboard:
-        return 'Dashboard';
-      case AppRoutes.products:
-        return 'Products';
-      case AppRoutes.categories:
-        return 'Categories';
-      case AppRoutes.pos:
-        return 'Point of Sale';
-      case AppRoutes.customers:
-        return 'Customers';
-      case AppRoutes.sales:
-        return 'Sales History';
-      case AppRoutes.debts:
-        return 'Debts';
-      default:
-        return 'Page';
-    }
-  }
+  // static String _getPageTitle(String route) {
+  //   switch (route) {
+  //     case AppRoutes.dashboard:
+  //       return 'Dashboard';
+  //     case AppRoutes.products:
+  //       return 'Products';
+  //     case AppRoutes.categories:
+  //       return 'Categories';
+  //     case AppRoutes.pos:
+  //       return 'Point of Sale';
+  //     case AppRoutes.customers:
+  //       return 'Customers';
+  //     case AppRoutes.sales:
+  //       return 'Sales History';
+  //     case AppRoutes.debts:
+  //       return 'Debts';
+  //     default:
+  //       return 'Page';
+  //   }
+  // }
 }

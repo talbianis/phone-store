@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:phone_shop/views/debts/debt_details_screen.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/constants/app_routes.dart';
 import '../../core/utils/currency_formatter.dart';
 
@@ -77,6 +78,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
   }
 
   Widget _buildHeader() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(24),
       color: Colors.white,
@@ -86,9 +88,9 @@ class _DebtsScreenState extends State<DebtsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Debts Management',
-                  style: TextStyle(
+                Text(
+                  l10n.debtsManagement,
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
@@ -97,7 +99,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
                 Consumer<DebtProvider>(
                   builder: (context, provider, child) {
                     return Text(
-                      '${provider.debts.length} debts tracked',
+                      l10n.debtsTrackedCount(provider.debts.length),
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -114,6 +116,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
   }
 
   Widget _buildFilters() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       color: Colors.white,
@@ -125,7 +128,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search by customer name or invoice...',
+                hintText: l10n.debtsSearchHint,
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
@@ -155,17 +158,17 @@ class _DebtsScreenState extends State<DebtsScreen> {
             child: DropdownButtonFormField<String>(
               value: _selectedStatus,
               decoration: InputDecoration(
-                labelText: 'Status',
+                labelText: l10n.debtStatus,
                 prefixIcon: const Icon(Icons.filter_list),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              items: const [
-                DropdownMenuItem(value: 'all', child: Text('All Debts')),
-                DropdownMenuItem(value: 'unpaid', child: Text('Unpaid')),
-                DropdownMenuItem(value: 'partial', child: Text('Partial')),
-                DropdownMenuItem(value: 'paid', child: Text('Paid')),
+              items: [
+                DropdownMenuItem(value: 'all', child: Text(l10n.allDebtsFilter)),
+                DropdownMenuItem(value: 'unpaid', child: Text(l10n.unpaid)),
+                DropdownMenuItem(value: 'partial', child: Text(l10n.partial)),
+                DropdownMenuItem(value: 'paid', child: Text(l10n.paid)),
               ],
               onChanged: (value) {
                 setState(() => _selectedStatus = value!);
@@ -181,6 +184,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
   Widget _buildStatsSummary() {
     return Consumer<DebtProvider>(
       builder: (context, debtProvider, child) {
+        final l10n = AppLocalizations.of(context);
         final totalDebt = debtProvider.debts.fold<double>(
           0.0,
           (sum, debt) => sum + debt.totalAmount,
@@ -201,7 +205,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
             children: [
               Expanded(
                 child: _buildStatCard(
-                  'Total Debt',
+                  l10n.totalDebt,
                   CurrencyFormatter.format(totalDebt),
                   Icons.account_balance_wallet,
                   AppColors.error,
@@ -210,7 +214,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
               const SizedBox(width: 16),
               Expanded(
                 child: _buildStatCard(
-                  'Amount Paid',
+                  l10n.paidAmount,
                   CurrencyFormatter.format(totalPaid),
                   Icons.payment,
                   AppColors.success,
@@ -219,7 +223,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
               const SizedBox(width: 16),
               Expanded(
                 child: _buildStatCard(
-                  'Remaining',
+                  l10n.remainingAmount,
                   CurrencyFormatter.format(totalRemaining),
                   Icons.pending_actions,
                   Colors.orange,
@@ -228,7 +232,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
               const SizedBox(width: 16),
               Expanded(
                 child: _buildStatCard(
-                  'Unpaid',
+                  l10n.unpaid,
                   '$unpaidCount',
                   Icons.warning_amber,
                   AppColors.error,
@@ -291,6 +295,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -302,7 +307,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No debts found',
+            l10n.noDebts,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -311,7 +316,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            _getEmptyStateMessage(),
+            _getEmptyStateMessage(l10n),
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[500],
@@ -322,16 +327,16 @@ class _DebtsScreenState extends State<DebtsScreen> {
     );
   }
 
-  String _getEmptyStateMessage() {
+  String _getEmptyStateMessage(AppLocalizations l10n) {
     switch (_selectedStatus) {
       case 'unpaid':
-        return 'No unpaid debts';
+        return l10n.noUnpaidDebts;
       case 'partial':
-        return 'No partially paid debts';
+        return l10n.noPartialDebts;
       case 'paid':
-        return 'No paid debts';
+        return l10n.noPaidDebts;
       default:
-        return 'Debts from credit sales will appear here';
+        return l10n.debtsEmptyHint;
     }
   }
 

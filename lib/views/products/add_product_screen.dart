@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/utils/validators.dart';
 import '../../core/utils/helpers.dart';
 import '../../data/models/product_model.dart';
@@ -73,9 +74,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add New Product'),
+        title: Text(l10n.addNewProduct),
         actions: [
           TextButton.icon(
             onPressed: _isLoading ? null : _handleSubmit,
@@ -86,7 +88,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.check),
-            label: const Text('Save'),
+            label: Text(l10n.save),
           ),
           const SizedBox(width: 8),
         ],
@@ -104,21 +106,21 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSectionTitle('Basic Information'),
+                    _buildSectionTitle(l10n.basicInformation),
                     const SizedBox(height: 16),
-                    _buildBasicInfo(),
+                    _buildBasicInfo(l10n),
                     const SizedBox(height: 32),
-                    _buildSectionTitle('Pricing'),
+                    _buildSectionTitle(l10n.pricingSection),
                     const SizedBox(height: 16),
-                    _buildPricing(),
+                    _buildPricing(l10n),
                     const SizedBox(height: 32),
-                    _buildSectionTitle('Inventory'),
+                    _buildSectionTitle(l10n.inventorySection),
                     const SizedBox(height: 16),
-                    _buildInventory(),
+                    _buildInventory(l10n),
                     const SizedBox(height: 32),
-                    _buildSectionTitle('Additional Information'),
+                    _buildSectionTitle(l10n.additionalInformation),
                     const SizedBox(height: 16),
-                    _buildAdditionalInfo(),
+                    _buildAdditionalInfo(l10n),
                   ],
                 ),
               ),
@@ -134,13 +136,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionTitle('Product Image'),
+                  _buildSectionTitle(l10n.productImage),
                   const SizedBox(height: 16),
-                  _buildImagePicker(),
+                  _buildImagePicker(l10n),
                   const SizedBox(height: 32),
-                  _buildSectionTitle('Profit Summary'),
+                  _buildSectionTitle(l10n.profitSummary),
                   const SizedBox(height: 16),
-                  _buildProfitSummary(),
+                  _buildProfitSummary(l10n),
                 ],
               ),
             ),
@@ -160,32 +162,33 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  Widget _buildBasicInfo() {
+  Widget _buildBasicInfo(AppLocalizations l10n) {
     return Column(
       children: [
-        // Product Name
         TextFormField(
           controller: _nameController,
-          decoration: const InputDecoration(
-            labelText: 'Product Name *',
-            hintText: 'e.g., iPhone 15 Pro Max',
-            prefixIcon: Icon(Icons.inventory_2),
+          decoration: InputDecoration(
+            labelText: l10n.productNameRequired,
+            hintText: l10n.hintProductNameEx,
+            prefixIcon: const Icon(Icons.inventory_2),
           ),
           textCapitalization: TextCapitalization.words,
-          validator: (value) =>
-              Validators.required(value, fieldName: 'Product name'),
+          validator: (value) => Validators.required(
+            value,
+            l10n,
+            fieldName: l10n.productName,
+          ),
         ),
 
         const SizedBox(height: 16),
 
-        // Category
         Consumer<CategoryProvider>(
           builder: (context, categoryProvider, child) {
             return DropdownButtonFormField<int>(
               value: _selectedCategoryId,
-              decoration: const InputDecoration(
-                labelText: 'Category *',
-                prefixIcon: Icon(Icons.category),
+              decoration: InputDecoration(
+                labelText: l10n.selectCategory,
+                prefixIcon: const Icon(Icons.category),
               ),
               items: categoryProvider.categories.map((category) {
                 return DropdownMenuItem(
@@ -198,7 +201,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               },
               validator: (value) {
                 if (value == null) {
-                  return 'Please select a category';
+                  return l10n.pleaseSelectCategory;
                 }
                 return null;
               },
@@ -208,13 +211,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
         const SizedBox(height: 16),
 
-        // Brand
         TextFormField(
           controller: _brandController,
-          decoration: const InputDecoration(
-            labelText: 'Brand',
-            hintText: 'e.g., Apple, Samsung',
-            prefixIcon: Icon(Icons.branding_watermark),
+          decoration: InputDecoration(
+            labelText: l10n.brand,
+            hintText: l10n.hintBrandEx,
+            prefixIcon: const Icon(Icons.branding_watermark),
           ),
           textCapitalization: TextCapitalization.words,
         ),
@@ -222,7 +224,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  Widget _buildPricing() {
+  Widget _buildPricing(AppLocalizations l10n) {
     return Column(
       children: [
         Row(
@@ -230,34 +232,34 @@ class _AddProductScreenState extends State<AddProductScreen> {
             Expanded(
               child: TextFormField(
                 controller: _purchasePriceController,
-                decoration: const InputDecoration(
-                  labelText: 'Purchase Price *',
-                  hintText: '0.00',
-                  prefixIcon: Icon(Icons.shopping_cart),
-                  suffixText: 'DA',
+                decoration: InputDecoration(
+                  labelText: '${l10n.buyingPrice} *',
+                  hintText: l10n.hintPriceZero,
+                  prefixIcon: const Icon(Icons.shopping_cart),
+                  suffixText: l10n.currency,
                 ),
                 keyboardType: TextInputType.number,
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
                 ],
-                validator: Validators.price,
+                validator: (v) => Validators.price(v, l10n),
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: TextFormField(
                 controller: _sellingPriceController,
-                decoration: const InputDecoration(
-                  labelText: 'Selling Price *',
-                  hintText: '0.00',
-                  prefixIcon: Icon(Icons.sell),
-                  suffixText: 'DA',
+                decoration: InputDecoration(
+                  labelText: '${l10n.sellingPrice} *',
+                  hintText: l10n.hintPriceZero,
+                  prefixIcon: const Icon(Icons.sell),
+                  suffixText: l10n.currency,
                 ),
                 keyboardType: TextInputType.number,
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
                 ],
-                validator: Validators.price,
+                validator: (v) => Validators.price(v, l10n),
               ),
             ),
           ],
@@ -266,7 +268,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  Widget _buildInventory() {
+  Widget _buildInventory(AppLocalizations l10n) {
     return Column(
       children: [
         Row(
@@ -274,28 +276,28 @@ class _AddProductScreenState extends State<AddProductScreen> {
             Expanded(
               child: TextFormField(
                 controller: _quantityController,
-                decoration: const InputDecoration(
-                  labelText: 'Initial Quantity *',
-                  hintText: '0',
-                  prefixIcon: Icon(Icons.inventory),
+                decoration: InputDecoration(
+                  labelText: l10n.initialQuantity,
+                  hintText: l10n.hintQuantityZero,
+                  prefixIcon: const Icon(Icons.inventory),
                 ),
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                validator: Validators.quantity,
+                validator: (v) => Validators.quantity(v, l10n),
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: TextFormField(
                 controller: _minQuantityController,
-                decoration: const InputDecoration(
-                  labelText: 'Min Quantity (Alert)',
-                  hintText: '5',
-                  prefixIcon: Icon(Icons.warning_amber),
+                decoration: InputDecoration(
+                  labelText: l10n.minQuantityAlert,
+                  hintText: l10n.hintMinStock,
+                  prefixIcon: const Icon(Icons.warning_amber),
                 ),
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                validator: Validators.quantity,
+                validator: (v) => Validators.quantity(v, l10n),
               ),
             ),
           ],
@@ -304,29 +306,27 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  Widget _buildAdditionalInfo() {
+  Widget _buildAdditionalInfo(AppLocalizations l10n) {
     return Column(
       children: [
-        // Barcode
         TextFormField(
           controller: _barcodeController,
-          decoration: const InputDecoration(
-            labelText: 'Barcode (Optional)',
-            hintText: 'Scan or enter barcode',
-            prefixIcon: Icon(Icons.qr_code),
+          decoration: InputDecoration(
+            labelText: l10n.barcodeOptional,
+            hintText: l10n.hintBarcode,
+            prefixIcon: const Icon(Icons.qr_code),
           ),
-          validator: Validators.barcode,
+          validator: (v) => Validators.barcode(v, l10n),
         ),
 
         const SizedBox(height: 16),
 
-        // Notes
         TextFormField(
           controller: _notesController,
-          decoration: const InputDecoration(
-            labelText: 'Notes (Optional)',
-            hintText: 'Additional details about the product',
-            prefixIcon: Icon(Icons.note),
+          decoration: InputDecoration(
+            labelText: l10n.notesOptional,
+            hintText: l10n.hintProductNotes,
+            prefixIcon: const Icon(Icons.note),
             alignLabelWithHint: true,
           ),
           maxLines: 3,
@@ -336,7 +336,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  Widget _buildImagePicker() {
+  Widget _buildImagePicker(AppLocalizations l10n) {
     return Column(
       children: [
         Container(
@@ -365,7 +365,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'No image selected',
+                      l10n.noImageSelected,
                       style: TextStyle(
                         color: Colors.grey[600],
                         fontSize: 14,
@@ -381,7 +381,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               child: OutlinedButton.icon(
                 onPressed: () => _pickImage(ImageSource.gallery),
                 icon: const Icon(Icons.photo_library),
-                label: const Text('Gallery'),
+                label: Text(l10n.gallery),
               ),
             ),
             const SizedBox(width: 12),
@@ -389,7 +389,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               child: OutlinedButton.icon(
                 onPressed: () => _pickImage(ImageSource.camera),
                 icon: const Icon(Icons.camera_alt),
-                label: const Text('Camera'),
+                label: Text(l10n.camera),
               ),
             ),
           ],
@@ -401,15 +401,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
               setState(() => _selectedImage = null);
             },
             icon: const Icon(Icons.delete, color: Colors.red),
-            label:
-                const Text('Remove Image', style: TextStyle(color: Colors.red)),
+            label: Text(
+              l10n.removeImage,
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ],
     );
   }
 
-  Widget _buildProfitSummary() {
+  Widget _buildProfitSummary(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -420,15 +422,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
       child: Column(
         children: [
           _buildProfitRow(
-            'Profit per Unit',
+            l10n.profitPerUnit,
             _calculatedProfit,
             AppColors.success,
+            l10n,
           ),
           const Divider(height: 24),
           _buildProfitRow(
-            'Profit Margin',
+            l10n.profitMarginLabel,
             _profitMargin,
             AppColors.primary,
+            l10n,
             isPercentage: true,
           ),
         ],
@@ -436,8 +440,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  Widget _buildProfitRow(String label, double value, Color color,
-      {bool isPercentage = false}) {
+  Widget _buildProfitRow(
+    String label,
+    double value,
+    Color color,
+    AppLocalizations l10n, {
+    bool isPercentage = false,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -451,7 +460,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         Text(
           isPercentage
               ? '${value.toStringAsFixed(1)}%'
-              : '${value.toStringAsFixed(2)} DA',
+              : '${value.toStringAsFixed(2)} ${l10n.currency}',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -479,9 +488,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
+        debugPrint('$e');
         Helpers.showSnackBar(
           context,
-          'Failed to pick image: $e',
+          l10n.failedPickImage,
           isError: true,
         );
       }
@@ -526,13 +537,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
     setState(() => _isLoading = false);
 
     if (mounted) {
+      final l10n = AppLocalizations.of(context);
       if (success) {
-        Helpers.showSnackBar(context, 'Product added successfully');
+        Helpers.showSnackBar(context, l10n.productAddSuccess);
         Navigator.pop(context);
       } else {
+        if (productProvider.errorMessage != null) {
+          debugPrint(productProvider.errorMessage);
+        }
         Helpers.showSnackBar(
           context,
-          productProvider.errorMessage ?? 'Failed to add product',
+          l10n.failedAddProduct,
           isError: true,
         );
       }

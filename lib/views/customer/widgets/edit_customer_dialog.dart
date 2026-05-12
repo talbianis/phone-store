@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../data/models/customer_model.dart';
@@ -49,6 +50,7 @@ class _EditCustomerDialogState extends State<EditCustomerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -60,7 +62,6 @@ class _EditCustomerDialogState extends State<EditCustomerDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
             Row(
               children: [
                 Container(
@@ -76,10 +77,10 @@ class _EditCustomerDialogState extends State<EditCustomerDialog> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Edit Customer',
-                    style: TextStyle(
+                    l10n.editCustomer,
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -94,44 +95,43 @@ class _EditCustomerDialogState extends State<EditCustomerDialog> {
 
             const SizedBox(height: 24),
 
-            // Form
             Form(
               key: _formKey,
               child: Column(
                 children: [
-                  // Customer Name
                   TextFormField(
                     controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Customer Name *',
-                      prefixIcon: Icon(Icons.person),
+                    decoration: InputDecoration(
+                      labelText: '${l10n.customerName} *',
+                      prefixIcon: const Icon(Icons.person),
                     ),
                     textCapitalization: TextCapitalization.words,
-                    validator: (value) =>
-                        Validators.required(value, fieldName: 'Customer name'),
+                    validator: (value) => Validators.required(
+                      value,
+                      l10n,
+                      fieldName: l10n.customerName,
+                    ),
                   ),
 
                   const SizedBox(height: 16),
 
-                  // Phone Number
                   TextFormField(
                     controller: _phoneController,
-                    decoration: const InputDecoration(
-                      labelText: 'Phone Number *',
-                      prefixIcon: Icon(Icons.phone),
+                    decoration: InputDecoration(
+                      labelText: '${l10n.phone} *',
+                      prefixIcon: const Icon(Icons.phone),
                     ),
                     keyboardType: TextInputType.phone,
-                    validator: Validators.phone,
+                    validator: (v) => Validators.phone(v, l10n),
                   ),
 
                   const SizedBox(height: 16),
 
-                  // Address
                   TextFormField(
                     controller: _addressController,
-                    decoration: const InputDecoration(
-                      labelText: 'Address (Optional)',
-                      prefixIcon: Icon(Icons.location_on),
+                    decoration: InputDecoration(
+                      labelText: l10n.addressOptional,
+                      prefixIcon: const Icon(Icons.location_on),
                       alignLabelWithHint: true,
                     ),
                     maxLines: 2,
@@ -143,13 +143,12 @@ class _EditCustomerDialogState extends State<EditCustomerDialog> {
 
             const SizedBox(height: 24),
 
-            // Actions
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
                   onPressed: _isLoading ? null : () => Navigator.pop(context),
-                  child: const Text('Cancel'),
+                  child: Text(l10n.cancel),
                 ),
                 const SizedBox(width: 12),
                 ElevatedButton(
@@ -167,9 +166,9 @@ class _EditCustomerDialogState extends State<EditCustomerDialog> {
                                 AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         )
-                      : const Text(
-                          'Update Customer',
-                          style: TextStyle(color: AppColors.white),
+                      : Text(
+                          l10n.updateCustomer,
+                          style: const TextStyle(color: AppColors.white),
                         ),
                 ),
               ],
@@ -203,13 +202,17 @@ class _EditCustomerDialogState extends State<EditCustomerDialog> {
     setState(() => _isLoading = false);
 
     if (mounted) {
+      final l10n = AppLocalizations.of(context);
       if (success) {
-        Helpers.showSnackBar(context, 'Customer updated successfully');
+        Helpers.showSnackBar(context, l10n.customerUpdateSuccess);
         Navigator.pop(context);
       } else {
+        if (customerProvider.errorMessage != null) {
+          debugPrint(customerProvider.errorMessage);
+        }
         Helpers.showSnackBar(
           context,
-          customerProvider.errorMessage ?? 'Failed to update customer',
+          l10n.failedUpdateCustomer,
           isError: true,
         );
       }

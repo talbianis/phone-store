@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/constants/app_routes.dart';
 import '../../providers/product_provider.dart';
 import '../../providers/category_provider.dart';
@@ -90,26 +91,27 @@ class _PosScreenState extends State<PosScreen> {
   }
 
   Widget _buildHeader() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(24),
       color: Colors.white,
       child: Row(
         children: [
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Point of Sale',
-                  style: TextStyle(
+                  l10n.pos,
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
-                  'Scan or select products to add to cart',
-                  style: TextStyle(
+                  l10n.posSubtitle,
+                  style: const TextStyle(
                     fontSize: 14,
                     color: Colors.grey,
                   ),
@@ -126,7 +128,7 @@ class _PosScreenState extends State<PosScreen> {
                     ? null
                     : () => _clearCart(cartProvider),
                 icon: const Icon(Icons.clear_all),
-                label: const Text('Clear Cart'),
+                label: Text(AppLocalizations.of(context).clearCart),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.red,
                   side: const BorderSide(color: Colors.red),
@@ -140,6 +142,7 @@ class _PosScreenState extends State<PosScreen> {
   }
 
   Widget _buildCategoryFilter() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       color: Colors.white,
@@ -151,7 +154,7 @@ class _PosScreenState extends State<PosScreen> {
               children: [
                 // All Categories
                 _buildCategoryChip(
-                  label: 'All Products',
+                  label: l10n.allProductsPos,
                   isSelected: _selectedCategoryId == null,
                   onTap: () {
                     setState(() => _selectedCategoryId = null);
@@ -210,6 +213,7 @@ class _PosScreenState extends State<PosScreen> {
   Widget _buildProductGrid() {
     return Consumer<ProductProvider>(
       builder: (context, productProvider, child) {
+        final l10n = AppLocalizations.of(context);
         if (productProvider.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -226,7 +230,7 @@ class _PosScreenState extends State<PosScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'No products available',
+                  l10n.noProductsAvailable,
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey[600],
@@ -254,7 +258,7 @@ class _PosScreenState extends State<PosScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'No products in stock',
+                  l10n.noProductsInStockPos,
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey[600],
@@ -288,13 +292,14 @@ class _PosScreenState extends State<PosScreen> {
 
   void _addProductToCart(product) {
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    final l10n = AppLocalizations.of(context);
 
     // Check if product is already in cart at max quantity
     final existingItem = cartProvider.getCartItem(product.id!);
     if (existingItem != null && existingItem.quantity >= product.quantity) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Cannot add more. Only ${product.quantity} in stock.'),
+          content: Text(l10n.cannotAddMoreInStockCount(product.quantity)),
           backgroundColor: Colors.orange,
         ),
       );
@@ -306,7 +311,7 @@ class _PosScreenState extends State<PosScreen> {
     // Show brief feedback
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('${product.name} added to cart'),
+        content: Text(l10n.productAddedToCartName(product.name)),
         duration: const Duration(milliseconds: 800),
         behavior: SnackBarBehavior.floating,
         width: 300,
@@ -315,29 +320,32 @@ class _PosScreenState extends State<PosScreen> {
   }
 
   void _clearCart(CartProvider cartProvider) {
+    final parentL10n = AppLocalizations.of(context);
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Clear Cart'),
-        content: const Text(
-            'Are you sure you want to remove all items from the cart?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              cartProvider.clearCart();
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+      builder: (context) {
+        final l10n = AppLocalizations.of(context);
+        return AlertDialog(
+          title: Text(parentL10n.clearCart),
+          content: Text(parentL10n.clearCartConfirmMessage),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(l10n.cancel),
             ),
-            child: const Text('Clear Cart'),
-          ),
-        ],
-      ),
+            ElevatedButton(
+              onPressed: () {
+                cartProvider.clearCart();
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              child: Text(l10n.clearCart),
+            ),
+          ],
+        );
+      },
     );
   }
 

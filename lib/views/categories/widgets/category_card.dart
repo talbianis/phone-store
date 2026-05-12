@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../data/models/category_model.dart';
 import '../../../providers/product_provider.dart';
 
@@ -21,6 +22,7 @@ class CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Consumer<ProductProvider>(
       builder: (context, productProvider, child) {
         // Count products in this category
@@ -102,7 +104,7 @@ class CategoryCard extends StatelessWidget {
                                       size: 20.sp), // ⬅️ Responsive
                                   SizedBox(width: 12.w), // ⬅️ Responsive
                                   Text(
-                                    'Edit',
+                                    l10n.edit,
                                     style: TextStyle(
                                         fontSize: 14.sp), // ⬅️ Responsive
                                   ),
@@ -186,7 +188,7 @@ class CategoryCard extends StatelessWidget {
                               width: 10
                                   .w), // ⬅️ Changed from 10.w to 6.w (smaller)
                           Text(
-                            '$productCount Products',
+                            l10n.productCountInCategoryLabel(productCount),
                             style: TextStyle(
                               fontSize: 16
                                   .sp, // ⬅️ Changed from 16.sp to 13.sp (smaller)

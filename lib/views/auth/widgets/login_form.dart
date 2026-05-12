@@ -51,9 +51,13 @@ class _LoginFormState extends State<LoginForm> {
     if (success) {
       Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
     } else {
+      final l10n = AppLocalizations.of(context);
+      if (authProvider.errorMessage != null) {
+        debugPrint(authProvider.errorMessage);
+      }
       Helpers.showSnackBar(
         context,
-        authProvider.errorMessage ?? 'Login failed',
+        l10n.loginFailed,
         isError: true,
       );
     }
@@ -80,7 +84,7 @@ class _LoginFormState extends State<LoginForm> {
               prefixIcon: const Icon(Icons.person),
             ),
             textInputAction: TextInputAction.next,
-            validator: Validators.username,
+            validator: (v) => Validators.username(v, l10n),
           ),
 
           const SizedBox(height: 16),
@@ -106,7 +110,7 @@ class _LoginFormState extends State<LoginForm> {
             ),
             textInputAction: TextInputAction.done,
             onFieldSubmitted: (_) => _handleLogin(),
-            validator: Validators.password,
+            validator: (v) => Validators.password(v, l10n),
           ),
 
           const SizedBox(height: 8),

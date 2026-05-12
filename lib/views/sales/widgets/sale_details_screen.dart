@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:phone_shop/core/constants/app_colors.dart';
+import 'package:phone_shop/core/localization/app_localizations.dart';
 import 'package:phone_shop/core/utils/currency_formatter.dart';
 import 'package:phone_shop/core/utils/date_formater.dart';
 import 'package:phone_shop/data/models/sales_item_model.dart';
@@ -43,6 +44,7 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -50,9 +52,9 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         backgroundColor: AppColors.sidebarBackground,
-        title: const Text(
-          'Sale Details',
-          style: TextStyle(color: AppColors.white),
+        title: Text(
+          l10n.saleDetails,
+          style: const TextStyle(color: AppColors.white),
         ),
         actions: [
           IconButton(
@@ -61,7 +63,7 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
               color: AppColors.white,
             ),
             onPressed: _handlePrint,
-            tooltip: 'Print Invoice',
+            tooltip: l10n.printInvoiceTooltip,
           ),
         ],
       ),
@@ -114,6 +116,7 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
   }
 
   Widget _buildInvoiceHeader() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(24),
       color: AppColors.primary.withOpacity(0.05),
@@ -128,7 +131,7 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'INVOICE',
+                    l10n.invoiceHeading,
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[600],
@@ -152,7 +155,7 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    'Date',
+                    l10n.date,
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey[600],
@@ -189,7 +192,7 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Customer',
+                      l10n.customerSectionLabel,
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[600],
@@ -197,7 +200,7 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      widget.sale.customerName ?? 'Walk-in Customer',
+                      widget.sale.customerName ?? l10n.walkInCustomer,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -214,11 +217,12 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
   }
 
   Widget _buildInfoCards() {
+    final l10n = AppLocalizations.of(context);
     return Row(
       children: [
         Expanded(
           child: _buildInfoCard(
-            'Total Amount',
+            l10n.totalAmountLabel,
             CurrencyFormatter.format(widget.sale.total),
             Icons.attach_money,
             AppColors.primary,
@@ -227,7 +231,7 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
         const SizedBox(width: 16),
         Expanded(
           child: _buildInfoCard(
-            'Profit',
+            l10n.profit,
             CurrencyFormatter.format(widget.sale.profit),
             Icons.trending_up,
             AppColors.success,
@@ -236,7 +240,7 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
         const SizedBox(width: 16),
         Expanded(
           child: _buildInfoCard(
-            'Items',
+            l10n.items,
             '${_saleItems.length}',
             Icons.shopping_cart,
             Colors.orange,
@@ -302,6 +306,7 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
   }
 
   Widget _buildItemsSection() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -318,9 +323,9 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
               children: [
                 const Icon(Icons.receipt_long, color: AppColors.primary),
                 const SizedBox(width: 12),
-                const Text(
-                  'Sale Items',
-                  style: TextStyle(
+                Text(
+                  l10n.saleItemsTitle,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -336,7 +341,7 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    '${_saleItems.length} items',
+                    l10n.itemsCountShortLabel(_saleItems.length),
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -356,44 +361,44 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
             color: Colors.grey[50],
             child: Row(
               children: [
-                const Expanded(
+                Expanded(
                   flex: 3,
                   child: Text(
-                    'Product',
-                    style: TextStyle(
+                    l10n.tableProduct,
+                    style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: Colors.grey,
                     ),
                   ),
                 ),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Price',
+                    l10n.tablePrice,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: Colors.grey,
                     ),
                   ),
                 ),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Qty',
+                    l10n.tableQtyShort,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: Colors.grey,
                     ),
                   ),
                 ),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Total',
+                    l10n.total,
                     textAlign: TextAlign.right,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: Colors.grey,
@@ -434,7 +439,8 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Profit: ${CurrencyFormatter.format(item.profit)}',
+                            AppLocalizations.of(context).cartItemProfitFormatted(
+                                CurrencyFormatter.format(item.profit)),
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[600],
@@ -497,6 +503,7 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
   }
 
   Widget _buildPaymentDetails() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -507,24 +514,24 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Payment Details',
-            style: TextStyle(
+          Text(
+            l10n.paymentDetailsTitle,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 16),
-          _buildDetailRow('Payment Method', _getPaymentMethodLabel()),
+          _buildDetailRow(l10n.paymentMethod, _getPaymentMethodLabel(l10n)),
           const Divider(height: 24),
           _buildDetailRow(
-            'Amount Paid',
+            l10n.amountPaid,
             CurrencyFormatter.format(widget.sale.paidAmount),
           ),
           if (widget.sale.remainingDebt > 0) ...[
             const Divider(height: 24),
             _buildDetailRow(
-              'Remaining Debt',
+              l10n.remainingDebt,
               CurrencyFormatter.format(widget.sale.remainingDebt),
               valueColor: AppColors.error,
             ),
@@ -535,6 +542,7 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
   }
 
   Widget _buildSaleSummary() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -545,19 +553,19 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Sale Summary',
-            style: TextStyle(
+          Text(
+            l10n.saleSummaryTitle,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 16),
-          _buildSummaryRow('Subtotal', widget.sale.subtotal),
+          _buildSummaryRow(l10n.subtotal, widget.sale.subtotal),
           const SizedBox(height: 12),
           if (widget.sale.discount > 0) ...[
             _buildSummaryRow(
-              'Discount',
+              l10n.discount,
               -widget.sale.discount,
               valueColor: AppColors.error,
             ),
@@ -565,14 +573,14 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
           ],
           const Divider(height: 24),
           _buildSummaryRow(
-            'Total',
+            l10n.total,
             widget.sale.total,
             isBold: true,
             fontSize: 20,
           ),
           const SizedBox(height: 12),
           _buildSummaryRow(
-            'Profit',
+            l10n.profit,
             widget.sale.profit,
             valueColor: AppColors.success,
             fontSize: 16,
@@ -634,16 +642,16 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
     );
   }
 
-  String _getPaymentMethodLabel() {
+  String _getPaymentMethodLabel(AppLocalizations l10n) {
     switch (widget.sale.paymentMethod.toLowerCase()) {
       case 'cash':
-        return 'Cash';
+        return l10n.cash;
       case 'card':
-        return 'Card';
+        return l10n.card;
       case 'debt':
-        return 'On Credit';
+        return l10n.paymentOnCreditShort;
       case 'mixed':
-        return 'Mixed Payment';
+        return l10n.paymentMixedShort;
       default:
         return widget.sale.paymentMethod;
     }
@@ -651,9 +659,10 @@ class _SaleDetailsScreenState extends State<SaleDetailsScreen> {
 
   void _handlePrint() {
     // TODO: Implement print functionality
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Print functionality coming soon!'),
+      SnackBar(
+        content: Text(l10n.printComingSoon),
       ),
     );
   }

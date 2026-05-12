@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:phone_shop/views/sales/widgets/sale_details_screen.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/constants/app_routes.dart';
 import '../../core/utils/currency_formatter.dart';
 
@@ -110,6 +111,7 @@ class _SalesScreenState extends State<SalesScreen> {
   }
 
   Widget _buildHeader() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(24),
       color: Colors.white,
@@ -119,9 +121,9 @@ class _SalesScreenState extends State<SalesScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Sales History',
-                  style: TextStyle(
+                Text(
+                  l10n.sales,
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
@@ -130,7 +132,7 @@ class _SalesScreenState extends State<SalesScreen> {
                 Consumer<SaleProvider>(
                   builder: (context, provider, child) {
                     return Text(
-                      '${provider.sales.length} sales recorded',
+                      l10n.salesRecordedCount(provider.sales.length),
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -147,6 +149,7 @@ class _SalesScreenState extends State<SalesScreen> {
   }
 
   Widget _buildFilters() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       color: AppColors.white,
@@ -158,7 +161,7 @@ class _SalesScreenState extends State<SalesScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search by invoice number or customer...',
+                hintText: l10n.searchInvoiceNumberHint,
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
@@ -191,19 +194,19 @@ class _SalesScreenState extends State<SalesScreen> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                labelText: 'Period',
+                labelText: l10n.period,
                 prefixIcon: const Icon(Icons.calendar_today),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: AppColors.textPrimary),
                 ),
               ),
-              items: const [
-                DropdownMenuItem(value: 'today', child: Text('Today')),
-                DropdownMenuItem(value: 'week', child: Text('This Week')),
-                DropdownMenuItem(value: 'month', child: Text('This Month')),
-                DropdownMenuItem(value: 'all', child: Text('All Time')),
-                DropdownMenuItem(value: 'custom', child: Text('Custom Range')),
+              items: [
+                DropdownMenuItem(value: 'today', child: Text(l10n.today)),
+                DropdownMenuItem(value: 'week', child: Text(l10n.thisWeek)),
+                DropdownMenuItem(value: 'month', child: Text(l10n.thisMonth)),
+                DropdownMenuItem(value: 'all', child: Text(l10n.allTime)),
+                DropdownMenuItem(value: 'custom', child: Text(l10n.customRange)),
               ],
               onChanged: (value) {
                 setState(() => _selectedFilter = value!);
@@ -223,6 +226,7 @@ class _SalesScreenState extends State<SalesScreen> {
   Widget _buildStatsSummary() {
     return Consumer<SaleProvider>(
       builder: (context, saleProvider, child) {
+        final l10n = AppLocalizations.of(context);
         final totalSales = saleProvider.sales.fold<double>(
           0.0,
           (sum, sale) => sum + sale.total,
@@ -239,7 +243,7 @@ class _SalesScreenState extends State<SalesScreen> {
             children: [
               Expanded(
                 child: _buildStatCard(
-                  'Total Sales',
+                  l10n.totalSales,
                   CurrencyFormatter.format(totalSales),
                   Icons.attach_money,
                   AppColors.primary,
@@ -248,7 +252,7 @@ class _SalesScreenState extends State<SalesScreen> {
               const SizedBox(width: 16),
               Expanded(
                 child: _buildStatCard(
-                  'Total Profit',
+                  l10n.totalProfit,
                   CurrencyFormatter.format(totalProfit),
                   Icons.trending_up,
                   AppColors.success,
@@ -257,7 +261,7 @@ class _SalesScreenState extends State<SalesScreen> {
               const SizedBox(width: 16),
               Expanded(
                 child: _buildStatCard(
-                  'Transactions',
+                  l10n.transactionCount,
                   '${saleProvider.sales.length}',
                   Icons.receipt,
                   Colors.orange,
@@ -266,7 +270,7 @@ class _SalesScreenState extends State<SalesScreen> {
               const SizedBox(width: 16),
               Expanded(
                 child: _buildStatCard(
-                  'Avg. Sale',
+                  l10n.avgSaleShort,
                   CurrencyFormatter.format(
                     saleProvider.sales.isEmpty
                         ? 0
@@ -337,6 +341,7 @@ class _SalesScreenState extends State<SalesScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -348,7 +353,7 @@ class _SalesScreenState extends State<SalesScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No sales found',
+            l10n.noSales,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -357,7 +362,7 @@ class _SalesScreenState extends State<SalesScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            _getEmptyStateMessage(),
+            _getEmptyStateMessage(l10n),
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[500],
@@ -375,9 +380,9 @@ class _SalesScreenState extends State<SalesScreen> {
               Icons.point_of_sale,
               color: AppColors.white,
             ),
-            label: const Text(
-              'Go to POS',
-              style: TextStyle(color: AppColors.white),
+            label: Text(
+              l10n.goToPos,
+              style: const TextStyle(color: AppColors.white),
             ),
           ),
         ],
@@ -385,18 +390,18 @@ class _SalesScreenState extends State<SalesScreen> {
     );
   }
 
-  String _getEmptyStateMessage() {
+  String _getEmptyStateMessage(AppLocalizations l10n) {
     switch (_selectedFilter) {
       case 'today':
-        return 'No sales recorded today';
+        return l10n.noSalesRecordedToday;
       case 'week':
-        return 'No sales this week';
+        return l10n.noSalesThisWeek;
       case 'month':
-        return 'No sales this month';
+        return l10n.noSalesThisMonth;
       case 'custom':
-        return 'No sales in selected date range';
+        return l10n.noSalesInSelectedRange;
       default:
-        return 'Start making sales to see them here';
+        return l10n.noSalesDefaultHint;
     }
   }
 

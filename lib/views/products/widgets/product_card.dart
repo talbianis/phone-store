@@ -7,6 +7,7 @@ import 'package:phone_shop/views/products/edit_product_screen.dart';
 import 'package:phone_shop/views/products/product_details_screen.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../data/models/product_model.dart';
@@ -22,6 +23,7 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -98,12 +100,12 @@ class ProductCard extends StatelessWidget {
                       SizedBox(height: 8.h),
 
                       // Stock Badge
-                      _buildStockBadge(),
+                      _buildStockBadge(l10n),
 
                       SizedBox(height: 8.h),
 
                       // Actions
-                      _buildActions(context),
+                      _buildActions(context, l10n),
                     ],
                   ),
                 ),
@@ -155,22 +157,22 @@ class ProductCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStockBadge() {
+  Widget _buildStockBadge(AppLocalizations l10n) {
     Color badgeColor;
     String badgeText;
     IconData badgeIcon;
 
     if (product.isOutOfStock) {
       badgeColor = AppColors.error;
-      badgeText = 'Out of Stock';
+      badgeText = l10n.outOfStock;
       badgeIcon = Icons.error_outline;
     } else if (product.isLowStock) {
       badgeColor = AppColors.warning;
-      badgeText = 'Low Stock: ${product.quantity}';
+      badgeText = '${l10n.lowStock}: ${product.quantity}';
       badgeIcon = Icons.warning_amber;
     } else {
       badgeColor = AppColors.success;
-      badgeText = 'In Stock: ${product.quantity}';
+      badgeText = '${l10n.inStock}: ${product.quantity}';
       badgeIcon = Icons.check_circle_outline;
     }
 
@@ -202,7 +204,7 @@ class ProductCard extends StatelessWidget {
     );
   }
 
-  Widget _buildActions(BuildContext context) {
+  Widget _buildActions(BuildContext context, AppLocalizations l10n) {
     return Row(
       children: [
         Expanded(
@@ -216,7 +218,7 @@ class ProductCard extends StatelessWidget {
               );
             },
             icon: Icon(Icons.edit, size: 20.sp),
-            label: Text('Edit', style: TextStyle(fontSize: 20.sp)),
+            label: Text(l10n.edit, style: TextStyle(fontSize: 20.sp)),
             style: OutlinedButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: 8.h),
               minimumSize: const Size(0, 32),
@@ -239,12 +241,13 @@ class ProductCard extends StatelessWidget {
   }
 
   Future<void> _handleDelete(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
     final confirm = await Helpers.showConfirmDialog(
       context,
-      title: 'Delete Product',
-      message: 'Are you sure you want to delete "${product.name}"?',
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      title: l10n.deleteProduct,
+      message: l10n.deleteProductNamed(product.name),
+      confirmText: l10n.delete,
+      cancelText: l10n.cancel,
     );
 
     if (confirm && context.mounted) {
@@ -256,12 +259,16 @@ class ProductCard extends StatelessWidget {
       final success = await productProvider.deleteProduct(product.id!);
 
       if (context.mounted) {
+        final loc = AppLocalizations.of(context);
         if (success) {
-          Helpers.showSnackBar(context, 'Product deleted successfully');
+          Helpers.showSnackBar(context, loc.productDeleteSuccess);
         } else {
+          if (productProvider.errorMessage != null) {
+            debugPrint(productProvider.errorMessage);
+          }
           Helpers.showSnackBar(
             context,
-            productProvider.errorMessage ?? 'Failed to delete product',
+            loc.failedDeleteProduct,
             isError: true,
           );
         }

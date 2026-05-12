@@ -26,8 +26,8 @@ class Helpers {
     BuildContext context, {
     required String title,
     required String message,
-    String confirmText = 'Confirmer',
-    String cancelText = 'Annuler',
+    required String confirmText,
+    required String cancelText,
   }) async {
     final result = await showDialog<bool>(
       context: context,

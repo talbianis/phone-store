@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:phone_shop/core/utils/date_formater.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/utils/currency_formatter.dart';
 
 import '../../data/models/customer_model.dart';
@@ -45,9 +46,10 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Customer Details'),
+        title: Text(l10n.customerDetails),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
@@ -60,7 +62,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
               );
               _loadCustomerData();
             },
-            tooltip: 'Edit Customer',
+            tooltip: l10n.editCustomerTooltip,
           ),
         ],
       ),
@@ -154,11 +156,12 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
   // ⬅️ NEW: Debt Section with Payment Button
 
   Widget _buildStatsCards() {
+    final l10n = AppLocalizations.of(context);
     return Row(
       children: [
         Expanded(
           child: _buildStatCard(
-            'Total Purchases',
+            l10n.totalPurchases,
             '0',
             Icons.shopping_bag,
             AppColors.primary,
@@ -167,7 +170,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
         const SizedBox(width: 16),
         Expanded(
           child: _buildStatCard(
-            'Total Spent',
+            l10n.totalSpent,
             CurrencyFormatter.format(0),
             Icons.attach_money,
             AppColors.success,
@@ -176,8 +179,8 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
         const SizedBox(width: 16),
         Expanded(
           child: _buildStatCard(
-            'Last Purchase',
-            'Never',
+            l10n.lastPurchase,
+            l10n.lastPurchaseNever,
             Icons.calendar_today,
             Colors.orange,
           ),
@@ -246,6 +249,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
   }
 
   Widget _buildCustomerInfo() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -256,26 +260,26 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Customer Information',
-            style: TextStyle(
+          Text(
+            l10n.customerInformation,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 16),
-          _buildInfoRow('Customer ID', '#${_currentCustomer.id}'),
+          _buildInfoRow(l10n.customerId, '#${_currentCustomer.id}'),
           const Divider(height: 24),
-          _buildInfoRow('Phone', _currentCustomer.phone),
+          _buildInfoRow(l10n.phone, _currentCustomer.phone),
           const Divider(height: 24),
           if (_currentCustomer.address != null &&
               _currentCustomer.address!.isNotEmpty)
-            _buildInfoRow('Address', _currentCustomer.address!),
+            _buildInfoRow(l10n.address, _currentCustomer.address!),
           if (_currentCustomer.address != null &&
               _currentCustomer.address!.isNotEmpty)
             const Divider(height: 24),
           _buildInfoRow(
-            'Member Since',
+            l10n.memberSince,
             DateFormatter.formatDate(_currentCustomer.createdAt),
           ),
         ],
@@ -309,6 +313,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
   }
 
   Widget _buildPurchaseHistory() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -319,9 +324,9 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Purchase History',
-            style: TextStyle(
+          Text(
+            l10n.purchaseHistory,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -337,7 +342,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'No purchases yet',
+                  l10n.noPurchasesYet,
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey[600],
@@ -345,7 +350,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Purchase history will appear here',
+                  l10n.purchaseHistoryHint,
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[500],

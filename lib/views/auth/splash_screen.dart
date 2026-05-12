@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_routes.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -77,6 +78,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.primary,
       body: Center(
@@ -132,9 +134,9 @@ class _SplashScreenState extends State<SplashScreen>
             // Subtitle
             FadeTransition(
               opacity: _fadeAnimation,
-              child: const Text(
-                'Gestion de Magasin',
-                style: TextStyle(
+              child: Text(
+                l10n.splashTagline,
+                style: const TextStyle(
                   fontSize: 16,
                   color: AppColors.white,
                   fontWeight: FontWeight.w300,

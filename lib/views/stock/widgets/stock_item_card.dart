@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../data/models/product_model.dart';
 
@@ -17,6 +18,7 @@ class StockItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -70,7 +72,7 @@ class StockItemCard extends StatelessWidget {
 
                   // Barcode
                   Text(
-                    'Barcode: ${product.barcode}',
+                    '${l10n.barcodePrefix} ${product.barcode ?? '-'}',
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.grey[600],
@@ -81,7 +83,7 @@ class StockItemCard extends StatelessWidget {
 
                   // Stock Value
                   Text(
-                    'Value: ${CurrencyFormatter.format(product.purchasePrice * product.quantity)}',
+                    '${l10n.valuePrefix} ${CurrencyFormatter.format(product.purchasePrice * product.quantity)}',
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.grey[600],
@@ -120,7 +122,7 @@ class StockItemCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        '${product.quantity} units',
+                        l10n.unitsCountLabel(product.quantity),
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -137,7 +139,7 @@ class StockItemCard extends StatelessWidget {
                 ElevatedButton.icon(
                   onPressed: onAdjust,
                   icon: const Icon(Icons.edit, size: 16),
-                  label: const Text('Adjust'),
+                  label: Text(l10n.adjust),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     padding: const EdgeInsets.symmetric(

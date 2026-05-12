@@ -1,5 +1,6 @@
 // lib/views/debts/widgets/add_debt_payment_dialog.dart
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,6 +8,7 @@ import 'package:phone_shop/data/models/debt_payement_model.dart';
 
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../data/models/debt_model.dart';
@@ -39,6 +41,7 @@ class _AddDebtPaymentDialogState extends State<AddDebtPaymentDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -63,10 +66,10 @@ class _AddDebtPaymentDialogState extends State<AddDebtPaymentDialog> {
                 ),
               ),
               const SizedBox(width: 16),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'Add Payment',
-                  style: TextStyle(
+                  l10n.addPaymentTitle,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -94,12 +97,13 @@ class _AddDebtPaymentDialogState extends State<AddDebtPaymentDialog> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Customer',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    Text(
+                      l10n.customerSectionLabel,
+                      style:
+                          const TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                     Text(
-                      widget.debt.customerName ?? 'Unknown Customer',
+                      widget.debt.customerName ?? l10n.unknownCustomer,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -111,13 +115,14 @@ class _AddDebtPaymentDialogState extends State<AddDebtPaymentDialog> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Invoice',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    Text(
+                      l10n.invoiceNumber,
+                      style:
+                          const TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                     Text(
                       widget.debt.invoiceNumber ??
-                          'Invoice #${widget.debt.saleId}',
+                          l10n.invoiceHashId(widget.debt.saleId),
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -131,9 +136,10 @@ class _AddDebtPaymentDialogState extends State<AddDebtPaymentDialog> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Total Debt',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    Text(
+                      l10n.totalDebt,
+                      style:
+                          const TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                     Text(
                       CurrencyFormatter.format(widget.debt.totalAmount),
@@ -148,9 +154,10 @@ class _AddDebtPaymentDialogState extends State<AddDebtPaymentDialog> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Already Paid',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    Text(
+                      l10n.alreadyPaid,
+                      style:
+                          const TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                     Text(
                       CurrencyFormatter.format(widget.debt.paidAmount),
@@ -166,9 +173,9 @@ class _AddDebtPaymentDialogState extends State<AddDebtPaymentDialog> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Remaining',
-                      style: TextStyle(
+                    Text(
+                      l10n.remainingAmount,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -205,22 +212,22 @@ class _AddDebtPaymentDialogState extends State<AddDebtPaymentDialog> {
                         RegExp(r'^\d+\.?\d{0,2}')),
                   ],
                   decoration: InputDecoration(
-                    labelText: 'Payment Amount *',
+                    labelText: l10n.paymentAmountField,
                     hintText: widget.debt.remainingAmount.toStringAsFixed(0),
                     prefixIcon: const Icon(Icons.attach_money),
-                    suffixText: 'DA',
+                    suffixText: l10n.currency,
                     border: const OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please enter payment amount';
+                      return l10n.valEnterPaymentAmount;
                     }
                     final amount = double.tryParse(value);
                     if (amount == null || amount <= 0) {
-                      return 'Please enter a valid amount';
+                      return l10n.valValidPaymentAmount;
                     }
                     if (amount > widget.debt.remainingAmount) {
-                      return 'Payment cannot exceed remaining debt';
+                      return l10n.valPaymentExceedsDebt;
                     }
                     return null;
                   },
@@ -230,9 +237,9 @@ class _AddDebtPaymentDialogState extends State<AddDebtPaymentDialog> {
                 const SizedBox(height: 16),
 
                 // Payment Method
-                const Text(
-                  'Payment Method',
-                  style: TextStyle(
+                Text(
+                  l10n.paymentMethod,
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -244,7 +251,7 @@ class _AddDebtPaymentDialogState extends State<AddDebtPaymentDialog> {
                     Expanded(
                       child: _buildPaymentMethodOption(
                         'cash',
-                        'Cash',
+                        l10n.cash,
                         Icons.money,
                       ),
                     ),
@@ -252,7 +259,7 @@ class _AddDebtPaymentDialogState extends State<AddDebtPaymentDialog> {
                     Expanded(
                       child: _buildPaymentMethodOption(
                         'card',
-                        'Card',
+                        l10n.card,
                         Icons.credit_card,
                       ),
                     ),
@@ -278,7 +285,7 @@ class _AddDebtPaymentDialogState extends State<AddDebtPaymentDialog> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text('Payment Amount'),
+                            Text(l10n.paymentAmount),
                             Text(
                               CurrencyFormatter.format(
                                 double.tryParse(_amountController.text) ?? 0,
@@ -294,9 +301,10 @@ class _AddDebtPaymentDialogState extends State<AddDebtPaymentDialog> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'New Remaining Debt',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                            Text(
+                              l10n.newRemainingDebt,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             Text(
                               CurrencyFormatter.format(
@@ -333,7 +341,7 @@ class _AddDebtPaymentDialogState extends State<AddDebtPaymentDialog> {
             children: [
               TextButton(
                 onPressed: _isProcessing ? null : () => Navigator.pop(context),
-                child: const Text('Cancel'),
+                child: Text(l10n.cancel),
               ),
               const SizedBox(width: 12),
               ElevatedButton(
@@ -351,7 +359,7 @@ class _AddDebtPaymentDialogState extends State<AddDebtPaymentDialog> {
                               AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       )
-                    : const Text('Add Payment'),
+                    : Text(l10n.addPaymentTitle),
               ),
             ],
           ),
@@ -420,30 +428,32 @@ class _AddDebtPaymentDialogState extends State<AddDebtPaymentDialog> {
 
       final debtProvider = Provider.of<DebtProvider>(context, listen: false);
 
-      print('💳 Adding payment: ${payment.toMap()}'); // Debug log
+      debugPrint('Adding payment: ${payment.toMap()}');
 
       final success = await debtProvider.addPayment(payment);
 
       setState(() => _isProcessing = false);
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         if (success) {
           final newRemaining = widget.debt.remainingAmount - paymentAmount;
 
-          print('✅ Payment successful! New remaining: $newRemaining');
+          debugPrint('Payment successful. New remaining: $newRemaining');
 
           Helpers.showSnackBar(
             context,
-            'Payment recorded! Remaining: ${CurrencyFormatter.format(newRemaining)}',
+            l10n.paymentRecordedRemainingFormatted(
+                CurrencyFormatter.format(newRemaining)),
           );
 
           Navigator.pop(context, true);
         } else {
-          print('❌ Payment failed: ${debtProvider.errorMessage}');
+          debugPrint('Payment failed: ${debtProvider.errorMessage}');
 
           Helpers.showSnackBar(
             context,
-            debtProvider.errorMessage ?? 'Failed to add payment',
+            l10n.failedAddPayment,
             isError: true,
           );
         }
@@ -451,12 +461,13 @@ class _AddDebtPaymentDialogState extends State<AddDebtPaymentDialog> {
     } catch (e) {
       setState(() => _isProcessing = false);
 
-      print('❌ Exception adding payment: $e');
+      debugPrint('Exception adding payment: $e');
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         Helpers.showSnackBar(
           context,
-          'Error: $e',
+          l10n.operationFailed,
           isError: true,
         );
       }

@@ -2,12 +2,14 @@
 
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 
 class BestSellingProducts extends StatelessWidget {
   const BestSellingProducts({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     // Sample data - you'll replace with actual data from provider
     final products = [
       {
@@ -63,16 +65,16 @@ class BestSellingProducts extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Best Selling Products',
-                    style: TextStyle(
+                  Text(
+                    l10n.bestSellingProducts,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    "This month's top sellers",
+                    l10n.topSellersThisMonth,
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.grey[600],

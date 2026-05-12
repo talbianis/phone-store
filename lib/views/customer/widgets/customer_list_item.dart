@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../data/models/customer_model.dart';
 
@@ -21,6 +22,7 @@ class CustomerListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       color: Colors.white,
       child: Material(
@@ -78,9 +80,9 @@ class CustomerListItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     if (customer.totalDebt > 0) ...[
-                      const Text(
-                        'Debt',
-                        style: TextStyle(
+                      Text(
+                        l10n.debtShort,
+                        style: const TextStyle(
                           fontSize: 12,
                           color: Colors.grey,
                         ),
@@ -104,9 +106,9 @@ class CustomerListItem extends StatelessWidget {
                           color: AppColors.success.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: const Text(
-                          'No Debt',
-                          style: TextStyle(
+                        child: Text(
+                          l10n.noDebtLabel,
+                          style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                             color: AppColors.success,
@@ -125,12 +127,12 @@ class CustomerListItem extends StatelessWidget {
                     IconButton(
                       icon: const Icon(Icons.edit_outlined),
                       onPressed: onEdit,
-                      tooltip: 'Edit',
+                      tooltip: l10n.edit,
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete_outline, color: Colors.red),
                       onPressed: onDelete,
-                      tooltip: 'Delete',
+                      tooltip: l10n.delete,
                     ),
                   ],
                 ),

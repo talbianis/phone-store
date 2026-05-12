@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../data/models/customer_model.dart';
@@ -34,6 +35,7 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -45,7 +47,6 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
             Row(
               children: [
                 Container(
@@ -61,10 +62,10 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Add New Customer',
-                    style: TextStyle(
+                    l10n.addCustomer,
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -79,47 +80,46 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
 
             const SizedBox(height: 24),
 
-            // Form
             Form(
               key: _formKey,
               child: Column(
                 children: [
-                  // Customer Name
                   TextFormField(
                     controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Customer Name *',
-                      hintText: 'e.g., Ahmed Benali',
-                      prefixIcon: Icon(Icons.person),
+                    decoration: InputDecoration(
+                      labelText: '${l10n.customerName} *',
+                      hintText: l10n.hintFullNameExample,
+                      prefixIcon: const Icon(Icons.person),
                     ),
                     textCapitalization: TextCapitalization.words,
-                    validator: (value) =>
-                        Validators.required(value, fieldName: 'Customer name'),
+                    validator: (value) => Validators.required(
+                      value,
+                      l10n,
+                      fieldName: l10n.customerName,
+                    ),
                   ),
 
                   const SizedBox(height: 16),
 
-                  // Phone Number
                   TextFormField(
                     controller: _phoneController,
-                    decoration: const InputDecoration(
-                      labelText: 'Phone Number *',
-                      hintText: 'e.g., 0555123456',
-                      prefixIcon: Icon(Icons.phone),
+                    decoration: InputDecoration(
+                      labelText: '${l10n.phone} *',
+                      hintText: l10n.hintPhoneExample,
+                      prefixIcon: const Icon(Icons.phone),
                     ),
                     keyboardType: TextInputType.phone,
-                    validator: Validators.phone,
+                    validator: (v) => Validators.phone(v, l10n),
                   ),
 
                   const SizedBox(height: 16),
 
-                  // Address (Optional)
                   TextFormField(
                     controller: _addressController,
-                    decoration: const InputDecoration(
-                      labelText: 'Address (Optional)',
-                      hintText: 'Customer address',
-                      prefixIcon: Icon(Icons.location_on),
+                    decoration: InputDecoration(
+                      labelText: l10n.addressOptional,
+                      hintText: l10n.hintAddress,
+                      prefixIcon: const Icon(Icons.location_on),
                       alignLabelWithHint: true,
                     ),
                     maxLines: 2,
@@ -131,13 +131,12 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
 
             const SizedBox(height: 24),
 
-            // Actions
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
                   onPressed: _isLoading ? null : () => Navigator.pop(context),
-                  child: const Text('Cancel'),
+                  child: Text(l10n.cancel),
                 ),
                 const SizedBox(width: 12),
                 ElevatedButton(
@@ -152,7 +151,7 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                                 AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         )
-                      : const Text('Add Customer'),
+                      : Text(l10n.addCustomer),
                 ),
               ],
             ),
@@ -187,13 +186,17 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
     setState(() => _isLoading = false);
 
     if (mounted) {
+      final l10n = AppLocalizations.of(context);
       if (success) {
-        Helpers.showSnackBar(context, 'Customer added successfully');
+        Helpers.showSnackBar(context, l10n.customerAddSuccess);
         Navigator.pop(context);
       } else {
+        if (customerProvider.errorMessage != null) {
+          debugPrint(customerProvider.errorMessage);
+        }
         Helpers.showSnackBar(
           context,
-          customerProvider.errorMessage ?? 'Failed to add customer',
+          l10n.failedAddCustomer,
           isError: true,
         );
       }

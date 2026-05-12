@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../providers/cart_provider.dart';
 
@@ -35,8 +36,9 @@ class _DiscountDialogState extends State<DiscountDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AlertDialog(
-      title: const Text('Apply Discount'),
+      title: Text(l10n.applyDiscount),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,7 +48,7 @@ class _DiscountDialogState extends State<DiscountDialog> {
             children: [
               Expanded(
                 child: _buildTypeButton(
-                  label: 'Fixed Amount',
+                  label: l10n.fixedDiscount,
                   isSelected: !_isPercentage,
                   onTap: () => setState(() => _isPercentage = false),
                 ),
@@ -54,7 +56,7 @@ class _DiscountDialogState extends State<DiscountDialog> {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildTypeButton(
-                  label: 'Percentage',
+                  label: l10n.percentageDiscount,
                   isSelected: _isPercentage,
                   onTap: () => setState(() => _isPercentage = true),
                 ),
@@ -73,12 +75,16 @@ class _DiscountDialogState extends State<DiscountDialog> {
               FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
             ],
             decoration: InputDecoration(
-              labelText: _isPercentage ? 'Discount (%)' : 'Discount Amount',
-              hintText: _isPercentage ? 'e.g., 10' : 'e.g., 5000',
+              labelText: _isPercentage
+                  ? l10n.discountFieldPercent
+                  : l10n.discountFieldAmount,
+              hintText: _isPercentage
+                  ? l10n.hintDiscountPercentEx
+                  : l10n.hintDiscountAmountEx,
               prefixIcon: Icon(
                 _isPercentage ? Icons.percent : Icons.attach_money,
               ),
-              suffixText: _isPercentage ? '%' : 'DA',
+              suffixText: _isPercentage ? '%' : l10n.currency,
               border: const OutlineInputBorder(),
             ),
           ),
@@ -88,6 +94,7 @@ class _DiscountDialogState extends State<DiscountDialog> {
           // Preview
           Consumer<CartProvider>(
             builder: (context, cartProvider, child) {
+              final loc = AppLocalizations.of(context);
               final discount = _calculateDiscount(cartProvider.subtotal);
               return Container(
                 padding: const EdgeInsets.all(12),
@@ -100,9 +107,9 @@ class _DiscountDialogState extends State<DiscountDialog> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Subtotal:'),
+                        Text(loc.subtotalColon),
                         Text(
-                          '${cartProvider.subtotal.toStringAsFixed(2)} DA',
+                          '${cartProvider.subtotal.toStringAsFixed(2)} ${loc.currency}',
                           style: const TextStyle(fontWeight: FontWeight.w600),
                         ),
                       ],
@@ -111,9 +118,9 @@ class _DiscountDialogState extends State<DiscountDialog> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Discount:'),
+                        Text(loc.discountColon),
                         Text(
-                          '-${discount.toStringAsFixed(2)} DA',
+                          '-${discount.toStringAsFixed(2)} ${loc.currency}',
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             color: AppColors.error,
@@ -125,12 +132,12 @@ class _DiscountDialogState extends State<DiscountDialog> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Total:',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        Text(
+                          loc.totalColon,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          '${(cartProvider.subtotal - discount).toStringAsFixed(2)} DA',
+                          '${(cartProvider.subtotal - discount).toStringAsFixed(2)} ${loc.currency}',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: AppColors.primary,
@@ -153,15 +160,15 @@ class _DiscountDialogState extends State<DiscountDialog> {
             Provider.of<CartProvider>(context, listen: false).removeDiscount();
             Navigator.pop(context);
           },
-          child: const Text('Remove Discount'),
+          child: Text(l10n.removeDiscount),
         ),
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(l10n.cancel),
         ),
         ElevatedButton(
           onPressed: _applyDiscount,
-          child: const Text('Apply'),
+          child: Text(l10n.apply),
         ),
       ],
     );
@@ -205,12 +212,13 @@ class _DiscountDialogState extends State<DiscountDialog> {
 
   void _applyDiscount() {
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    final l10n = AppLocalizations.of(context);
     final discount = _calculateDiscount(cartProvider.subtotal);
 
     if (discount > cartProvider.subtotal) {
       Helpers.showSnackBar(
         context,
-        'Discount cannot exceed subtotal',
+        l10n.discountExceedsSubtotal,
         isError: true,
       );
       return;

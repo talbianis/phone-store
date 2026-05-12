@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../data/models/category_model.dart';
@@ -44,6 +45,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -71,10 +73,10 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Edit Category',
-                    style: TextStyle(
+                    l10n.editCategory,
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -97,14 +99,17 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                   // Category Name
                   TextFormField(
                     controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Category Name *',
-                      hintText: 'e.g., Smartphones',
-                      prefixIcon: Icon(Icons.label),
+                    decoration: InputDecoration(
+                      labelText: '${l10n.categoryName} *',
+                      hintText: l10n.hintCategoryName,
+                      prefixIcon: const Icon(Icons.label),
                     ),
                     textCapitalization: TextCapitalization.words,
-                    validator: (value) =>
-                        Validators.required(value, fieldName: 'Category name'),
+                    validator: (value) => Validators.required(
+                      value,
+                      l10n,
+                      fieldName: l10n.categoryName,
+                    ),
                   ),
 
                   const SizedBox(height: 16),
@@ -112,10 +117,10 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                   // Description (Optional)
                   TextFormField(
                     controller: _descriptionController,
-                    decoration: const InputDecoration(
-                      labelText: 'Description (Optional)',
-                      hintText: 'Brief description of the category',
-                      prefixIcon: Icon(Icons.description),
+                    decoration: InputDecoration(
+                      labelText: l10n.descriptionOptional,
+                      hintText: l10n.hintCategoryDesc,
+                      prefixIcon: const Icon(Icons.description),
                     ),
                     maxLines: 3,
                     textCapitalization: TextCapitalization.sentences,
@@ -132,7 +137,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
               children: [
                 TextButton(
                   onPressed: _isLoading ? null : () => Navigator.pop(context),
-                  child: const Text('Cancel'),
+                  child: Text(l10n.cancel),
                 ),
                 const SizedBox(width: 12),
                 ElevatedButton(
@@ -147,7 +152,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                                 AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         )
-                      : const Text('Update Category'),
+                      : Text(l10n.updateCategory),
                 ),
               ],
             ),
@@ -179,13 +184,17 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
     setState(() => _isLoading = false);
 
     if (mounted) {
+      final l10n = AppLocalizations.of(context);
       if (success) {
-        Helpers.showSnackBar(context, 'Category updated successfully');
+        Helpers.showSnackBar(context, l10n.categoryUpdateSuccess);
         Navigator.pop(context);
       } else {
+        if (categoryProvider.errorMessage != null) {
+          debugPrint(categoryProvider.errorMessage);
+        }
         Helpers.showSnackBar(
           context,
-          categoryProvider.errorMessage ?? 'Failed to update category',
+          l10n.failedUpdateCategory,
           isError: true,
         );
       }

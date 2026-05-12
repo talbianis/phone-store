@@ -1,6 +1,7 @@
 // lib/views/dashboard/widgets/sales_chart.dart
 
 import 'package:flutter/material.dart';
+import '../../../core/localization/app_localizations.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class SalesChart extends StatelessWidget {
@@ -13,6 +14,7 @@ class SalesChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -89,9 +91,9 @@ class SalesChart extends StatelessWidget {
           // Legend
           Row(
             children: [
-              _buildLegend('Revenue', Colors.blue),
+              _buildLegend(l10n.revenue, Colors.blue),
               const SizedBox(width: 24),
-              _buildLegend('Profit', Colors.green),
+              _buildLegend(l10n.profit, Colors.green),
             ],
           ),
 
@@ -101,7 +103,7 @@ class SalesChart extends StatelessWidget {
           SizedBox(
             height: 300,
             child: salesData.isEmpty
-                ? const Center(child: Text('No data available'))
+                ? Center(child: Text(l10n.noData))
                 : LineChart(
                     _buildChartData(),
                   ),

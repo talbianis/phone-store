@@ -1,10 +1,12 @@
 // lib/views/stock/widgets/add_stock_adjustment_dialog.dart
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phone_shop/providers/stock_provider.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../data/models/product_model.dart';
@@ -56,6 +58,7 @@ class _AddStockAdjustmentDialogState extends State<AddStockAdjustmentDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -84,10 +87,10 @@ class _AddStockAdjustmentDialogState extends State<AddStockAdjustmentDialog> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Adjust Stock',
-                      style: TextStyle(
+                      l10n.adjustStock,
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
@@ -124,9 +127,9 @@ class _AddStockAdjustmentDialogState extends State<AddStockAdjustmentDialog> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Current Stock:'),
+                        Text(l10n.currentStockColon),
                         Text(
-                          '${widget.product.quantity} units',
+                          l10n.unitsCountLabel(widget.product.quantity),
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -139,7 +142,7 @@ class _AddStockAdjustmentDialogState extends State<AddStockAdjustmentDialog> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Stock Value:'),
+                        Text(l10n.stockValueColon),
                         Text(
                           CurrencyFormatter.format(
                             widget.product.purchasePrice *
@@ -165,9 +168,9 @@ class _AddStockAdjustmentDialogState extends State<AddStockAdjustmentDialog> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Adjustment Type
-                    const Text(
-                      'Adjustment Type',
-                      style: TextStyle(
+                    Text(
+                      l10n.adjustmentType,
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
@@ -179,7 +182,7 @@ class _AddStockAdjustmentDialogState extends State<AddStockAdjustmentDialog> {
                         Expanded(
                           child: _buildAdjustmentTypeOption(
                             'add',
-                            'Add Stock',
+                            l10n.addStock,
                             Icons.add_circle,
                             AppColors.success,
                           ),
@@ -188,7 +191,7 @@ class _AddStockAdjustmentDialogState extends State<AddStockAdjustmentDialog> {
                         Expanded(
                           child: _buildAdjustmentTypeOption(
                             'remove',
-                            'Remove Stock',
+                            l10n.removeStock,
                             Icons.remove_circle,
                             AppColors.error,
                           ),
@@ -207,23 +210,23 @@ class _AddStockAdjustmentDialogState extends State<AddStockAdjustmentDialog> {
                         FilteringTextInputFormatter.digitsOnly,
                       ],
                       decoration: InputDecoration(
-                        labelText: 'Quantity *',
-                        hintText: 'Enter quantity',
+                        labelText: l10n.quantityLabel,
+                        hintText: l10n.enterQuantity,
                         prefixIcon: const Icon(Icons.format_list_numbered),
-                        suffixText: 'units',
+                        suffixText: l10n.unitsSuffix,
                         border: const OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Please enter quantity';
+                          return l10n.valPleaseEnterQuantity;
                         }
                         final qty = int.tryParse(value);
                         if (qty == null || qty <= 0) {
-                          return 'Please enter a valid quantity';
+                          return l10n.valPleaseValidQuantity;
                         }
                         if (_adjustmentType == 'remove' &&
                             qty > widget.product.quantity) {
-                          return 'Cannot remove more than current stock';
+                          return l10n.valCannotRemoveMoreStock;
                         }
                         return null;
                       },
@@ -235,10 +238,10 @@ class _AddStockAdjustmentDialogState extends State<AddStockAdjustmentDialog> {
                     // Reason Dropdown
                     DropdownButtonFormField<String>(
                       value: _reason,
-                      decoration: const InputDecoration(
-                        labelText: 'Reason *',
-                        prefixIcon: Icon(Icons.info_outline),
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.reasonLabel,
+                        prefixIcon: const Icon(Icons.info_outline),
+                        border: const OutlineInputBorder(),
                       ),
                       items: (_adjustmentType == 'add'
                               ? _addReasons
@@ -246,7 +249,7 @@ class _AddStockAdjustmentDialogState extends State<AddStockAdjustmentDialog> {
                           .map((reason) {
                         return DropdownMenuItem(
                           value: reason,
-                          child: Text(reason),
+                          child: Text(l10n.adjustmentReasonLabel(reason)),
                         );
                       }).toList(),
                       onChanged: (value) {
@@ -261,16 +264,16 @@ class _AddStockAdjustmentDialogState extends State<AddStockAdjustmentDialog> {
                       TextFormField(
                         controller: _reasonController,
                         maxLines: 2,
-                        decoration: const InputDecoration(
-                          labelText: 'Additional Notes',
-                          hintText: 'Specify the reason',
-                          prefixIcon: Icon(Icons.notes),
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: l10n.additionalNotes,
+                          hintText: l10n.specifyReason,
+                          prefixIcon: const Icon(Icons.notes),
+                          border: const OutlineInputBorder(),
                         ),
                         validator: (value) {
                           if (_reason == 'Other' &&
                               (value == null || value.trim().isEmpty)) {
-                            return 'Please specify the reason';
+                            return l10n.valPleaseSpecifyReason;
                           }
                           return null;
                         },
@@ -298,15 +301,15 @@ class _AddStockAdjustmentDialogState extends State<AddStockAdjustmentDialog> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'New Stock Level:',
-                              style: TextStyle(
+                            Text(
+                              l10n.newStockLevel,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             Text(
-                              '${_calculateNewStock()} units',
+                              l10n.unitsCountLabel(_calculateNewStock()),
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -331,7 +334,7 @@ class _AddStockAdjustmentDialogState extends State<AddStockAdjustmentDialog> {
                   TextButton(
                     onPressed:
                         _isProcessing ? null : () => Navigator.pop(context),
-                    child: const Text('Cancel'),
+                    child: Text(l10n.cancel),
                   ),
                   const SizedBox(width: 12),
                   ElevatedButton(
@@ -444,16 +447,18 @@ class _AddStockAdjustmentDialogState extends State<AddStockAdjustmentDialog> {
     setState(() => _isProcessing = false);
 
     if (mounted) {
+      final l10n = AppLocalizations.of(context);
       if (success) {
         Helpers.showSnackBar(
           context,
-          'Stock adjusted successfully! New stock: ${_calculateNewStock()} units',
+          l10n.stockAdjustedNewUnitsCount(_calculateNewStock()),
         );
         Navigator.pop(context, true);
       } else {
+        debugPrint('addAdjustment error: ${stockProvider.errorMessage}');
         Helpers.showSnackBar(
           context,
-          stockProvider.errorMessage ?? 'Failed to adjust stock',
+          l10n.operationFailed,
           isError: true,
         );
       }

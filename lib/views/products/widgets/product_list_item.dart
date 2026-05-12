@@ -7,6 +7,7 @@ import 'package:phone_shop/views/products/edit_product_screen.dart';
 import 'package:phone_shop/views/products/product_details_screen.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../data/models/product_model.dart';
@@ -23,6 +24,7 @@ class ProductListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       color: Colors.white,
       child: Material(
@@ -84,7 +86,7 @@ class ProductListItem extends StatelessWidget {
                             product.categoryId,
                           );
                           return Text(
-                            '${product.brand ?? 'No Brand'} • ${category?.name ?? 'Unknown'}',
+                            '${product.brand ?? l10n.noBrand} • ${category?.name ?? l10n.unknownCategory}',
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.grey[600],
@@ -95,7 +97,7 @@ class ProductListItem extends StatelessWidget {
                       if (product.barcode != null) ...[
                         const SizedBox(height: 4),
                         Text(
-                          'Barcode: ${product.barcode}',
+                          '${l10n.barcodePrefix} ${product.barcode}',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[500],
@@ -122,7 +124,7 @@ class ProductListItem extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Profit: ${CurrencyFormatter.format(product.profitPerUnit)}',
+                      '${l10n.profitLabelShort} ${CurrencyFormatter.format(product.profitPerUnit)}',
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[600],
@@ -136,7 +138,7 @@ class ProductListItem extends StatelessWidget {
                 // Stock Badge
                 SizedBox(
                   width: 120,
-                  child: _buildStockBadge(),
+                  child: _buildStockBadge(l10n),
                 ),
 
                 const SizedBox(width: 16),
@@ -154,12 +156,12 @@ class ProductListItem extends StatelessWidget {
                           ),
                         );
                       },
-                      tooltip: 'Edit',
+                      tooltip: l10n.edit,
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete_outline, color: Colors.red),
                       onPressed: () => _handleDelete(context),
-                      tooltip: 'Delete',
+                      tooltip: l10n.delete,
                     ),
                   ],
                 ),
@@ -181,22 +183,22 @@ class ProductListItem extends StatelessWidget {
     );
   }
 
-  Widget _buildStockBadge() {
+  Widget _buildStockBadge(AppLocalizations l10n) {
     Color badgeColor;
     String badgeText;
     IconData badgeIcon;
 
     if (product.isOutOfStock) {
       badgeColor = AppColors.error;
-      badgeText = 'Out of Stock';
+      badgeText = l10n.outOfStock;
       badgeIcon = Icons.error_outline;
     } else if (product.isLowStock) {
       badgeColor = AppColors.warning;
-      badgeText = 'Low: ${product.quantity}';
+      badgeText = '${l10n.lowQtyShort} ${product.quantity}';
       badgeIcon = Icons.warning_amber;
     } else {
       badgeColor = AppColors.success;
-      badgeText = 'Stock: ${product.quantity}';
+      badgeText = '${l10n.stockQtyShort} ${product.quantity}';
       badgeIcon = Icons.check_circle_outline;
     }
 
@@ -226,12 +228,13 @@ class ProductListItem extends StatelessWidget {
   }
 
   Future<void> _handleDelete(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
     final confirm = await Helpers.showConfirmDialog(
       context,
-      title: 'Delete Product',
-      message: 'Are you sure you want to delete "${product.name}"?',
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      title: l10n.deleteProduct,
+      message: l10n.deleteProductNamed(product.name),
+      confirmText: l10n.delete,
+      cancelText: l10n.cancel,
     );
 
     if (confirm && context.mounted) {
@@ -243,12 +246,16 @@ class ProductListItem extends StatelessWidget {
       final success = await productProvider.deleteProduct(product.id!);
 
       if (context.mounted) {
+        final loc = AppLocalizations.of(context);
         if (success) {
-          Helpers.showSnackBar(context, 'Product deleted successfully');
+          Helpers.showSnackBar(context, loc.productDeleteSuccess);
         } else {
+          if (productProvider.errorMessage != null) {
+            debugPrint(productProvider.errorMessage);
+          }
           Helpers.showSnackBar(
             context,
-            productProvider.errorMessage ?? 'Failed to delete product',
+            loc.failedDeleteProduct,
             isError: true,
           );
         }

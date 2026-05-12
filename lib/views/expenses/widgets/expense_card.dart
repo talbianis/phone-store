@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:phone_shop/core/utils/date_formater.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/currency_formatter.dart';
 
 import '../../../data/models/expense_model.dart';
@@ -21,6 +22,7 @@ class ExpenseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -131,7 +133,7 @@ class ExpenseCard extends StatelessWidget {
                       onPressed: onEdit,
                       icon: const Icon(Icons.edit, size: 20),
                       color: AppColors.primary,
-                      tooltip: 'Edit',
+                      tooltip: l10n.edit,
                       constraints: const BoxConstraints(
                         minWidth: 36,
                         minHeight: 36,
@@ -144,7 +146,7 @@ class ExpenseCard extends StatelessWidget {
                       onPressed: onDelete,
                       icon: const Icon(Icons.delete, size: 20),
                       color: AppColors.error,
-                      tooltip: 'Delete',
+                      tooltip: l10n.delete,
                       constraints: const BoxConstraints(
                         minWidth: 36,
                         minHeight: 36,

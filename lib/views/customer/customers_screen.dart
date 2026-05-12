@@ -1,8 +1,10 @@
 // lib/views/customers/customers_screen.dart
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/constants/app_routes.dart';
 import '../../core/utils/helpers.dart';
 import '../../providers/customer_provider.dart';
@@ -77,6 +79,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
   }
 
   Widget _buildHeader() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(24),
       color: Colors.white,
@@ -86,9 +89,9 @@ class _CustomersScreenState extends State<CustomersScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Customers',
-                  style: TextStyle(
+                Text(
+                  l10n.customers,
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
@@ -97,7 +100,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                 Consumer<CustomerProvider>(
                   builder: (context, provider, child) {
                     return Text(
-                      '${provider.customers.length} customers registered',
+                      l10n.customersRegistered(provider.customers.length),
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -116,9 +119,9 @@ class _CustomersScreenState extends State<CustomersScreen> {
               Icons.add,
               color: AppColors.white,
             ),
-            label: const Text(
-              'Add Customer',
-              style: TextStyle(color: AppColors.white),
+            label: Text(
+              l10n.addCustomer,
+              style: const TextStyle(color: AppColors.white),
             ),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(
@@ -134,6 +137,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
   }
 
   Widget _buildFilters() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       color: Colors.white,
@@ -145,7 +149,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search by name, phone, or email...',
+                hintText: l10n.searchCustomerHint,
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
@@ -175,24 +179,24 @@ class _CustomersScreenState extends State<CustomersScreen> {
             child: DropdownButtonFormField<String>(
               value: _filterStatus,
               decoration: InputDecoration(
-                labelText: 'Filter',
+                labelText: l10n.filter,
                 prefixIcon: const Icon(Icons.filter_list),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              items: const [
+              items: [
                 DropdownMenuItem(
                   value: 'all',
-                  child: Text('All Customers'),
+                  child: Text(l10n.allCustomers),
                 ),
                 DropdownMenuItem(
                   value: 'has_debt',
-                  child: Text('With Debt'),
+                  child: Text(l10n.withDebt),
                 ),
                 DropdownMenuItem(
                   value: 'no_debt',
-                  child: Text('No Debt'),
+                  child: Text(l10n.noDebtLabel),
                 ),
               ],
               onChanged: (value) {
@@ -218,7 +222,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                     color: _isGridView ? AppColors.primary : Colors.grey,
                   ),
                   onPressed: () => setState(() => _isGridView = true),
-                  tooltip: 'Grid View',
+                  tooltip: l10n.gridView,
                 ),
                 Container(
                   width: 1,
@@ -231,7 +235,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                     color: !_isGridView ? AppColors.primary : Colors.grey,
                   ),
                   onPressed: () => setState(() => _isGridView = false),
-                  tooltip: 'List View',
+                  tooltip: l10n.listView,
                 ),
               ],
             ),
@@ -242,6 +246,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -253,7 +258,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No customers yet',
+            l10n.noCustomersYetTitle,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -262,7 +267,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Add your first customer to get started',
+            l10n.addFirstCustomerHint,
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[500],
@@ -272,7 +277,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
           ElevatedButton.icon(
             onPressed: () => _showAddCustomerDialog(),
             icon: const Icon(Icons.add),
-            label: const Text('Add Customer'),
+            label: Text(l10n.addCustomer),
           ),
         ],
       ),
@@ -355,12 +360,13 @@ class _CustomersScreenState extends State<CustomersScreen> {
   }
 
   Future<void> _deleteCustomer(int customerId) async {
+    final l10n = AppLocalizations.of(context);
     final confirm = await Helpers.showConfirmDialog(
       context,
-      title: 'Delete Customer',
-      message: 'Are you sure you want to delete this customer?',
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      title: l10n.deleteCustomer,
+      message: l10n.deleteCustomerMessage,
+      confirmText: l10n.delete,
+      cancelText: l10n.cancel,
     );
 
     if (confirm && context.mounted) {
@@ -372,12 +378,14 @@ class _CustomersScreenState extends State<CustomersScreen> {
       final success = await customerProvider.deleteCustomer(customerId);
 
       if (context.mounted) {
+        final loc = AppLocalizations.of(context);
         if (success) {
-          Helpers.showSnackBar(context, 'Customer deleted successfully');
+          Helpers.showSnackBar(context, loc.customerDeleteSuccess);
         } else {
+          debugPrint('deleteCustomer error: ${customerProvider.errorMessage}');
           Helpers.showSnackBar(
             context,
-            customerProvider.errorMessage ?? 'Failed to delete customer',
+            loc.failedDeleteCustomer,
             isError: true,
           );
         }

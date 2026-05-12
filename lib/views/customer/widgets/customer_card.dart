@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 
 import '../../../data/models/customer_model.dart';
 
@@ -21,6 +22,7 @@ class CustomerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -76,25 +78,26 @@ class CustomerCard extends StatelessWidget {
                               }
                             },
                             itemBuilder: (context) => [
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'edit',
                                 child: Row(
                                   children: [
-                                    Icon(Icons.edit, size: 20),
-                                    SizedBox(width: 12),
-                                    Text('Edit'),
+                                    const Icon(Icons.edit, size: 20),
+                                    const SizedBox(width: 12),
+                                    Text(l10n.edit),
                                   ],
                                 ),
                               ),
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'delete',
                                 child: Row(
                                   children: [
-                                    Icon(Icons.delete,
+                                    const Icon(Icons.delete,
                                         size: 20, color: Colors.red),
-                                    SizedBox(width: 12),
-                                    Text('Delete',
-                                        style: TextStyle(color: Colors.red)),
+                                    const SizedBox(width: 12),
+                                    Text(l10n.delete,
+                                        style: const TextStyle(
+                                            color: Colors.red)),
                                   ],
                                 ),
                               ),

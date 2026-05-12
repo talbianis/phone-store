@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:phone_shop/providers/stock_provider.dart';
+import 'package:phone_shop/core/localization/app_localizations.dart';
 import 'package:phone_shop/views/stock/widgets/add_stock_adjustment_dialog.dart';
 import 'package:phone_shop/views/stock/widgets/stock_history_dialog.dart';
 import 'package:phone_shop/views/stock/widgets/stock_item_card.dart';
@@ -78,6 +79,7 @@ class _StockScreenState extends State<StockScreen> {
   }
 
   Widget _buildHeader() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(24),
       color: Colors.white,
@@ -87,9 +89,9 @@ class _StockScreenState extends State<StockScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Stock Management',
-                  style: TextStyle(
+                Text(
+                  l10n.stock,
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
@@ -98,7 +100,7 @@ class _StockScreenState extends State<StockScreen> {
                 Consumer<ProductProvider>(
                   builder: (context, provider, child) {
                     return Text(
-                      '${provider.products.length} products in inventory',
+                      l10n.productsCountInventory(provider.products.length),
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -112,8 +114,8 @@ class _StockScreenState extends State<StockScreen> {
           ElevatedButton.icon(
             onPressed: _showStockHistory,
             icon: const Icon(Icons.history, size: 20, color: AppColors.white),
-            label: const Text('View History',
-                style: TextStyle(color: AppColors.white)),
+            label: Text(l10n.viewHistory,
+                style: const TextStyle(color: AppColors.white)),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.sidebarBackground,
               padding: const EdgeInsets.symmetric(
@@ -128,6 +130,7 @@ class _StockScreenState extends State<StockScreen> {
   }
 
   Widget _buildFilters() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       color: Colors.white,
@@ -139,7 +142,7 @@ class _StockScreenState extends State<StockScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search products by name or barcode...',
+                hintText: l10n.stockSearchHint,
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
@@ -169,18 +172,18 @@ class _StockScreenState extends State<StockScreen> {
             child: DropdownButtonFormField<String>(
               value: _selectedFilter,
               decoration: InputDecoration(
-                labelText: 'Stock Status',
+                labelText: l10n.stockStatus,
                 prefixIcon: const Icon(Icons.filter_list),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              items: const [
-                DropdownMenuItem(value: 'all', child: Text('All Products')),
-                DropdownMenuItem(value: 'low_stock', child: Text('Low Stock')),
+              items: [
+                DropdownMenuItem(value: 'all', child: Text(l10n.allProducts)),
+                DropdownMenuItem(value: 'low_stock', child: Text(l10n.lowStock)),
                 DropdownMenuItem(
-                    value: 'out_of_stock', child: Text('Out of Stock')),
-                DropdownMenuItem(value: 'normal', child: Text('Normal Stock')),
+                    value: 'out_of_stock', child: Text(l10n.outOfStock)),
+                DropdownMenuItem(value: 'normal', child: Text(l10n.normalStock)),
               ],
               onChanged: (value) {
                 setState(() => _selectedFilter = value!);
@@ -196,6 +199,7 @@ class _StockScreenState extends State<StockScreen> {
   Widget _buildStatsSummary() {
     return Consumer<ProductProvider>(
       builder: (context, productProvider, child) {
+        final l10n = AppLocalizations.of(context);
         final totalProducts = productProvider.products.length;
 
         final lowStock = productProvider.products
@@ -217,7 +221,7 @@ class _StockScreenState extends State<StockScreen> {
             children: [
               Expanded(
                 child: _buildStatCard(
-                  'Total Products',
+                  l10n.totalProducts,
                   '$totalProducts',
                   Icons.inventory,
                   AppColors.primary,
@@ -226,7 +230,7 @@ class _StockScreenState extends State<StockScreen> {
               const SizedBox(width: 16),
               Expanded(
                 child: _buildStatCard(
-                  'Low Stock',
+                  l10n.lowStock,
                   '$lowStock',
                   Icons.warning_amber,
                   Colors.orange,
@@ -235,7 +239,7 @@ class _StockScreenState extends State<StockScreen> {
               const SizedBox(width: 16),
               Expanded(
                 child: _buildStatCard(
-                  'Out of Stock',
+                  l10n.outOfStock,
                   '$outOfStock',
                   Icons.remove_circle,
                   AppColors.error,
@@ -244,7 +248,7 @@ class _StockScreenState extends State<StockScreen> {
               const SizedBox(width: 16),
               Expanded(
                 child: _buildStatCard(
-                  'Stock Value',
+                  l10n.stockValue,
                   CurrencyFormatter.format(totalValue),
                   Icons.attach_money,
                   AppColors.success,
@@ -307,6 +311,7 @@ class _StockScreenState extends State<StockScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -318,7 +323,7 @@ class _StockScreenState extends State<StockScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No products found',
+            l10n.noProducts,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -327,7 +332,7 @@ class _StockScreenState extends State<StockScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Add products to start managing inventory',
+            l10n.stockEmptySubtitle,
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[500],

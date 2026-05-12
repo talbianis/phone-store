@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../data/models/category_model.dart';
@@ -30,6 +31,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -57,10 +59,10 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Add New Category',
-                    style: TextStyle(
+                    l10n.addCategory,
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -83,14 +85,17 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                   // Category Name
                   TextFormField(
                     controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Category Name *',
-                      hintText: 'e.g., Smartphones',
-                      prefixIcon: Icon(Icons.label),
+                    decoration: InputDecoration(
+                      labelText: '${l10n.categoryName} *',
+                      hintText: l10n.hintCategoryName,
+                      prefixIcon: const Icon(Icons.label),
                     ),
                     textCapitalization: TextCapitalization.words,
-                    validator: (value) =>
-                        Validators.required(value, fieldName: 'Category name'),
+                    validator: (value) => Validators.required(
+                      value,
+                      l10n,
+                      fieldName: l10n.categoryName,
+                    ),
                   ),
 
                   const SizedBox(height: 16),
@@ -98,10 +103,10 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                   // Description (Optional)
                   TextFormField(
                     controller: _descriptionController,
-                    decoration: const InputDecoration(
-                      labelText: 'Description (Optional)',
-                      hintText: 'Brief description of the category',
-                      prefixIcon: Icon(Icons.description),
+                    decoration: InputDecoration(
+                      labelText: l10n.descriptionOptional,
+                      hintText: l10n.hintCategoryDesc,
+                      prefixIcon: const Icon(Icons.description),
                     ),
                     maxLines: 3,
                     textCapitalization: TextCapitalization.sentences,
@@ -118,7 +123,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
               children: [
                 TextButton(
                   onPressed: _isLoading ? null : () => Navigator.pop(context),
-                  child: const Text('Cancel'),
+                  child: Text(l10n.cancel),
                 ),
                 const SizedBox(width: 12),
                 ElevatedButton(
@@ -143,9 +148,9 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                                 AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         )
-                      : const Text(
-                          'Add Category',
-                          style: TextStyle(color: AppColors.white),
+                      : Text(
+                          l10n.addCategory,
+                          style: const TextStyle(color: AppColors.white),
                         ),
                 ),
               ],
@@ -179,13 +184,17 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
     setState(() => _isLoading = false);
 
     if (mounted) {
+      final l10n = AppLocalizations.of(context);
       if (success) {
-        Helpers.showSnackBar(context, 'Category added successfully');
+        Helpers.showSnackBar(context, l10n.categoryAddSuccess);
         Navigator.pop(context);
       } else {
+        if (categoryProvider.errorMessage != null) {
+          debugPrint(categoryProvider.errorMessage);
+        }
         Helpers.showSnackBar(
           context,
-          categoryProvider.errorMessage ?? 'Failed to add category',
+          l10n.failedAddCategory,
           isError: true,
         );
       }

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../data/models/product_model.dart';
 import '../../../providers/product_provider.dart';
 
@@ -70,6 +71,7 @@ class _ProductSearchBarState extends State<ProductSearchBar> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
         // Search Input
@@ -77,7 +79,7 @@ class _ProductSearchBarState extends State<ProductSearchBar> {
           controller: _searchController,
           focusNode: _focusNode,
           decoration: InputDecoration(
-            hintText: 'Search by name, brand, or scan barcode...',
+            hintText: l10n.searchPosHint,
             prefixIcon: const Icon(Icons.search),
             suffixIcon: _searchController.text.isNotEmpty
                 ? IconButton(
@@ -147,11 +149,11 @@ class _ProductSearchBarState extends State<ProductSearchBar> {
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                   subtitle: Text(
-                    '${product.brand ?? 'No brand'} • Stock: ${product.quantity}',
+                    '${product.brand ?? l10n.noBrand} • ${l10n.stockQtyShort} ${product.quantity}',
                     style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                   trailing: Text(
-                    '${product.sellingPrice.toStringAsFixed(0)} DA',
+                    '${product.sellingPrice.toStringAsFixed(0)} ${l10n.currency}',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: AppColors.primary,

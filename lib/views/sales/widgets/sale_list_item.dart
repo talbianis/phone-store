@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:phone_shop/core/utils/date_formater.dart';
 import 'package:phone_shop/data/models/sales_model.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/currency_formatter.dart';
 
 class SaleListItem extends StatelessWidget {
@@ -18,6 +19,7 @@ class SaleListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -83,7 +85,7 @@ class SaleListItem extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            sale.customerName ?? 'Walk-in Customer',
+                            sale.customerName ?? l10n.walkInCustomer,
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.grey[700],
@@ -134,7 +136,7 @@ class SaleListItem extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        _getPaymentMethodLabel(),
+                        _getPaymentMethodLabel(l10n),
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -230,16 +232,16 @@ class SaleListItem extends StatelessWidget {
     }
   }
 
-  String _getPaymentMethodLabel() {
+  String _getPaymentMethodLabel(AppLocalizations l10n) {
     switch (sale.paymentMethod.toLowerCase()) {
       case 'cash':
-        return 'Cash';
+        return l10n.cash;
       case 'card':
-        return 'Card';
+        return l10n.card;
       case 'debt':
-        return 'Credit';
+        return l10n.debt;
       case 'mixed':
-        return 'Mixed';
+        return l10n.mixed;
       default:
         return sale.paymentMethod;
     }

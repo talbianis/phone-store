@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:phone_shop/core/utils/date_formater.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 
 import '../../../data/models/stock_adjustment_model.dart';
 import '../../../providers/stock_provider.dart';
@@ -13,6 +14,7 @@ class StockHistoryDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -40,10 +42,10 @@ class StockHistoryDialog extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 16),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Stock Adjustment History',
-                    style: TextStyle(
+                    l10n.stockAdjustmentHistory,
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -67,7 +69,7 @@ class StockHistoryDialog extends StatelessWidget {
                   }
 
                   if (stockProvider.adjustments.isEmpty) {
-                    return _buildEmptyState();
+                    return _buildEmptyState(context);
                   }
 
                   return ListView.separated(
@@ -76,7 +78,7 @@ class StockHistoryDialog extends StatelessWidget {
                         const Divider(height: 1),
                     itemBuilder: (context, index) {
                       final adjustment = stockProvider.adjustments[index];
-                      return _buildHistoryItem(adjustment);
+                      return _buildHistoryItem(context, adjustment);
                     },
                   );
                 },
@@ -88,7 +90,8 @@ class StockHistoryDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -100,7 +103,7 @@ class StockHistoryDialog extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'No adjustment history',
+            l10n.noStockHistory,
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey[600],
@@ -111,7 +114,8 @@ class StockHistoryDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildHistoryItem(StockAdjustmentModel adjustment) {
+  Widget _buildHistoryItem(BuildContext context, StockAdjustmentModel adjustment) {
+    final l10n = AppLocalizations.of(context);
     final isAddition = adjustment.adjustmentType == 'add';
 
     return Padding(
@@ -142,7 +146,8 @@ class StockHistoryDialog extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  adjustment.productName ?? 'Product #${adjustment.productId}',
+                  adjustment.productName ??
+                      l10n.productHashId(adjustment.productId),
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -150,7 +155,7 @@ class StockHistoryDialog extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  adjustment.reason,
+                  l10n.adjustmentReasonLabel(adjustment.reason),
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.grey[600],
@@ -184,7 +189,7 @@ class StockHistoryDialog extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-                'units',
+                l10n.unitsSuffix,
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey[600],

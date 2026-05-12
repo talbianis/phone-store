@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:phone_shop/core/utils/date_formater.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 
 class DateFilterDialog extends StatefulWidget {
   final DateTime? startDate;
@@ -31,6 +32,7 @@ class _DateFilterDialogState extends State<DateFilterDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -58,10 +60,10 @@ class _DateFilterDialogState extends State<DateFilterDialog> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Select Date Range',
-                    style: TextStyle(
+                    l10n.selectDateRange,
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -78,7 +80,7 @@ class _DateFilterDialogState extends State<DateFilterDialog> {
 
             // Start Date
             _buildDateSelector(
-              'Start Date',
+              l10n.startDate,
               _startDate,
               (date) => setState(() => _startDate = date),
             ),
@@ -87,7 +89,7 @@ class _DateFilterDialogState extends State<DateFilterDialog> {
 
             // End Date
             _buildDateSelector(
-              'End Date',
+              l10n.endDate,
               _endDate,
               (date) => setState(() => _endDate = date),
             ),
@@ -100,12 +102,12 @@ class _DateFilterDialogState extends State<DateFilterDialog> {
               children: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
+                  child: Text(l10n.cancel),
                 ),
                 const SizedBox(width: 12),
                 ElevatedButton(
                   onPressed: _handleApply,
-                  child: const Text('Apply Filter'),
+                  child: Text(l10n.applyFilter),
                 ),
               ],
             ),
@@ -176,10 +178,11 @@ class _DateFilterDialogState extends State<DateFilterDialog> {
   }
 
   void _handleApply() {
+    final l10n = AppLocalizations.of(context);
     if (_startDate.isAfter(_endDate)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Start date must be before end date'),
+        SnackBar(
+          content: Text(l10n.dateRangeInvalid),
           backgroundColor: AppColors.error,
         ),
       );

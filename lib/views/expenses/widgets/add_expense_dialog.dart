@@ -1,9 +1,11 @@
 // lib/views/expenses/widgets/add_expense_dialog.dart
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../data/models/expense_model.dart';
 import '../../../providers/expense_provider.dart';
@@ -44,6 +46,7 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -72,10 +75,10 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Add Expense',
-                      style: TextStyle(
+                      l10n.addExpense,
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
@@ -99,15 +102,15 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
                     // Category Dropdown
                     DropdownButtonFormField<String>(
                       value: _selectedCategory,
-                      decoration: const InputDecoration(
-                        labelText: 'Category *',
-                        prefixIcon: Icon(Icons.category),
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.categoryRequired,
+                        prefixIcon: const Icon(Icons.category),
+                        border: const OutlineInputBorder(),
                       ),
                       items: _categories.map((category) {
                         return DropdownMenuItem(
                           value: category,
-                          child: Text(category),
+                          child: Text(l10n.expenseCategoryLabel(category)),
                         );
                       }).toList(),
                       onChanged: (value) {
@@ -126,20 +129,20 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
                           RegExp(r'^\d+\.?\d{0,2}'),
                         ),
                       ],
-                      decoration: const InputDecoration(
-                        labelText: 'Amount *',
-                        hintText: 'e.g., 50000',
-                        prefixIcon: Icon(Icons.attach_money),
-                        suffixText: 'DA',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: '${l10n.amount} *',
+                        hintText: l10n.hintExpenseAmountEx,
+                        prefixIcon: const Icon(Icons.attach_money),
+                        suffixText: l10n.currency,
+                        border: const OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Please enter amount';
+                          return l10n.valEnterAmount;
                         }
                         final amount = double.tryParse(value);
                         if (amount == null || amount <= 0) {
-                          return 'Please enter a valid amount';
+                          return l10n.valValidAmount;
                         }
                         return null;
                       },
@@ -151,11 +154,11 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
                     TextFormField(
                       controller: _descriptionController,
                       maxLines: 3,
-                      decoration: const InputDecoration(
-                        labelText: 'Description (Optional)',
-                        hintText: 'Brief description of the expense',
-                        prefixIcon: Icon(Icons.description),
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.descriptionOptional,
+                        hintText: l10n.expenseDescriptionHint,
+                        prefixIcon: const Icon(Icons.description),
+                        border: const OutlineInputBorder(),
                       ),
                     ),
 
@@ -166,10 +169,10 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
                       onTap: _selectDate,
                       borderRadius: BorderRadius.circular(8),
                       child: InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Expense Date *',
-                          prefixIcon: Icon(Icons.calendar_today),
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: l10n.expenseDate,
+                          prefixIcon: const Icon(Icons.calendar_today),
+                          border: const OutlineInputBorder(),
                         ),
                         child: Text(
                           '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
@@ -190,7 +193,7 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
                   TextButton(
                     onPressed:
                         _isProcessing ? null : () => Navigator.pop(context),
-                    child: const Text('Cancel'),
+                    child: Text(l10n.cancel),
                   ),
                   const SizedBox(width: 12),
                   ElevatedButton(
@@ -205,7 +208,7 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
                                   AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
-                        : const Text('Add Expense'),
+                        : Text(l10n.addExpense),
                   ),
                 ],
               ),
@@ -251,13 +254,15 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
     setState(() => _isProcessing = false);
 
     if (mounted) {
+      final l10n = AppLocalizations.of(context);
       if (success) {
-        Helpers.showSnackBar(context, 'Expense added successfully');
+        Helpers.showSnackBar(context, l10n.expenseAddSuccess);
         Navigator.pop(context, true);
       } else {
+        debugPrint('addExpense error: ${expenseProvider.errorMessage}');
         Helpers.showSnackBar(
           context,
-          expenseProvider.errorMessage ?? 'Failed to add expense',
+          l10n.failedAddExpense,
           isError: true,
         );
       }

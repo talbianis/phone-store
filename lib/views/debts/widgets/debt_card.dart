@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:phone_shop/core/utils/date_formater.dart' show DateFormatter;
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/currency_formatter.dart';
 
 import '../../../data/models/debt_model.dart';
@@ -21,6 +22,7 @@ class DebtCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -68,7 +70,7 @@ class DebtCard extends StatelessWidget {
                         children: [
                           // Customer Name
                           Text(
-                            debt.customerName ?? 'Unknown Customer',
+                            debt.customerName ?? l10n.unknownCustomer,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -87,7 +89,8 @@ class DebtCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                debt.invoiceNumber ?? 'Invoice #${debt.saleId}',
+                                debt.invoiceNumber ??
+                                    l10n.invoiceHashId(debt.saleId),
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: Colors.grey[700],
@@ -129,7 +132,7 @@ class DebtCard extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        _getStatusLabel(),
+                        _statusLabel(l10n),
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -150,7 +153,7 @@ class DebtCard extends StatelessWidget {
                     // Total Amount
                     Expanded(
                       child: _buildAmountInfo(
-                        'Total',
+                        l10n.total,
                         debt.totalAmount,
                         AppColors.error,
                       ),
@@ -165,7 +168,7 @@ class DebtCard extends StatelessWidget {
                     // Paid Amount
                     Expanded(
                       child: _buildAmountInfo(
-                        'Paid',
+                        l10n.paid,
                         debt.paidAmount,
                         AppColors.success,
                       ),
@@ -180,7 +183,7 @@ class DebtCard extends StatelessWidget {
                     // Remaining Amount
                     Expanded(
                       child: _buildAmountInfo(
-                        'Remaining',
+                        l10n.remainingAmount,
                         debt.remainingAmount,
                         Colors.orange,
                       ),
@@ -195,7 +198,7 @@ class DebtCard extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: onAddPayment,
                       icon: const Icon(Icons.payment, size: 18),
-                      label: const Text('Add Payment'),
+                      label: Text(l10n.addPayment),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.success,
                         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -246,15 +249,15 @@ class DebtCard extends StatelessWidget {
     }
   }
 
-  String _getStatusLabel() {
+  String _statusLabel(AppLocalizations l10n) {
     switch (debt.status) {
       case 'paid':
-        return 'Paid';
+        return l10n.paid;
       case 'partial':
-        return 'Partial';
+        return l10n.partial;
       case 'unpaid':
       default:
-        return 'Unpaid';
+        return l10n.unpaid;
     }
   }
 }

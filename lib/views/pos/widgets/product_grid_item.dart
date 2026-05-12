@@ -3,6 +3,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../data/models/product_model.dart';
 
 class ProductGridItem extends StatelessWidget {
@@ -17,6 +18,7 @@ class ProductGridItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Material(
       color: Colors.white,
       borderRadius: BorderRadius.circular(12),
@@ -87,7 +89,7 @@ class ProductGridItem extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${product.sellingPrice.toStringAsFixed(0)} DA',
+                            '${product.sellingPrice.toStringAsFixed(0)} ${l10n.currency}',
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -96,7 +98,7 @@ class ProductGridItem extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Stock: ${product.quantity}',
+                            '${l10n.stockQtyShort} ${product.quantity}',
                             style: TextStyle(
                               fontSize: 11,
                               color: _getStockColor(),

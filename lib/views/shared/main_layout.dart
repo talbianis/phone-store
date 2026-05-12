@@ -1,6 +1,7 @@
 // lib/views/shared/main_layout.dart
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/localization/app_localizations.dart';
@@ -73,7 +74,7 @@ class MainLayout extends StatelessWidget {
                     fontSize: 14,
                   ),
                   prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
-                  suffixText: 'Ctrl+K',
+                  suffixText: l10n.searchShortcut,
                   suffixStyle: TextStyle(
                     color: Colors.grey[400],
                     fontSize: 12,
@@ -107,7 +108,9 @@ class MainLayout extends StatelessWidget {
                 Icon(Icons.calendar_today, size: 16, color: Colors.grey[600]),
                 const SizedBox(width: 8),
                 Text(
-                  'Fri, Mar 6, 2026',
+                  DateFormat.yMMMEd(
+                    Localizations.localeOf(context).toString(),
+                  ).format(DateTime.now()),
                   style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                 ),
               ],
@@ -126,13 +129,13 @@ class MainLayout extends StatelessWidget {
             child: Row(
               children: [
                 _buildLangButton(
-                  label: 'EN',
+                  label: l10n.langCodeEn,
                   isSelected: !isFrench,
                   onTap: () => localeProvider.setLocale(const Locale('en')),
                   isLeft: true,
                 ),
                 _buildLangButton(
-                  label: 'FR',
+                  label: l10n.langCodeFr,
                   isSelected: isFrench,
                   onTap: () => localeProvider.setLocale(const Locale('fr')),
                   isLeft: false,
@@ -196,14 +199,14 @@ class MainLayout extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    authProvider.currentUser?.fullName ?? 'User',
+                    authProvider.currentUser?.fullName ?? l10n.guestUser,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   Text(
-                    authProvider.currentUser?.role ?? 'Admin',
+                    authProvider.currentUser?.role ?? l10n.admin,
                     style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                 ],

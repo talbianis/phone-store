@@ -1,149 +1,147 @@
 // lib/core/utils/validators.dart
 
 import '../constants/app_constants.dart';
-import '../constants/app_strings.dart';
+import '../localization/app_localizations.dart';
 
 class Validators {
-  // Required field
-  static String? required(String? value, {String? fieldName}) {
+  static String? required(
+    String? value,
+    AppLocalizations l10n, {
+    String? fieldName,
+  }) {
     if (value == null || value.trim().isEmpty) {
       return fieldName != null
-          ? '$fieldName ${AppStrings.fieldRequired}'
-          : AppStrings.fieldRequired;
+          ? l10n.fieldRequiredNamed(fieldName)
+          : l10n.required;
     }
     return null;
   }
 
-  // Username validation
-  static String? username(String? value) {
+  static String? username(String? value, AppLocalizations l10n) {
     if (value == null || value.trim().isEmpty) {
-      return AppStrings.fieldRequired;
+      return l10n.required;
     }
 
     if (value.length < AppConstants.minUsernameLength) {
-      return 'Nom d\'utilisateur trop court (min ${AppConstants.minUsernameLength} caractères)';
+      return l10n.usernameTooShortMsg(AppConstants.minUsernameLength);
     }
 
     if (value.length > AppConstants.maxUsernameLength) {
-      return 'Nom d\'utilisateur trop long (max ${AppConstants.maxUsernameLength} caractères)';
+      return l10n.usernameTooLongMsg(AppConstants.maxUsernameLength);
     }
 
     return null;
   }
 
-  // Password validation
-  static String? password(String? value) {
+  static String? password(String? value, AppLocalizations l10n) {
     if (value == null || value.isEmpty) {
-      return AppStrings.fieldRequired;
+      return l10n.required;
     }
 
     if (value.length < AppConstants.minPasswordLength) {
-      return AppStrings.passwordTooShort;
+      return l10n.passwordTooShortMsg(AppConstants.minPasswordLength);
     }
 
     if (value.length > AppConstants.maxPasswordLength) {
-      return 'Mot de passe trop long (max ${AppConstants.maxPasswordLength} caractères)';
+      return l10n.passwordTooLongMsg(AppConstants.maxPasswordLength);
     }
 
     return null;
   }
 
-  // Phone validation (Algerian format)
-  static String? phone(String? value) {
+  static String? phone(String? value, AppLocalizations l10n) {
     if (value == null || value.trim().isEmpty) {
-      return AppStrings.fieldRequired;
+      return l10n.required;
     }
 
     final phoneRegex = RegExp(AppConstants.phonePattern);
     if (!phoneRegex.hasMatch(value)) {
-      return AppStrings.invalidPhone;
+      return l10n.invalidPhone;
     }
 
     return null;
   }
 
-  // Number validation
-  static String? number(String? value, {bool allowNegative = false}) {
+  static String? number(
+    String? value,
+    AppLocalizations l10n, {
+    bool allowNegative = false,
+  }) {
     if (value == null || value.trim().isEmpty) {
-      return AppStrings.fieldRequired;
+      return l10n.required;
     }
 
     final number = double.tryParse(value);
     if (number == null) {
-      return 'Veuillez entrer un nombre valide';
+      return l10n.enterValidNumber;
     }
 
     if (!allowNegative && number < 0) {
-      return 'Le nombre ne peut pas être négatif';
+      return l10n.numberCannotBeNegative;
     }
 
     return null;
   }
 
-  // Price validation
-  static String? price(String? value) {
+  static String? price(String? value, AppLocalizations l10n) {
     if (value == null || value.trim().isEmpty) {
-      return AppStrings.fieldRequired;
+      return l10n.required;
     }
 
     final price = double.tryParse(value);
     if (price == null) {
-      return 'Veuillez entrer un prix valide';
+      return l10n.enterValidPriceMsg;
     }
 
     if (price < 0) {
-      return 'Le prix ne peut pas être négatif';
+      return l10n.priceCannotBeNegative;
     }
 
     return null;
   }
 
-  // Quantity validation
-  static String? quantity(String? value) {
+  static String? quantity(String? value, AppLocalizations l10n) {
     if (value == null || value.trim().isEmpty) {
-      return AppStrings.fieldRequired;
+      return l10n.required;
     }
 
     final qty = int.tryParse(value);
     if (qty == null) {
-      return 'Veuillez entrer une quantité valide';
+      return l10n.enterValidQuantityMsg;
     }
 
     if (qty < 0) {
-      return 'La quantité ne peut pas être négative';
+      return l10n.quantityCannotBeNegative;
     }
 
     return null;
   }
 
-  // Percentage validation
-  static String? percentage(String? value) {
+  static String? percentage(String? value, AppLocalizations l10n) {
     if (value == null || value.trim().isEmpty) {
-      return AppStrings.fieldRequired;
+      return l10n.required;
     }
 
     final percent = double.tryParse(value);
     if (percent == null) {
-      return 'Veuillez entrer un pourcentage valide';
+      return l10n.enterValidPercentage;
     }
 
     if (percent < 0 || percent > 100) {
-      return 'Le pourcentage doit être entre 0 et 100';
+      return l10n.percentageRange;
     }
 
     return null;
   }
 
-  // Barcode validation (optional field)
-  static String? barcode(String? value) {
+  static String? barcode(String? value, AppLocalizations l10n) {
     if (value == null || value.trim().isEmpty) {
-      return null; // Optional field
+      return null;
     }
 
-    // Basic barcode validation (alphanumeric)
     final barcodeRegex = RegExp(r'^[a-zA-Z0-9]+$');
     if (!barcodeRegex.hasMatch(value)) {
-      return 'Code-barres invalide (seulement lettres et chiffres)';
+      return l10n.invalidBarcodeFormat;
     }
 
     return null;

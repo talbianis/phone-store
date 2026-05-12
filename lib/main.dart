@@ -80,7 +80,8 @@ class MyApp extends StatelessWidget {
             splitScreenMode: true,
             builder: (context, child) {
               return MaterialApp(
-                title: 'Magasin Pro',
+                onGenerateTitle: (context) =>
+                    AppLocalizations.of(context).magasinPro,
                 debugShowCheckedModeBanner: false,
 
                 // ✅ Locale
