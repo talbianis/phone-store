@@ -35,7 +35,7 @@ class TextStyles {
   );
 
   // Body Text
-  static TextStyle body = TextStyle(
+  static const TextStyle body = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.normal,
     color: AppColors.textPrimary,

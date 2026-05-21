@@ -48,13 +48,11 @@ class SidebarMenu extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: AppColors.primary,
+                    color: const Color.fromARGB(255, 107, 142, 199),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(
-                    Icons.store,
-                    color: AppColors.white,
-                    size: 22,
+                  child: Image.asset(
+                    'assets/icons/app_icon.png',
                   ),
                 ),
                 const SizedBox(width: 7),

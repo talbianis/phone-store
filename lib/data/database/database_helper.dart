@@ -196,13 +196,12 @@ class DatabaseHelper {
     // Insert default admin user
     debugPrint('👤 Creating default admin user...');
     await db.insert(Tables.users, {
-      'username': 'admin',
-      'password': 'admin123', // In production, hash this!
-      'full_name': 'Administrator',
+      'username': 'dahsi',
+      'password': 'dahsi2026', // In production, hash this!
+      'full_name': 'dahsi phone',
       'role': 'admin',
       'created_at': DateTime.now().toIso8601String(),
     });
-    debugPrint('✅ Default admin user created (username: admin, password: admin123)');
 
     // Insert default categories
     debugPrint('📂 Creating default categories...');

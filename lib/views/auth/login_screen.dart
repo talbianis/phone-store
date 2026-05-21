@@ -52,11 +52,7 @@ class LoginScreen extends StatelessWidget {
                           color: AppColors.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: const Icon(
-                          Icons.store,
-                          size: 48,
-                          color: AppColors.primary,
-                        ),
+                        child: Image.asset('assets/icons/app_icon.png'),
                       ),
 
                       const SizedBox(height: 24),
