@@ -18,15 +18,16 @@ class ProductListItem extends StatelessWidget {
   final ProductModel product;
 
   const ProductListItem({
-    Key? key,
+    super.key,
     required this.product,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Container(
-      color: Colors.white,
+      color: colors.surface,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -47,7 +48,7 @@ class ProductListItem extends StatelessWidget {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
+                    color: colors.surfaceVariant,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: ClipRRect(
@@ -58,10 +59,10 @@ class ProductListItem extends StatelessWidget {
                             File(product.imagePath!),
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
-                              return _buildPlaceholder();
+                              return _buildPlaceholder(context);
                             },
                           )
-                        : _buildPlaceholder(),
+                        : _buildPlaceholder(context),
                   ),
                 ),
 
@@ -74,9 +75,10 @@ class ProductListItem extends StatelessWidget {
                     children: [
                       Text(
                         product.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
+                          color: colors.onSurface,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -89,7 +91,7 @@ class ProductListItem extends StatelessWidget {
                             '${product.brand ?? l10n.noBrand} • ${category?.name ?? l10n.unknownCategory}',
                             style: TextStyle(
                               fontSize: 13,
-                              color: Colors.grey[600],
+                              color: colors.onSurfaceVariant,
                             ),
                           );
                         },
@@ -100,7 +102,7 @@ class ProductListItem extends StatelessWidget {
                           '${l10n.barcodePrefix} ${product.barcode}',
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey[500],
+                            color: colors.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -127,7 +129,7 @@ class ProductListItem extends StatelessWidget {
                       '${l10n.profitLabelShort} ${CurrencyFormatter.format(product.profitPerUnit)}',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        color: colors.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -173,12 +175,13 @@ class ProductListItem extends StatelessWidget {
     );
   }
 
-  Widget _buildPlaceholder() {
+  Widget _buildPlaceholder(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Center(
       child: Icon(
         Icons.image_outlined,
         size: 32,
-        color: Colors.grey[400],
+        color: colors.onSurfaceVariant,
       ),
     );
   }

@@ -174,6 +174,25 @@ class SaleRepository {
     return List.generate(maps.length, (i) => SaleModel.fromMap(maps[i]));
   }
 
+  // add getbestsellingproducts
+  Future<List<Map<String, dynamic>>> getBestSellingProducts(
+      {int limit = 5}) async {
+    final db = await DatabaseHelper.instance.database;
+    final result = await db.rawQuery('''
+    SELECT
+      p.id,
+      p.name,
+      p.brand,
+      SUM(si.quantity) AS totalSold
+    FROM ${Tables.saleItems} si
+    JOIN ${Tables.products} p ON si.product_id = p.id
+    GROUP BY p.id
+    ORDER BY totalSold DESC
+    LIMIT ?
+  ''', [limit]);
+    return result;
+  }
+
   // Get total sales amount
   Future<double> getTotalSalesAmount() async {
     final db = await _dbHelper.database;

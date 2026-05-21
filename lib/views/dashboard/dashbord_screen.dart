@@ -44,9 +44,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             builder: (context, constraints) {
               final contentW = constraints.maxWidth;
               final gap = 16.0;
-              final cols = desktopStatColumns(contentW);
-              final tileW =
-                  cols > 1 ? (contentW - gap * (cols - 1)) / cols : contentW;
 
               final statTiles = <Widget>[
                 StatCard(

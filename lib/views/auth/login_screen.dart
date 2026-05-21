@@ -14,6 +14,7 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 600;
 
     return Scaffold(
       body: Container(
@@ -31,8 +32,7 @@ class LoginScreen extends StatelessWidget {
             padding: const EdgeInsets.all(24),
             child: Container(
               constraints: BoxConstraints(
-                maxWidth:
-                    (size.width * 0.42).clamp(320.0, 520.0),
+                maxWidth: isDesktop ? 450 : double.infinity,
               ),
               child: Card(
                 elevation: 8,
@@ -85,7 +85,7 @@ class LoginScreen extends StatelessWidget {
                       // Footer
                       Text(
                         l10n.version,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),

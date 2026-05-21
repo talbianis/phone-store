@@ -10,10 +10,15 @@ class ProductProvider with ChangeNotifier {
   List<ProductModel> _products = [];
   List<ProductModel> _filteredProducts = [];
   bool _isLoading = false;
+  bool _hasLoaded = false;
+  String _searchQuery = '';
+  bool _availableNameOnly = false;
   String? _errorMessage;
 
   List<ProductModel> get products => _filteredProducts;
+  List<ProductModel> get allProducts => List.unmodifiable(_products);
   bool get isLoading => _isLoading;
+  bool get hasLoaded => _hasLoaded;
   String? get errorMessage => _errorMessage;
 
   // Load all products
@@ -24,7 +29,8 @@ class ProductProvider with ChangeNotifier {
 
     try {
       _products = await _repository.getAllProducts();
-      _filteredProducts = _products;
+      _applySearch();
+      _hasLoaded = true;
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -32,6 +38,11 @@ class ProductProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> ensureProductsLoaded() async {
+    if (_hasLoaded || _isLoading) return;
+    await loadProducts();
   }
 
   // Add product
@@ -75,20 +86,44 @@ class ProductProvider with ChangeNotifier {
 
   // Search products
   void searchProducts(String query) {
-    if (query.isEmpty) {
-      _filteredProducts = _products;
-    } else {
-      _filteredProducts = _products
-          .where(
-            (product) =>
-                product.name.toLowerCase().contains(query.toLowerCase()) ||
-                (product.brand?.toLowerCase().contains(query.toLowerCase()) ??
-                    false) ||
-                (product.barcode?.contains(query) ?? false),
-          )
-          .toList();
-    }
+    _searchQuery = query.trim();
+    _availableNameOnly = false;
+    _applySearch();
     notifyListeners();
+  }
+
+  void searchAvailableProductsByName(String query) {
+    _searchQuery = query.trim();
+    _availableNameOnly = true;
+    _applySearch();
+    notifyListeners();
+  }
+
+  void _applySearch() {
+    if (_searchQuery.isEmpty) {
+      _filteredProducts = List<ProductModel>.from(_products);
+    } else {
+      final lowerQuery = _searchQuery.toLowerCase();
+      if (_availableNameOnly) {
+        _filteredProducts = _products
+            .where(
+              (product) =>
+                  product.quantity > 0 &&
+                  product.name.toLowerCase().contains(lowerQuery),
+            )
+            .toList();
+      } else {
+        _filteredProducts = _products
+            .where(
+              (product) =>
+                  product.name.toLowerCase().contains(lowerQuery) ||
+                  (product.brand?.toLowerCase().contains(lowerQuery) ??
+                      false) ||
+                  (product.barcode?.contains(_searchQuery) ?? false),
+            )
+            .toList();
+      }
+    }
   }
 
   // Filter by category

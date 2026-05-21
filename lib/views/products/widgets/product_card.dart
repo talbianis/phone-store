@@ -17,21 +17,25 @@ class ProductCard extends StatelessWidget {
   final ProductModel product;
 
   const ProductCard({
-    Key? key,
+    super.key,
     required this.product,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: theme.dividerColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.black.withOpacity(
+              theme.brightness == Brightness.dark ? 0.22 : 0.08,
+            ),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -53,7 +57,7 @@ class ProductCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Product Image
-              _buildProductImage(),
+              _buildProductImage(context),
 
               // Product Info
               Expanded(
@@ -65,9 +69,10 @@ class ProductCard extends StatelessWidget {
                       // Product Name
                       Text(
                         product.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
+                          color: colors.onSurface,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -79,7 +84,7 @@ class ProductCard extends StatelessWidget {
                           product.brand!,
                           style: TextStyle(
                             fontSize: 12.sp,
-                            color: Colors.grey[600],
+                            color: colors.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -117,11 +122,12 @@ class ProductCard extends StatelessWidget {
     );
   }
 
-  Widget _buildProductImage() {
+  Widget _buildProductImage(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Container(
       height: 170.h,
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: colors.surfaceVariant,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(12),
           topRight: Radius.circular(12),
@@ -139,20 +145,21 @@ class ProductCard extends StatelessWidget {
                 height: 150.h,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
-                  return _buildPlaceholder();
+                  return _buildPlaceholder(context);
                 },
               )
-            : _buildPlaceholder(),
+            : _buildPlaceholder(context),
       ),
     );
   }
 
-  Widget _buildPlaceholder() {
+  Widget _buildPlaceholder(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Center(
       child: Icon(
         Icons.image_outlined,
         size: 60.sp,
-        color: Colors.grey[400],
+        color: colors.onSurfaceVariant,
       ),
     );
   }

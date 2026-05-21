@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:phone_shop/core/localization/app_localizations.dart';
+import 'package:phone_shop/core/themes/app_theme.dart';
 
 import 'package:phone_shop/providers/dashborad_provider.dart';
 import 'package:phone_shop/providers/locale_provider.dart';
@@ -80,6 +81,8 @@ class MyApp extends StatelessWidget {
             splitScreenMode: true,
             builder: (context, child) {
               return MaterialApp(
+                theme: AppTheme.light,
+                darkTheme: AppTheme.dark,
                 onGenerateTitle: (context) =>
                     AppLocalizations.of(context).magasinPro,
                 debugShowCheckedModeBanner: false,

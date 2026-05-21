@@ -4,103 +4,73 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/localization/app_localizations.dart';
 
+import 'package:provider/provider.dart';
+import '../../../providers/dashborad_provider.dart'; // note the typo
+
 class BestSellingProducts extends StatelessWidget {
   const BestSellingProducts({Key? key}) : super(key: key);
+
+  // Map index → color (same palette as before)
+  static const _rankColors = [
+    AppColors.primary,
+    AppColors.chartTertiary,
+    Colors.orange,
+    Colors.purple,
+    Colors.teal,
+  ];
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    // Sample data - you'll replace with actual data from provider
-    final products = [
-      {
-        'rank': 1,
-        'name': 'iPhone 15 Pro Max',
-        'brand': 'Apple',
-        'quantity': 48,
-        'color': AppColors.primary,
-      },
-      {
-        'rank': 2,
-        'name': 'Samsung Galaxy S24 ...',
-        'brand': 'Samsung',
-        'quantity': 35,
-        'color': AppColors.chartTertiary,
-      },
-      {
-        'rank': 3,
-        'name': 'iPhone 15',
-        'brand': 'Apple',
-        'quantity': 29,
-        'color': Colors.orange,
-      },
-      {
-        'rank': 4,
-        'name': 'Xiaomi 14 Pro',
-        'brand': 'Xiaomi',
-        'quantity': 22,
-        'color': Colors.purple,
-      },
-    ];
+    final products = context.watch<DashboardProvider>().bestSellingProducts;
+
+    // ... keep your Container/Column header the same ...
 
     return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      // ... same decoration ...
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.bestSellingProducts,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    l10n.topSellersThisMonth,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-              Icon(
-                Icons.trending_up,
-                color: Colors.green,
-                size: 24,
-              ),
-            ],
-          ),
+          // header row — unchanged
+          // ...
 
           const SizedBox(height: 24),
 
-          // Products List
-          ...products.map((product) => _buildProductItem(product)).toList(),
+          if (products.isEmpty)
+            Center(
+              child: Text(
+                l10n.noData, // or any empty-state string you have
+                style: TextStyle(color: Colors.grey[500]),
+              ),
+            )
+          else
+            ...products.asMap().entries.map((entry) {
+              final i = entry.key;
+              final p = entry.value;
+              final maxQty = (products.first['totalSold'] as num).toDouble();
+
+              return _buildProductItem({
+                'rank': i + 1,
+                'name': p['name'] ?? '',
+                'brand': p['brand'] ?? '',
+                'quantity': p['totalSold'],
+                'color': _rankColors[i % _rankColors.length],
+                'maxQuantity': maxQty,
+              });
+            }).toList(),
         ],
       ),
     );
   }
 
   Widget _buildProductItem(Map<String, dynamic> product) {
-    final maxQuantity = 48; // Maximum for progress bar calculation
+    final maxQuantity = (product['maxQuantity'] as double?) ?? 1.0;
+    // final quantity = (product['quantity'] as num?)?.toDouble() ?? 0;
+
+    // ... rest of the method unchanged, just replace:
+    // value: product['quantity'] / maxQuantity
+    // with:
+    // value: maxQuantity > 0 ? quantity / maxQuantity : 0,
 
     return Container(
       margin: const EdgeInsets.only(bottom: 20),

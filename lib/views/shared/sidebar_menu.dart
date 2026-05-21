@@ -12,7 +12,7 @@ class SidebarMenu extends StatelessWidget {
   final String currentRoute;
 
   const SidebarMenu({
-    Key? key,
+    super.key,
     required this.currentRoute,
   });
 
@@ -20,10 +20,24 @@ class SidebarMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+    final sidebarBackground = isDark ? const Color(0xFF101828) : colors.surface;
+    final primaryText = isDark ? Colors.white : colors.onSurface;
+    final secondaryText =
+        isDark ? Colors.white.withOpacity(0.68) : colors.onSurfaceVariant;
+    final dividerColor =
+        isDark ? Colors.white.withOpacity(0.10) : theme.dividerColor;
 
     return Container(
       width: double.infinity,
-      color: AppColors.sidebarBackground,
+      decoration: BoxDecoration(
+        color: sidebarBackground,
+        border: Border(
+          right: BorderSide(color: dividerColor),
+        ),
+      ),
       child: Column(
         children: [
           Container(
@@ -40,26 +54,28 @@ class SidebarMenu extends StatelessWidget {
                   child: const Icon(
                     Icons.store,
                     color: AppColors.white,
-                    size: 24,
+                    size: 22,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 7),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       l10n.sidebarTitleShort,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: primaryText,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
                       l10n.sidebarSubtitle,
-                      style: const TextStyle(
-                        color: Colors.white60,
-                        fontSize: 11,
+                      maxLines: 2,
+                      style: TextStyle(
+                        color: secondaryText,
+                        fontSize: 9,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
@@ -67,22 +83,19 @@ class SidebarMenu extends StatelessWidget {
               ],
             ),
           ),
-
-          const Divider(color: Colors.white12, height: 1),
-
+          Divider(color: dividerColor, height: 1),
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
             child: Text(
               l10n.mainMenu,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
+                color: secondaryText,
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 1.2,
               ),
             ),
           ),
-
           Expanded(
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -144,28 +157,26 @@ class SidebarMenu extends StatelessWidget {
               ],
             ),
           ),
-
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: _buildMenuItem(
-              context,
-              icon: Icons.logout,
-              label: l10n.logout,
-              route: 'logout',
-              onTap: () async {
-                await authProvider.logout();
-                if (context.mounted) {
-                  Navigator.pushReplacementNamed(context, AppRoutes.login);
-                }
-              },
-            ),
-          ),
-
+          // Padding(
+          //   padding: const EdgeInsets.all(12),
+          //   child: _buildMenuItem(
+          //     context,
+          //     icon: Icons.logout,
+          //     label: l10n.logout,
+          //     route: 'logout',
+          //     onTap: () async {
+          //       await authProvider.logout();
+          //       if (context.mounted) {
+          //         Navigator.pushReplacementNamed(context, AppRoutes.login);
+          //       }
+          //     },
+          //   ),
+          // ),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               border: Border(
-                top: BorderSide(color: Colors.white.withOpacity(0.1)),
+                top: BorderSide(color: dividerColor),
               ),
             ),
             child: Row(
@@ -188,8 +199,8 @@ class SidebarMenu extends StatelessWidget {
                     children: [
                       Text(
                         authProvider.currentUser?.fullName ?? l10n.guestUser,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: primaryText,
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
@@ -198,7 +209,7 @@ class SidebarMenu extends StatelessWidget {
                       Text(
                         authProvider.currentUser?.role ?? l10n.admin,
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.6),
+                          color: secondaryText,
                           fontSize: 12,
                         ),
                       ),
@@ -221,6 +232,13 @@ class SidebarMenu extends StatelessWidget {
     VoidCallback? onTap,
   }) {
     final isActive = currentRoute == route;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+    final inactiveColor =
+        isDark ? Colors.white.withOpacity(0.72) : colors.onSurfaceVariant;
+    final hoverColor =
+        isDark ? Colors.white.withOpacity(0.06) : colors.surfaceVariant;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 4),
@@ -234,6 +252,7 @@ class SidebarMenu extends StatelessWidget {
                 }
               },
           borderRadius: BorderRadius.circular(8),
+          hoverColor: hoverColor,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             decoration: BoxDecoration(
@@ -244,20 +263,23 @@ class SidebarMenu extends StatelessWidget {
               children: [
                 Icon(
                   icon,
-                  color: isActive ? Colors.white : Colors.white70,
-                  size: 20,
+                  color: isActive ? Colors.white : inactiveColor,
+                  size: 18,
                 ),
-                const SizedBox(width: 12),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: isActive ? Colors.white : Colors.white70,
-                    fontSize: 14,
-                    fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      color: isActive ? Colors.white : inactiveColor,
+                      fontSize: 13,
+                      fontWeight:
+                          isActive ? FontWeight.w600 : FontWeight.normal,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 if (isActive) ...[
-                  const Spacer(),
                   Container(
                     width: 6,
                     height: 6,

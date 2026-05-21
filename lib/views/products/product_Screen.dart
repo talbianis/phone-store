@@ -14,7 +14,7 @@ import '../../providers/category_provider.dart';
 import '../shared/main_layout.dart';
 
 class ProductsScreen extends StatefulWidget {
-  const ProductsScreen({Key? key}) : super(key: key);
+  const ProductsScreen({super.key});
 
   @override
   State<ProductsScreen> createState() => _ProductsScreenState();
@@ -79,9 +79,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   Widget _buildHeader() {
     final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(24),
-      color: Colors.white,
+      color: colors.surface,
       child: Row(
         children: [
           Expanded(
@@ -90,9 +91,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
               children: [
                 Text(
                   l10n.products,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
+                    color: colors.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -102,7 +104,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       l10n.productsCountInventory(provider.products.length),
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey[600],
+                        color: colors.onSurfaceVariant,
                       ),
                     );
                   },
@@ -147,9 +149,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   Widget _buildFilters() {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return Container(
       padding: const EdgeInsets.all(16),
-      color: Colors.white,
+      color: colors.surface,
       child: Row(
         children: [
           // Search Bar
@@ -222,7 +226,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
           // View Toggle
           Container(
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey[300]!),
+              color: colors.surfaceVariant,
+              border: Border.all(color: theme.dividerColor),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
@@ -238,7 +243,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 Container(
                   width: 1,
                   height: 24,
-                  color: Colors.grey[300],
+                  color: theme.dividerColor,
                 ),
                 IconButton(
                   icon: Icon(
@@ -258,6 +263,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   Widget _buildEmptyState() {
     final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -265,7 +271,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
           Icon(
             Icons.inventory_2_outlined,
             size: 80,
-            color: Colors.grey[300],
+            color: colors.onSurfaceVariant.withOpacity(0.45),
           ),
           const SizedBox(height: 16),
           Text(
@@ -273,7 +279,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.grey[600],
+              color: colors.onSurface,
             ),
           ),
           const SizedBox(height: 8),
@@ -281,7 +287,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             l10n.addFirstProductHint,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[500],
+              color: colors.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 24),

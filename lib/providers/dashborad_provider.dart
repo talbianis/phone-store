@@ -11,6 +11,8 @@ class DashboardProvider with ChangeNotifier {
   final ProductRepository _productRepo = ProductRepository();
   final CustomerRepository _customerRepo = CustomerRepository();
   final ExpenseRepository _expenseRepo = ExpenseRepository();
+  List<Map<String, dynamic>> _bestSellingProducts = [];
+  List<Map<String, dynamic>> get bestSellingProducts => _bestSellingProducts;
 
   bool _isLoading = false;
   String? _errorMessage;
@@ -73,6 +75,8 @@ class DashboardProvider with ChangeNotifier {
         _loadProductStats(),
         _loadCustomerStats(),
         _loadChartData(),
+        _loadBestSelling(),
+        
       ]);
 
       _isLoading = false;
@@ -83,7 +87,10 @@ class DashboardProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-
+ Future<void> _loadBestSelling() async {
+   _bestSellingProducts = await _saleRepo.getBestSellingProducts();
+   notifyListeners();
+}
   // Load today's statistics
   Future<void> _loadTodayStats() async {
     _todaySales = await _saleRepo.getTodaySalesAmount();
