@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/localization/app_localizations.dart';
 import 'package:fl_chart/fl_chart.dart';
+import '../../shared/themed_screen_sections.dart';
 
 class SalesChart extends StatelessWidget {
   final List<Map<String, dynamic>> salesData;
@@ -15,18 +16,13 @@ class SalesChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+      decoration: ThemedScreenSections.cardDecoration(
+        context,
+        radius: 12,
+        borderColor: Colors.transparent,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,11 +34,12 @@ class SalesChart extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Sales Trend - Last 7 Days',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      color: colors.onSurface,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -50,7 +47,7 @@ class SalesChart extends StatelessWidget {
                     'Revenue and profit overview',
                     style: TextStyle(
                       fontSize: 13,
-                      color: Colors.grey[600],
+                      color: colors.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -64,15 +61,15 @@ class SalesChart extends StatelessWidget {
                   color: Colors.green.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.trending_up,
                       color: Colors.green,
                       size: 16,
                     ),
-                    const SizedBox(width: 4),
-                    const Text(
+                    SizedBox(width: 4),
+                    Text(
                       '+12.5%',
                       style: TextStyle(
                         color: Colors.green,
@@ -91,9 +88,9 @@ class SalesChart extends StatelessWidget {
           // Legend
           Row(
             children: [
-              _buildLegend(l10n.revenue, Colors.blue),
+              _buildLegend(context, l10n.revenue, Colors.blue),
               const SizedBox(width: 24),
-              _buildLegend(l10n.profit, Colors.green),
+              _buildLegend(context, l10n.profit, Colors.green),
             ],
           ),
 
@@ -105,7 +102,7 @@ class SalesChart extends StatelessWidget {
             child: salesData.isEmpty
                 ? Center(child: Text(l10n.noData))
                 : LineChart(
-                    _buildChartData(),
+                    _buildChartData(context),
                   ),
           ),
         ],
@@ -113,7 +110,8 @@ class SalesChart extends StatelessWidget {
     );
   }
 
-  Widget _buildLegend(String label, Color color) {
+  Widget _buildLegend(BuildContext context, String label, Color color) {
+    final colors = Theme.of(context).colorScheme;
     return Row(
       children: [
         Container(
@@ -129,7 +127,7 @@ class SalesChart extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 13,
-            color: Colors.grey[700],
+            color: colors.onSurfaceVariant,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -137,7 +135,8 @@ class SalesChart extends StatelessWidget {
     );
   }
 
-  LineChartData _buildChartData() {
+  LineChartData _buildChartData(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     // Generate sample data if empty
     final List<FlSpot> revenueSpots = [];
     final List<FlSpot> profitSpots = [];
@@ -184,7 +183,7 @@ class SalesChart extends StatelessWidget {
         horizontalInterval: 35000,
         getDrawingHorizontalLine: (value) {
           return FlLine(
-            color: Colors.grey[200],
+            color: Theme.of(context).dividerColor,
             strokeWidth: 1,
           );
         },
@@ -210,7 +209,7 @@ class SalesChart extends StatelessWidget {
                   child: Text(
                     days[value.toInt()],
                     style: TextStyle(
-                      color: Colors.grey[600],
+                      color: colors.onSurfaceVariant,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
@@ -230,7 +229,7 @@ class SalesChart extends StatelessWidget {
               return Text(
                 '${(value / 1000).toInt()}k',
                 style: TextStyle(
-                  color: Colors.grey[600],
+                  color: colors.onSurfaceVariant,
                   fontSize: 12,
                 ),
               );

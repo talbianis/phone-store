@@ -6,33 +6,24 @@ import 'package:phone_shop/data/models/sales_model.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../shared/themed_screen_sections.dart';
 
 class SaleListItem extends StatelessWidget {
   final SaleModel sale;
   final VoidCallback onTap;
 
   const SaleListItem({
-    Key? key,
+    super.key,
     required this.sale,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      decoration: ThemedScreenSections.cardDecoration(context),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -67,9 +58,10 @@ class SaleListItem extends StatelessWidget {
                       // Invoice Number
                       Text(
                         sale.invoiceNumber,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
+                          color: colors.onSurface,
                         ),
                       ),
 
@@ -81,28 +73,28 @@ class SaleListItem extends StatelessWidget {
                           Icon(
                             Icons.person_outline,
                             size: 14,
-                            color: Colors.grey[600],
+                            color: colors.onSurfaceVariant,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             sale.customerName ?? l10n.walkInCustomer,
                             style: TextStyle(
                               fontSize: 13,
-                              color: Colors.grey[700],
+                              color: colors.onSurfaceVariant,
                             ),
                           ),
                           const SizedBox(width: 12),
                           Icon(
                             Icons.calendar_today,
                             size: 14,
-                            color: Colors.grey[600],
+                            color: colors.onSurfaceVariant,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             DateFormatter.formatDateTime(sale.saleDate),
                             style: TextStyle(
                               fontSize: 13,
-                              color: Colors.grey[600],
+                              color: colors.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -190,9 +182,9 @@ class SaleListItem extends StatelessWidget {
                 const SizedBox(width: 8),
 
                 // Arrow
-                const Icon(
+                Icon(
                   Icons.chevron_right,
-                  color: Colors.grey,
+                  color: colors.onSurfaceVariant,
                 ),
               ],
             ),

@@ -11,23 +11,24 @@ class ProductGridItem extends StatelessWidget {
   final VoidCallback onTap;
 
   const ProductGridItem({
-    Key? key,
+    super.key,
     required this.product,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Material(
-      color: Colors.white,
+      color: colors.surface,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[200]!),
+            border: Border.all(color: Theme.of(context).dividerColor),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
@@ -38,7 +39,7 @@ class ProductGridItem extends StatelessWidget {
                 flex: 3,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
+                    color: colors.surfaceVariant,
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(12),
                       topRight: Radius.circular(12),
@@ -56,10 +57,10 @@ class ProductGridItem extends StatelessWidget {
                             width: double.infinity,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
-                              return _buildPlaceholder();
+                              return _buildPlaceholder(context);
                             },
                           )
-                        : _buildPlaceholder(),
+                        : _buildPlaceholder(context),
                   ),
                 ),
               ),
@@ -76,9 +77,10 @@ class ProductGridItem extends StatelessWidget {
                       // Name
                       Text(
                         product.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
+                          color: colors.onSurface,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -118,12 +120,13 @@ class ProductGridItem extends StatelessWidget {
     );
   }
 
-  Widget _buildPlaceholder() {
+  Widget _buildPlaceholder(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Center(
       child: Icon(
         Icons.image_outlined,
         size: 32,
-        color: Colors.grey[400],
+        color: colors.onSurfaceVariant,
       ),
     );
   }

@@ -13,9 +13,10 @@ import '../../core/layout/desktop_adaptive.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../../providers/product_provider.dart';
 import '../shared/main_layout.dart';
+import '../shared/themed_screen_sections.dart';
 
 class StockScreen extends StatefulWidget {
-  const StockScreen({Key? key}) : super(key: key);
+  const StockScreen({super.key});
 
   @override
   State<StockScreen> createState() => _StockScreenState();
@@ -83,7 +84,7 @@ class _StockScreenState extends State<StockScreen> {
     final l10n = AppLocalizations.of(context);
     return Container(
       padding: desktopPagePadding(context),
-      color: Colors.white,
+      color: ThemedScreenSections.surface(context),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -93,9 +94,9 @@ class _StockScreenState extends State<StockScreen> {
               children: [
                 Text(
                   l10n.stock,
-                  style: TextStyle(
+                  style: ThemedScreenSections.titleStyle(
+                    context,
                     fontSize: desktopPageTitleFontSize(context),
-                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 SizedBox(height: desktopViewportHeight(context) * 0.005),
@@ -103,9 +104,9 @@ class _StockScreenState extends State<StockScreen> {
                   builder: (context, provider, child) {
                     return Text(
                       l10n.productsCountInventory(provider.products.length),
-                      style: TextStyle(
+                      style: ThemedScreenSections.subtitleStyle(
+                        context,
                         fontSize: desktopPageSubtitleFontSize(context),
-                        color: Colors.grey[600],
                       ),
                     );
                   },
@@ -116,8 +117,7 @@ class _StockScreenState extends State<StockScreen> {
           Flexible(
             child: ElevatedButton.icon(
               onPressed: _showStockHistory,
-              icon:
-                  const Icon(Icons.history, size: 20, color: AppColors.white),
+              icon: const Icon(Icons.history, size: 20, color: AppColors.white),
               label: Text(l10n.viewHistory,
                   style: const TextStyle(color: AppColors.white)),
               style: ElevatedButton.styleFrom(
@@ -143,7 +143,7 @@ class _StockScreenState extends State<StockScreen> {
         desktopPagePadding(context).right,
         12,
       ),
-      color: Colors.white,
+      color: ThemedScreenSections.surface(context),
       child: Row(
         children: [
           // Search Bar
@@ -190,10 +190,12 @@ class _StockScreenState extends State<StockScreen> {
               ),
               items: [
                 DropdownMenuItem(value: 'all', child: Text(l10n.allProducts)),
-                DropdownMenuItem(value: 'low_stock', child: Text(l10n.lowStock)),
+                DropdownMenuItem(
+                    value: 'low_stock', child: Text(l10n.lowStock)),
                 DropdownMenuItem(
                     value: 'out_of_stock', child: Text(l10n.outOfStock)),
-                DropdownMenuItem(value: 'normal', child: Text(l10n.normalStock)),
+                DropdownMenuItem(
+                    value: 'normal', child: Text(l10n.normalStock)),
               ],
               onChanged: (value) {
                 setState(() => _selectedFilter = value!);
@@ -231,7 +233,12 @@ class _StockScreenState extends State<StockScreen> {
             desktopPagePadding(context).right,
             16,
           ),
-          color: Colors.blue[50],
+          decoration: BoxDecoration(
+            color: ThemedScreenSections.subtleSurface(
+              context,
+              accentColor: AppColors.primary,
+            ),
+          ),
           child: Row(
             children: [
               Expanded(
@@ -280,11 +287,8 @@ class _StockScreenState extends State<StockScreen> {
       String label, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
+      decoration: ThemedScreenSections.cardDecoration(context,
+          radius: 8, shadow: false),
       child: Row(
         children: [
           Container(
@@ -304,7 +308,7 @@ class _StockScreenState extends State<StockScreen> {
                   label,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: ThemedScreenSections.mutedText(context),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -327,6 +331,7 @@ class _StockScreenState extends State<StockScreen> {
 
   Widget _buildEmptyState() {
     final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -334,7 +339,7 @@ class _StockScreenState extends State<StockScreen> {
           Icon(
             Icons.inventory_2_outlined,
             size: 80,
-            color: Colors.grey[300],
+            color: ThemedScreenSections.emptyIcon(context),
           ),
           const SizedBox(height: 16),
           Text(
@@ -342,7 +347,7 @@ class _StockScreenState extends State<StockScreen> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.grey[600],
+              color: colors.onSurface,
             ),
           ),
           const SizedBox(height: 8),
@@ -350,7 +355,7 @@ class _StockScreenState extends State<StockScreen> {
             l10n.stockEmptySubtitle,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[500],
+              color: colors.onSurfaceVariant,
             ),
           ),
         ],

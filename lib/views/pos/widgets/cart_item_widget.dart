@@ -14,19 +14,21 @@ class CartItemWidget extends StatelessWidget {
   final CartItemModel cartItem;
 
   const CartItemWidget({
-    Key? key,
+    super.key,
     required this.cartItem,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: colors.surface,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: theme.dividerColor),
       ),
       child: Column(
         children: [
@@ -38,7 +40,7 @@ class CartItemWidget extends StatelessWidget {
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: colors.surfaceVariant,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: ClipRRect(
@@ -49,10 +51,10 @@ class CartItemWidget extends StatelessWidget {
                           File(cartItem.product.imagePath!),
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
-                            return _buildPlaceholder();
+                            return _buildPlaceholder(context);
                           },
                         )
-                      : _buildPlaceholder(),
+                      : _buildPlaceholder(context),
                 ),
               ),
 
@@ -65,9 +67,10 @@ class CartItemWidget extends StatelessWidget {
                   children: [
                     Text(
                       cartItem.product.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
+                        color: colors.onSurface,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -77,7 +80,7 @@ class CartItemWidget extends StatelessWidget {
                       CurrencyFormatter.format(cartItem.product.sellingPrice),
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        color: colors.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -106,7 +109,7 @@ class CartItemWidget extends StatelessWidget {
               // Quantity Controls
               Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[300]!),
+                  border: Border.all(color: theme.dividerColor),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Row(
@@ -145,9 +148,10 @@ class CartItemWidget extends StatelessWidget {
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.zero,
                         ),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
+                          color: colors.onSurface,
                         ),
                         onSubmitted: (value) {
                           final newQuantity = int.tryParse(value) ?? 1;
@@ -210,7 +214,7 @@ class CartItemWidget extends StatelessWidget {
                 l10n.ofMaxStockCount(cartItem.product.quantity),
                 style: TextStyle(
                   fontSize: 11,
-                  color: Colors.grey[600],
+                  color: colors.onSurfaceVariant,
                 ),
               ),
 
@@ -233,7 +237,7 @@ class CartItemWidget extends StatelessWidget {
                         CurrencyFormatter.format(cartItem.totalProfit)),
                     style: TextStyle(
                       fontSize: 11,
-                      color: Colors.grey[600],
+                      color: colors.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -245,12 +249,13 @@ class CartItemWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildPlaceholder() {
+  Widget _buildPlaceholder(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Center(
       child: Icon(
         Icons.image_outlined,
         size: 24,
-        color: Colors.grey[400],
+        color: colors.onSurfaceVariant,
       ),
     );
   }

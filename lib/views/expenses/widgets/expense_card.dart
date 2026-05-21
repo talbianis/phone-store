@@ -7,6 +7,7 @@ import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/currency_formatter.dart';
 
 import '../../../data/models/expense_model.dart';
+import '../../shared/themed_screen_sections.dart';
 
 class ExpenseCard extends StatelessWidget {
   final ExpenseModel expense;
@@ -14,28 +15,18 @@ class ExpenseCard extends StatelessWidget {
   final VoidCallback onDelete;
 
   const ExpenseCard({
-    Key? key,
+    super.key,
     required this.expense,
     required this.onEdit,
     required this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      decoration: ThemedScreenSections.cardDecoration(context),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
@@ -65,9 +56,10 @@ class ExpenseCard extends StatelessWidget {
                   // Category
                   Text(
                     expense.category,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      color: colors.onSurface,
                     ),
                   ),
 
@@ -80,7 +72,7 @@ class ExpenseCard extends StatelessWidget {
                       expense.description!,
                       style: TextStyle(
                         fontSize: 13,
-                        color: Colors.grey[700],
+                        color: colors.onSurfaceVariant,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -94,14 +86,14 @@ class ExpenseCard extends StatelessWidget {
                       Icon(
                         Icons.calendar_today,
                         size: 14,
-                        color: Colors.grey[600],
+                        color: colors.onSurfaceVariant,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         DateFormatter.formatDate(expense.expenseDate),
                         style: TextStyle(
                           fontSize: 13,
-                          color: Colors.grey[600],
+                          color: colors.onSurfaceVariant,
                         ),
                       ),
                     ],

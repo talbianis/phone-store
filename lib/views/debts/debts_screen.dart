@@ -10,11 +10,12 @@ import '../../core/utils/currency_formatter.dart';
 
 import '../../providers/debt_provider.dart';
 import '../shared/main_layout.dart';
+import '../shared/themed_screen_sections.dart';
 import 'widgets/debt_card.dart';
 import 'widgets/add_debt_payment_dialog.dart';
 
 class DebtsScreen extends StatefulWidget {
-  const DebtsScreen({Key? key}) : super(key: key);
+  const DebtsScreen({super.key});
 
   @override
   State<DebtsScreen> createState() => _DebtsScreenState();
@@ -81,7 +82,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
     final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(24),
-      color: Colors.white,
+      color: ThemedScreenSections.surface(context),
       child: Row(
         children: [
           Expanded(
@@ -90,9 +91,9 @@ class _DebtsScreenState extends State<DebtsScreen> {
               children: [
                 Text(
                   l10n.debtsManagement,
-                  style: const TextStyle(
+                  style: ThemedScreenSections.titleStyle(
+                    context,
                     fontSize: 28,
-                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -100,9 +101,9 @@ class _DebtsScreenState extends State<DebtsScreen> {
                   builder: (context, provider, child) {
                     return Text(
                       l10n.debtsTrackedCount(provider.debts.length),
-                      style: TextStyle(
+                      style: ThemedScreenSections.subtitleStyle(
+                        context,
                         fontSize: 14,
-                        color: Colors.grey[600],
                       ),
                     );
                   },
@@ -119,7 +120,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
     final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
-      color: Colors.white,
+      color: ThemedScreenSections.surface(context),
       child: Row(
         children: [
           // Search Bar
@@ -165,7 +166,8 @@ class _DebtsScreenState extends State<DebtsScreen> {
                 ),
               ),
               items: [
-                DropdownMenuItem(value: 'all', child: Text(l10n.allDebtsFilter)),
+                DropdownMenuItem(
+                    value: 'all', child: Text(l10n.allDebtsFilter)),
                 DropdownMenuItem(value: 'unpaid', child: Text(l10n.unpaid)),
                 DropdownMenuItem(value: 'partial', child: Text(l10n.partial)),
                 DropdownMenuItem(value: 'paid', child: Text(l10n.paid)),
@@ -200,7 +202,12 @@ class _DebtsScreenState extends State<DebtsScreen> {
 
         return Container(
           padding: const EdgeInsets.all(20),
-          color: Colors.red[50],
+          decoration: BoxDecoration(
+            color: ThemedScreenSections.subtleSurface(
+              context,
+              accentColor: AppColors.error,
+            ),
+          ),
           child: Row(
             children: [
               Expanded(
@@ -249,11 +256,8 @@ class _DebtsScreenState extends State<DebtsScreen> {
       String label, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
+      decoration: ThemedScreenSections.cardDecoration(context,
+          radius: 8, shadow: false),
       child: Row(
         children: [
           Container(
@@ -273,7 +277,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
                   label,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: ThemedScreenSections.mutedText(context),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -296,6 +300,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
 
   Widget _buildEmptyState() {
     final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -303,7 +308,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
           Icon(
             Icons.account_balance_wallet_outlined,
             size: 80,
-            color: Colors.grey[300],
+            color: ThemedScreenSections.emptyIcon(context),
           ),
           const SizedBox(height: 16),
           Text(
@@ -311,7 +316,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.grey[600],
+              color: colors.onSurface,
             ),
           ),
           const SizedBox(height: 8),
@@ -319,7 +324,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
             _getEmptyStateMessage(l10n),
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[500],
+              color: colors.onSurfaceVariant,
             ),
           ),
         ],

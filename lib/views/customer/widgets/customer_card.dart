@@ -5,6 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/localization/app_localizations.dart';
 
 import '../../../data/models/customer_model.dart';
+import '../../shared/themed_screen_sections.dart';
 
 class CustomerCard extends StatelessWidget {
   final CustomerModel customer;
@@ -13,29 +14,19 @@ class CustomerCard extends StatelessWidget {
   final VoidCallback onDelete;
 
   const CustomerCard({
-    Key? key,
+    super.key,
     required this.customer,
     required this.onTap,
     required this.onEdit,
     required this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey[200]!),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
+        decoration: ThemedScreenSections.cardDecoration(context),
         child: Material(
             color: Colors.transparent,
             child: InkWell(
@@ -65,8 +56,8 @@ class CustomerCard extends StatelessWidget {
                           const Spacer(),
                           // Actions Menu
                           PopupMenuButton<String>(
-                            icon:
-                                Icon(Icons.more_vert, color: Colors.grey[600]),
+                            icon: Icon(Icons.more_vert,
+                                color: colors.onSurfaceVariant),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -96,8 +87,8 @@ class CustomerCard extends StatelessWidget {
                                         size: 20, color: Colors.red),
                                     const SizedBox(width: 12),
                                     Text(l10n.delete,
-                                        style: const TextStyle(
-                                            color: Colors.red)),
+                                        style:
+                                            const TextStyle(color: Colors.red)),
                                   ],
                                 ),
                               ),
@@ -111,9 +102,10 @@ class CustomerCard extends StatelessWidget {
                       // Customer Name
                       Text(
                         customer.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
+                          color: colors.onSurface,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -126,7 +118,7 @@ class CustomerCard extends StatelessWidget {
                         customer.phone,
                         style: TextStyle(
                           fontSize: 13,
-                          color: Colors.grey[600],
+                          color: colors.onSurfaceVariant,
                         ),
                       ),
                     ]),

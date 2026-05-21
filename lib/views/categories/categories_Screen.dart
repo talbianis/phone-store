@@ -14,9 +14,10 @@ import '../../core/utils/helpers.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/product_provider.dart';
 import '../shared/main_layout.dart';
+import '../shared/themed_screen_sections.dart';
 
 class CategoriesScreen extends StatefulWidget {
-  const CategoriesScreen({Key? key}) : super(key: key);
+  const CategoriesScreen({super.key});
 
   @override
   State<CategoriesScreen> createState() => _CategoriesScreenState();
@@ -39,12 +40,13 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       child: Consumer<CategoryProvider>(
         builder: (context, categoryProvider, child) {
           final l10n = AppLocalizations.of(context);
+          final colors = Theme.of(context).colorScheme;
           return Column(
             children: [
               // Header Section
               Container(
                 padding: const EdgeInsets.all(24),
-                color: Colors.white,
+                color: colors.surface,
                 child: Row(
                   children: [
                     Expanded(
@@ -53,17 +55,17 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                         children: [
                           Text(
                             l10n.categories,
-                            style: const TextStyle(
+                            style: ThemedScreenSections.titleStyle(
+                              context,
                               fontSize: 28,
-                              fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             l10n.categoriesSubtitle,
-                            style: TextStyle(
+                            style: ThemedScreenSections.subtitleStyle(
+                              context,
                               fontSize: 14,
-                              color: Colors.grey[600],
                             ),
                           ),
                         ],
@@ -109,6 +111,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
   Widget _buildEmptyState(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -116,7 +119,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           Icon(
             Icons.category_outlined,
             size: 80,
-            color: Colors.grey[300],
+            color: ThemedScreenSections.emptyIcon(context),
           ),
           const SizedBox(height: 16),
           Text(
@@ -124,7 +127,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.grey[600],
+              color: colors.onSurface,
             ),
           ),
           const SizedBox(height: 8),
@@ -132,7 +135,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             l10n.addFirstCategoryHint,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[500],
+              color: colors.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 24),
@@ -193,6 +196,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     final productProvider =
         Provider.of<ProductProvider>(context, listen: false);
     await productProvider.loadProducts();
+    if (!context.mounted) return;
 
     final hasProducts = productProvider.products
         .any((product) => product.categoryId == categoryId);

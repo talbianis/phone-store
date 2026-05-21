@@ -14,15 +14,16 @@ class CategoryCard extends StatelessWidget {
   final VoidCallback onDelete;
 
   const CategoryCard({
-    Key? key,
+    super.key,
     required this.category,
     required this.onEdit,
     required this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Consumer<ProductProvider>(
       builder: (context, productProvider, child) {
         // Count products in this category
@@ -32,12 +33,14 @@ class CategoryCard extends StatelessWidget {
 
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: colors.surface,
             borderRadius: BorderRadius.circular(15.r), // ⬅️ Responsive
-            border: Border.all(color: Colors.grey[200]!),
+            border: Border.all(color: Theme.of(context).dividerColor),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.black.withOpacity(
+                  Theme.of(context).brightness == Brightness.dark ? 0.22 : 0.08,
+                ),
                 blurRadius: 4.r, // ⬅️ Responsive
                 offset: Offset(0, 2.h), // ⬅️ Responsive
               ),
@@ -81,7 +84,7 @@ class CategoryCard extends StatelessWidget {
                         PopupMenuButton<String>(
                           icon: Icon(
                             Icons.more_vert,
-                            color: Colors.grey[600],
+                            color: colors.onSurfaceVariant,
                             size: 20.sp, // ⬅️ Responsive
                           ),
                           shape: RoundedRectangleBorder(
@@ -144,6 +147,7 @@ class CategoryCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 22.sp, // ⬅️ Responsive
                         fontWeight: FontWeight.bold,
+                        color: colors.onSurface,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -155,7 +159,7 @@ class CategoryCard extends StatelessWidget {
                         category.description!,
                         style: TextStyle(
                           fontSize: 13.sp, // ⬅️ Responsive
-                          color: Colors.grey[600],
+                          color: colors.onSurfaceVariant,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,

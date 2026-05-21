@@ -10,11 +10,12 @@ import '../../core/utils/currency_formatter.dart';
 
 import '../../providers/sale_provider.dart';
 import '../shared/main_layout.dart';
+import '../shared/themed_screen_sections.dart';
 import 'widgets/sale_list_item.dart';
 import 'widgets/date_filter_dialog.dart';
 
 class SalesScreen extends StatefulWidget {
-  const SalesScreen({Key? key}) : super(key: key);
+  const SalesScreen({super.key});
 
   @override
   State<SalesScreen> createState() => _SalesScreenState();
@@ -114,7 +115,7 @@ class _SalesScreenState extends State<SalesScreen> {
     final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(24),
-      color: Colors.white,
+      color: ThemedScreenSections.surface(context),
       child: Row(
         children: [
           Expanded(
@@ -123,9 +124,9 @@ class _SalesScreenState extends State<SalesScreen> {
               children: [
                 Text(
                   l10n.sales,
-                  style: const TextStyle(
+                  style: ThemedScreenSections.titleStyle(
+                    context,
                     fontSize: 28,
-                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -133,9 +134,9 @@ class _SalesScreenState extends State<SalesScreen> {
                   builder: (context, provider, child) {
                     return Text(
                       l10n.salesRecordedCount(provider.sales.length),
-                      style: TextStyle(
+                      style: ThemedScreenSections.subtitleStyle(
+                        context,
                         fontSize: 14,
-                        color: Colors.grey[600],
                       ),
                     );
                   },
@@ -152,7 +153,7 @@ class _SalesScreenState extends State<SalesScreen> {
     final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
-      color: AppColors.white,
+      color: ThemedScreenSections.surface(context),
       child: Row(
         children: [
           // Search Bar
@@ -198,7 +199,7 @@ class _SalesScreenState extends State<SalesScreen> {
                 prefixIcon: const Icon(Icons.calendar_today),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: AppColors.textPrimary),
+                  borderSide: const BorderSide(color: AppColors.textPrimary),
                 ),
               ),
               items: [
@@ -206,7 +207,8 @@ class _SalesScreenState extends State<SalesScreen> {
                 DropdownMenuItem(value: 'week', child: Text(l10n.thisWeek)),
                 DropdownMenuItem(value: 'month', child: Text(l10n.thisMonth)),
                 DropdownMenuItem(value: 'all', child: Text(l10n.allTime)),
-                DropdownMenuItem(value: 'custom', child: Text(l10n.customRange)),
+                DropdownMenuItem(
+                    value: 'custom', child: Text(l10n.customRange)),
               ],
               onChanged: (value) {
                 setState(() => _selectedFilter = value!);
@@ -238,7 +240,12 @@ class _SalesScreenState extends State<SalesScreen> {
 
         return Container(
           padding: const EdgeInsets.all(20),
-          color: AppColors.primary.withOpacity(0.05),
+          decoration: BoxDecoration(
+            color: ThemedScreenSections.subtleSurface(
+              context,
+              accentColor: AppColors.primary,
+            ),
+          ),
           child: Row(
             children: [
               Expanded(
@@ -295,11 +302,8 @@ class _SalesScreenState extends State<SalesScreen> {
   ) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
+      decoration: ThemedScreenSections.cardDecoration(context,
+          radius: 8, shadow: false),
       child: Row(
         children: [
           Container(
@@ -319,7 +323,7 @@ class _SalesScreenState extends State<SalesScreen> {
                   label,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: ThemedScreenSections.mutedText(context),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -342,6 +346,7 @@ class _SalesScreenState extends State<SalesScreen> {
 
   Widget _buildEmptyState() {
     final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -349,7 +354,7 @@ class _SalesScreenState extends State<SalesScreen> {
           Icon(
             Icons.receipt_long_outlined,
             size: 80,
-            color: Colors.grey[300],
+            color: ThemedScreenSections.emptyIcon(context),
           ),
           const SizedBox(height: 16),
           Text(
@@ -357,7 +362,7 @@ class _SalesScreenState extends State<SalesScreen> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.grey[600],
+              color: colors.onSurface,
             ),
           ),
           const SizedBox(height: 8),
@@ -365,7 +370,7 @@ class _SalesScreenState extends State<SalesScreen> {
             _getEmptyStateMessage(l10n),
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[500],
+              color: colors.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 24),

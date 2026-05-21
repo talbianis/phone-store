@@ -10,9 +10,10 @@ import '../../core/constants/app_routes.dart';
 import '../../core/layout/desktop_adaptive.dart';
 import '../../core/localization/app_localizations.dart';
 import '../shared/main_layout.dart';
+import '../shared/themed_screen_sections.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  const DashboardScreen({super.key});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -43,8 +44,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           return LayoutBuilder(
             builder: (context, constraints) {
               final contentW = constraints.maxWidth;
-              final gap = 16.0;
-
+              const gap = 16.0;
               final statTiles = <Widget>[
                 StatCard(
                   title: l10n.todaySales,
@@ -95,7 +95,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         SalesChart(
                           salesData: dashboardProvider.last7DaysSales,
                         ),
-                        SizedBox(height: gap + 8),
+                        const SizedBox(height: gap + 8),
                         const BestSellingProducts(),
                       ],
                     )
@@ -108,7 +108,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             salesData: dashboardProvider.last7DaysSales,
                           ),
                         ),
-                        SizedBox(width: gap + 8),
+                        const SizedBox(width: gap + 8),
                         const Expanded(
                           flex: 1,
                           child: BestSellingProducts(),
@@ -125,17 +125,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     children: [
                       Text(
                         l10n.dashboard,
-                        style: TextStyle(
+                        style: ThemedScreenSections.titleStyle(
+                          context,
                           fontSize: desktopPageTitleFontSize(context),
-                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       SizedBox(height: desktopViewportHeight(context) * 0.005),
                       Text(
                         l10n.dashboardSubtitle,
-                        style: TextStyle(
+                        style: ThemedScreenSections.subtitleStyle(
+                          context,
                           fontSize: desktopPageSubtitleFontSize(context),
-                          color: Colors.grey[600],
                         ),
                       ),
                       SizedBox(height: desktopViewportHeight(context) * 0.028),
@@ -143,7 +143,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         children: [
                           for (int i = 0; i < statTiles.length; i++) ...[
                             Expanded(child: statTiles[i]),
-                            if (i < statTiles.length - 1) SizedBox(width: gap),
+                            if (i < statTiles.length - 1)
+                              const SizedBox(width: gap),
                           ],
                         ],
                       ),

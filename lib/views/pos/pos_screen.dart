@@ -11,12 +11,13 @@ import '../../providers/category_provider.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/customer_provider.dart';
 import '../shared/main_layout.dart';
+import '../shared/themed_screen_sections.dart';
 import 'widgets/product_search_bar.dart';
 import 'widgets/product_grid_item.dart';
 import 'widgets/cart_section.dart';
 
 class PosScreen extends StatefulWidget {
-  const PosScreen({Key? key}) : super(key: key);
+  const PosScreen({super.key});
 
   @override
   State<PosScreen> createState() => _PosScreenState();
@@ -51,7 +52,7 @@ class _PosScreenState extends State<PosScreen> {
               builder: (context, constraints) {
                 final stackVertical = constraints.maxWidth < 780;
                 final leftPane = Container(
-                  color: Colors.grey[50],
+                  color: ThemedScreenSections.subtleSurface(context),
                   child: Column(
                     children: [
                       Padding(
@@ -102,7 +103,7 @@ class _PosScreenState extends State<PosScreen> {
     final l10n = AppLocalizations.of(context);
     return Container(
       padding: desktopPagePadding(context),
-      color: Colors.white,
+      color: ThemedScreenSections.surface(context),
       child: Row(
         children: [
           Expanded(
@@ -111,17 +112,17 @@ class _PosScreenState extends State<PosScreen> {
               children: [
                 Text(
                   l10n.pos,
-                  style: TextStyle(
+                  style: ThemedScreenSections.titleStyle(
+                    context,
                     fontSize: desktopPageTitleFontSize(context),
-                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 SizedBox(height: desktopViewportHeight(context) * 0.005),
                 Text(
                   l10n.posSubtitle,
-                  style: TextStyle(
+                  style: ThemedScreenSections.subtitleStyle(
+                    context,
                     fontSize: desktopPageSubtitleFontSize(context),
-                    color: Colors.grey,
                   ),
                 ),
               ],
@@ -153,7 +154,7 @@ class _PosScreenState extends State<PosScreen> {
     final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: Colors.white,
+      color: ThemedScreenSections.surface(context),
       child: Consumer<CategoryProvider>(
         builder: (context, categoryProvider, child) {
           return SingleChildScrollView(
@@ -201,19 +202,20 @@ class _PosScreenState extends State<PosScreen> {
     required bool isSelected,
     required VoidCallback onTap,
   }) {
+    final colors = Theme.of(context).colorScheme;
     return FilterChip(
       label: Text(label),
       selected: isSelected,
       onSelected: (_) => onTap(),
-      backgroundColor: Colors.white,
+      backgroundColor: colors.surface,
       selectedColor: AppColors.primary.withOpacity(0.2),
       checkmarkColor: AppColors.primary,
       labelStyle: TextStyle(
-        color: isSelected ? AppColors.primary : Colors.grey[700],
+        color: isSelected ? AppColors.primary : colors.onSurfaceVariant,
         fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
       ),
       side: BorderSide(
-        color: isSelected ? AppColors.primary : Colors.grey[300]!,
+        color: isSelected ? AppColors.primary : Theme.of(context).dividerColor,
       ),
     );
   }
@@ -222,6 +224,7 @@ class _PosScreenState extends State<PosScreen> {
     return Consumer<ProductProvider>(
       builder: (context, productProvider, child) {
         final l10n = AppLocalizations.of(context);
+        final colors = Theme.of(context).colorScheme;
         if (productProvider.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -234,14 +237,14 @@ class _PosScreenState extends State<PosScreen> {
                 Icon(
                   Icons.inventory_2_outlined,
                   size: 64,
-                  color: Colors.grey[400],
+                  color: ThemedScreenSections.emptyIcon(context),
                 ),
                 const SizedBox(height: 16),
                 Text(
                   l10n.noProductsAvailable,
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.grey[600],
+                    color: colors.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -262,14 +265,14 @@ class _PosScreenState extends State<PosScreen> {
                 Icon(
                   Icons.remove_shopping_cart,
                   size: 64,
-                  color: Colors.grey[400],
+                  color: ThemedScreenSections.emptyIcon(context),
                 ),
                 const SizedBox(height: 16),
                 Text(
                   l10n.noProductsInStockPos,
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.grey[600],
+                    color: colors.onSurfaceVariant,
                   ),
                 ),
               ],

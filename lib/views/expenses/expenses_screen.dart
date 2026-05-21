@@ -1,6 +1,5 @@
 // lib/views/expenses/expenses_screen.dart
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -10,13 +9,14 @@ import '../../core/utils/currency_formatter.dart';
 
 import '../../providers/expense_provider.dart';
 import '../shared/main_layout.dart';
+import '../shared/themed_screen_sections.dart';
 import 'widgets/expense_card.dart';
 import 'widgets/add_expense_dialog.dart';
 import 'widgets/edit_expense_dialog.dart';
 import 'widgets/date_filter_dialog.dart';
 
 class ExpensesScreen extends StatefulWidget {
-  const ExpensesScreen({Key? key}) : super(key: key);
+  const ExpensesScreen({super.key});
 
   @override
   State<ExpensesScreen> createState() => _ExpensesScreenState();
@@ -114,7 +114,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(24),
-      color: Colors.white,
+      color: ThemedScreenSections.surface(context),
       child: Row(
         children: [
           Expanded(
@@ -123,9 +123,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
               children: [
                 Text(
                   l10n.expensesManagement,
-                  style: const TextStyle(
+                  style: ThemedScreenSections.titleStyle(
+                    context,
                     fontSize: 28,
-                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -133,9 +133,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   builder: (context, provider, child) {
                     return Text(
                       l10n.expensesRecordedCount(provider.expenses.length),
-                      style: TextStyle(
+                      style: ThemedScreenSections.subtitleStyle(
+                        context,
                         fontSize: 14,
-                        color: Colors.grey[600],
                       ),
                     );
                   },
@@ -171,7 +171,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
-      color: Colors.white,
+      color: ThemedScreenSections.surface(context),
       child: Row(
         children: [
           // Search Bar
@@ -221,7 +221,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 DropdownMenuItem(value: 'week', child: Text(l10n.thisWeek)),
                 DropdownMenuItem(value: 'month', child: Text(l10n.thisMonth)),
                 DropdownMenuItem(value: 'all', child: Text(l10n.allTime)),
-                DropdownMenuItem(value: 'custom', child: Text(l10n.customRange)),
+                DropdownMenuItem(
+                    value: 'custom', child: Text(l10n.customRange)),
               ],
               onChanged: (value) {
                 setState(() => _selectedFilter = value!);
@@ -262,7 +263,12 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
         return Container(
           padding: const EdgeInsets.all(20),
-          color: Colors.orange[50],
+          decoration: BoxDecoration(
+            color: ThemedScreenSections.subtleSurface(
+              context,
+              accentColor: Colors.orange,
+            ),
+          ),
           child: Row(
             children: [
               Expanded(
@@ -317,11 +323,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       String label, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
+      decoration: ThemedScreenSections.cardDecoration(context,
+          radius: 8, shadow: false),
       child: Row(
         children: [
           Container(
@@ -341,7 +344,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   label,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: ThemedScreenSections.mutedText(context),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -364,6 +367,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
   Widget _buildEmptyState() {
     final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -371,7 +375,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           Icon(
             Icons.receipt_long_outlined,
             size: 80,
-            color: Colors.grey[300],
+            color: ThemedScreenSections.emptyIcon(context),
           ),
           const SizedBox(height: 16),
           Text(
@@ -379,7 +383,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.grey[600],
+              color: colors.onSurface,
             ),
           ),
           const SizedBox(height: 8),
@@ -387,7 +391,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             l10n.noExpensesHint,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[500],
+              color: colors.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 24),
@@ -493,6 +497,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     );
 
     if (confirmed == true) {
+      if (!mounted) return;
       final expenseProvider = Provider.of<ExpenseProvider>(
         context,
         listen: false,

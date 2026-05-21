@@ -11,17 +11,18 @@ class StockItemCard extends StatelessWidget {
   final VoidCallback onAdjust;
 
   const StockItemCard({
-    Key? key,
+    super.key,
     required this.product,
     required this.onAdjust,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: _getStockStatusColor().withOpacity(0.3),
@@ -29,7 +30,9 @@ class StockItemCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.black.withOpacity(
+              Theme.of(context).brightness == Brightness.dark ? 0.22 : 0.08,
+            ),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -44,11 +47,15 @@ class StockItemCard extends StatelessWidget {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: colors.surfaceVariant,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: product.imagePath == null
-                  ? Icon(Icons.phone_android, color: Colors.grey[400], size: 32)
+                  ? Icon(
+                      Icons.phone_android,
+                      color: colors.onSurfaceVariant,
+                      size: 32,
+                    )
                   : null,
             ),
 
@@ -62,9 +69,10 @@ class StockItemCard extends StatelessWidget {
                   // Product Name
                   Text(
                     product.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      color: colors.onSurface,
                     ),
                   ),
 
@@ -75,7 +83,7 @@ class StockItemCard extends StatelessWidget {
                     '${l10n.barcodePrefix} ${product.barcode ?? '-'}',
                     style: TextStyle(
                       fontSize: 13,
-                      color: Colors.grey[600],
+                      color: colors.onSurfaceVariant,
                     ),
                   ),
 
@@ -86,7 +94,7 @@ class StockItemCard extends StatelessWidget {
                     '${l10n.valuePrefix} ${CurrencyFormatter.format(product.purchasePrice * product.quantity)}',
                     style: TextStyle(
                       fontSize: 13,
-                      color: Colors.grey[600],
+                      color: colors.onSurfaceVariant,
                     ),
                   ),
                 ],

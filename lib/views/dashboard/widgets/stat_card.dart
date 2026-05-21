@@ -14,7 +14,7 @@ class StatCard extends StatelessWidget {
   final IconData icon;
 
   const StatCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.value,
     required this.unit,
@@ -27,17 +27,20 @@ class StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border(
           top: BorderSide(color: color, width: 3),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.black.withOpacity(
+              Theme.of(context).brightness == Brightness.dark ? 0.22 : 0.08,
+            ),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -54,7 +57,7 @@ class StatCard extends StatelessWidget {
                 title,
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey[600],
+                  color: colors.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -83,9 +86,10 @@ class StatCard extends StatelessWidget {
                 unit == 'DA'
                     ? CurrencyFormatter.formatNumber(value)
                     : value.toInt().toString(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
+                  color: colors.onSurface,
                 ),
               ),
               const SizedBox(width: 8),
@@ -95,7 +99,7 @@ class StatCard extends StatelessWidget {
                   unit,
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey[500],
+                    color: colors.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -127,7 +131,7 @@ class StatCard extends StatelessWidget {
                 subtitle,
                 style: TextStyle(
                   fontSize: 13,
-                  color: Colors.grey[500],
+                  color: colors.onSurfaceVariant,
                 ),
               ),
             ],

@@ -11,9 +11,9 @@ class ProductSearchBar extends StatefulWidget {
   final Function(ProductModel) onProductSelected;
 
   const ProductSearchBar({
-    Key? key,
+    super.key,
     required this.onProductSelected,
-  }) : super(key: key);
+  });
 
   @override
   State<ProductSearchBar> createState() => _ProductSearchBarState();
@@ -72,6 +72,8 @@ class _ProductSearchBarState extends State<ProductSearchBar> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return Column(
       children: [
         // Search Input
@@ -91,14 +93,14 @@ class _ProductSearchBarState extends State<ProductSearchBar> {
                   )
                 : const Icon(Icons.qr_code_scanner),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: colors.surface,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: theme.dividerColor),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: theme.dividerColor),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -114,8 +116,9 @@ class _ProductSearchBarState extends State<ProductSearchBar> {
           Container(
             constraints: const BoxConstraints(maxHeight: 300),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: colors.surface,
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: theme.dividerColor),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1),
@@ -146,11 +149,17 @@ class _ProductSearchBarState extends State<ProductSearchBar> {
                   ),
                   title: Text(
                     product.name,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      color: colors.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   subtitle: Text(
                     '${product.brand ?? l10n.noBrand} • ${l10n.stockQtyShort} ${product.quantity}',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colors.onSurfaceVariant,
+                    ),
                   ),
                   trailing: Text(
                     '${product.sellingPrice.toStringAsFixed(0)} ${l10n.currency}',

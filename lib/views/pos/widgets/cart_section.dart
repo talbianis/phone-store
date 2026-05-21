@@ -11,22 +11,24 @@ import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../providers/cart_provider.dart';
 import '../../../providers/customer_provider.dart';
+import '../../shared/themed_screen_sections.dart';
 
 class CartSection extends StatelessWidget {
   final VoidCallback onCheckout;
 
   const CartSection({
-    Key? key,
+    super.key,
     required this.onCheckout,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return Container(
       decoration: BoxDecoration(
-        border: BoxBorder.all(
-            color: AppColors.sidebarBackground, width: 1), // Subtle border
-        color: AppColors.white,
+        border: BoxBorder.all(color: theme.dividerColor, width: 1),
+        color: colors.surface,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(30),
           topRight: Radius.circular(30),
@@ -61,6 +63,7 @@ class CartSection extends StatelessWidget {
     return Consumer<CartProvider>(
       builder: (context, cartProvider, child) {
         final l10n = AppLocalizations.of(context);
+        final colors = Theme.of(context).colorScheme;
         return Container(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -69,9 +72,10 @@ class CartSection extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 l10n.cartWithItemsCount(cartProvider.itemCount),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
+                  color: colors.onSurface,
                 ),
               ),
             ],
@@ -85,6 +89,7 @@ class CartSection extends StatelessWidget {
     return Consumer<CartProvider>(
       builder: (context, cartProvider, child) {
         final l10n = AppLocalizations.of(context);
+        final colors = Theme.of(context).colorScheme;
         if (cartProvider.isEmpty) {
           return Center(
             child: Column(
@@ -93,14 +98,14 @@ class CartSection extends StatelessWidget {
                 Icon(
                   Icons.shopping_cart_outlined,
                   size: 60.sp,
-                  color: Colors.grey[300],
+                  color: ThemedScreenSections.emptyIcon(context),
                 ),
                 SizedBox(height: 16.h),
                 Text(
                   l10n.cartIsEmptyTitle,
                   style: TextStyle(
                     fontSize: 18,
-                    color: Colors.grey[600],
+                    color: colors.onSurface,
                   ),
                 ),
                 SizedBox(height: 8.h),
@@ -108,7 +113,7 @@ class CartSection extends StatelessWidget {
                   l10n.cartGetStartedSubtitle,
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey[500],
+                    color: colors.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -133,12 +138,14 @@ class CartSection extends StatelessWidget {
     return Consumer<CartProvider>(
       builder: (context, cartProvider, child) {
         final l10n = AppLocalizations.of(context);
+        final theme = Theme.of(context);
+        final colors = theme.colorScheme;
         return Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.grey[50],
+            color: colors.surfaceVariant,
             border: Border(
-              top: BorderSide(color: Colors.grey[200]!),
+              top: BorderSide(color: theme.dividerColor),
             ),
           ),
           child: Column(
@@ -152,6 +159,7 @@ class CartSection extends StatelessWidget {
 
               // Subtotal
               _buildSummaryRow(
+                context,
                 l10n.subtotal,
                 CurrencyFormatter.format(cartProvider.subtotal),
                 isBold: false,
@@ -165,7 +173,7 @@ class CartSection extends StatelessWidget {
                 children: [
                   Text(
                     l10n.discount,
-                    style: const TextStyle(fontSize: 14),
+                    style: TextStyle(fontSize: 14, color: colors.onSurface),
                   ),
                   Row(
                     children: [
@@ -205,6 +213,7 @@ class CartSection extends StatelessWidget {
 
               // Total
               _buildSummaryRow(
+                context,
                 l10n.total,
                 CurrencyFormatter.format(cartProvider.total),
                 isBold: true,
@@ -216,6 +225,7 @@ class CartSection extends StatelessWidget {
 
               // Profit
               _buildSummaryRow(
+                context,
                 l10n.profit,
                 CurrencyFormatter.format(cartProvider.totalProfit),
                 isBold: false,
@@ -244,7 +254,8 @@ class CartSection extends StatelessWidget {
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.sidebarBackground,
-                    disabledBackgroundColor: Colors.grey[300],
+                    disabledBackgroundColor:
+                        Theme.of(context).colorScheme.surfaceVariant,
                   ),
                 ),
               ),
@@ -258,6 +269,8 @@ class CartSection extends StatelessWidget {
   Widget _buildCustomerSelector(
       BuildContext context, CartProvider cartProvider) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return Consumer<CustomerProvider>(
       builder: (context, customerProvider, child) {
         return InkWell(
@@ -266,14 +279,14 @@ class CartSection extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey[300]!),
+              border: Border.all(color: theme.dividerColor),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               children: [
                 Icon(
                   Icons.person_outline,
-                  color: Colors.grey[600],
+                  color: colors.onSurfaceVariant,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -284,16 +297,17 @@ class CartSection extends StatelessWidget {
                         l10n.customerSectionLabel,
                         style: TextStyle(
                           fontSize: 11,
-                          color: Colors.grey[600],
+                          color: colors.onSurfaceVariant,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         cartProvider.selectedCustomer?.name ??
                             l10n.walkInCustomer,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
+                          color: colors.onSurface,
                         ),
                       ),
                     ],
@@ -301,7 +315,7 @@ class CartSection extends StatelessWidget {
                 ),
                 Icon(
                   Icons.arrow_drop_down,
-                  color: Colors.grey[600],
+                  color: colors.onSurfaceVariant,
                 ),
               ],
             ),
@@ -312,12 +326,14 @@ class CartSection extends StatelessWidget {
   }
 
   Widget _buildSummaryRow(
+    BuildContext context,
     String label,
     String value, {
     bool isBold = false,
     Color? valueColor,
     double fontSize = 14,
   }) {
+    final colors = Theme.of(context).colorScheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -326,6 +342,7 @@ class CartSection extends StatelessWidget {
           style: TextStyle(
             fontSize: fontSize,
             fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            color: colors.onSurface,
           ),
         ),
         Text(
@@ -365,72 +382,72 @@ class CartSection extends StatelessWidget {
       builder: (context) {
         final l10n = AppLocalizations.of(context);
         return AlertDialog(
-        title: Text(l10n.selectCustomerTitle),
-        content: SizedBox(
-          width: 400,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Walk-in customer option
-              ListTile(
-                leading: const Icon(Icons.person_outline),
-                title: Text(l10n.walkInCustomer),
-                subtitle: Text(l10n.noCustomerRecord),
-                trailing: cartProvider.selectedCustomer == null
-                    ? const Icon(Icons.check, color: AppColors.primary)
-                    : null,
-                onTap: () {
-                  cartProvider.selectCustomer(null);
-                  Navigator.pop(context);
-                },
-              ),
-              const Divider(),
-
-              // Customer list
-              SizedBox(
-                height: 300,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: customerProvider.customers.length,
-                  itemBuilder: (context, index) {
-                    final customer = customerProvider.customers[index];
-                    final isSelected =
-                        cartProvider.selectedCustomer?.id == customer.id;
-
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: AppColors.primary.withOpacity(0.1),
-                        child: Text(
-                          customer.name[0].toUpperCase(),
-                          style: const TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      title: Text(customer.name),
-                      subtitle: Text(customer.phone),
-                      trailing: isSelected
-                          ? const Icon(Icons.check, color: AppColors.primary)
-                          : null,
-                      onTap: () {
-                        cartProvider.selectCustomer(customer);
-                        Navigator.pop(context);
-                      },
-                    );
+          title: Text(l10n.selectCustomerTitle),
+          content: SizedBox(
+            width: 400,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Walk-in customer option
+                ListTile(
+                  leading: const Icon(Icons.person_outline),
+                  title: Text(l10n.walkInCustomer),
+                  subtitle: Text(l10n.noCustomerRecord),
+                  trailing: cartProvider.selectedCustomer == null
+                      ? const Icon(Icons.check, color: AppColors.primary)
+                      : null,
+                  onTap: () {
+                    cartProvider.selectCustomer(null);
+                    Navigator.pop(context);
                   },
                 ),
-              ),
-            ],
+                const Divider(),
+
+                // Customer list
+                SizedBox(
+                  height: 300,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: customerProvider.customers.length,
+                    itemBuilder: (context, index) {
+                      final customer = customerProvider.customers[index];
+                      final isSelected =
+                          cartProvider.selectedCustomer?.id == customer.id;
+
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: AppColors.primary.withOpacity(0.1),
+                          child: Text(
+                            customer.name[0].toUpperCase(),
+                            style: const TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        title: Text(customer.name),
+                        subtitle: Text(customer.phone),
+                        trailing: isSelected
+                            ? const Icon(Icons.check, color: AppColors.primary)
+                            : null,
+                        onTap: () {
+                          cartProvider.selectCustomer(customer);
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.close),
-          ),
-        ],
-      );
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(l10n.close),
+            ),
+          ],
+        );
       },
     );
   }

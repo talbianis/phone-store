@@ -13,18 +13,19 @@ class CustomerListItem extends StatelessWidget {
   final VoidCallback onDelete;
 
   const CustomerListItem({
-    Key? key,
+    super.key,
     required this.customer,
     required this.onTap,
     required this.onEdit,
     required this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Container(
-      color: Colors.white,
+      color: colors.surface,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -56,9 +57,10 @@ class CustomerListItem extends StatelessWidget {
                     children: [
                       Text(
                         customer.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
+                          color: colors.onSurface,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -66,7 +68,7 @@ class CustomerListItem extends StatelessWidget {
                         customer.phone,
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[600],
+                          color: colors.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -82,9 +84,9 @@ class CustomerListItem extends StatelessWidget {
                     if (customer.totalDebt > 0) ...[
                       Text(
                         l10n.debtShort,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey,
+                          color: colors.onSurfaceVariant,
                         ),
                       ),
                       const SizedBox(height: 4),

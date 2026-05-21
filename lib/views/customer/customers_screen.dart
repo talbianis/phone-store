@@ -1,6 +1,5 @@
 // lib/views/customers/customers_screen.dart
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -9,6 +8,7 @@ import '../../core/constants/app_routes.dart';
 import '../../core/utils/helpers.dart';
 import '../../providers/customer_provider.dart';
 import '../shared/main_layout.dart';
+import '../shared/themed_screen_sections.dart';
 import 'widgets/customer_card.dart';
 import 'widgets/customer_list_item.dart';
 import 'widgets/add_customer_dialog.dart';
@@ -16,7 +16,7 @@ import 'widgets/edit_customer_dialog.dart';
 import 'customer_details_screen.dart';
 
 class CustomersScreen extends StatefulWidget {
-  const CustomersScreen({Key? key}) : super(key: key);
+  const CustomersScreen({super.key});
 
   @override
   State<CustomersScreen> createState() => _CustomersScreenState();
@@ -82,7 +82,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
     final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(24),
-      color: Colors.white,
+      color: ThemedScreenSections.surface(context),
       child: Row(
         children: [
           Expanded(
@@ -91,9 +91,9 @@ class _CustomersScreenState extends State<CustomersScreen> {
               children: [
                 Text(
                   l10n.customers,
-                  style: const TextStyle(
+                  style: ThemedScreenSections.titleStyle(
+                    context,
                     fontSize: 28,
-                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -101,9 +101,9 @@ class _CustomersScreenState extends State<CustomersScreen> {
                   builder: (context, provider, child) {
                     return Text(
                       l10n.customersRegistered(provider.customers.length),
-                      style: TextStyle(
+                      style: ThemedScreenSections.subtitleStyle(
+                        context,
                         fontSize: 14,
-                        color: Colors.grey[600],
                       ),
                     );
                   },
@@ -138,9 +138,11 @@ class _CustomersScreenState extends State<CustomersScreen> {
 
   Widget _buildFilters() {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return Container(
       padding: const EdgeInsets.all(16),
-      color: Colors.white,
+      color: colors.surface,
       child: Row(
         children: [
           // Search Bar
@@ -211,7 +213,8 @@ class _CustomersScreenState extends State<CustomersScreen> {
           // View Toggle
           Container(
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey[300]!),
+              color: colors.surfaceVariant,
+              border: Border.all(color: theme.dividerColor),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
@@ -227,7 +230,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                 Container(
                   width: 1,
                   height: 24,
-                  color: Colors.grey[300],
+                  color: theme.dividerColor,
                 ),
                 IconButton(
                   icon: Icon(
@@ -247,6 +250,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
 
   Widget _buildEmptyState() {
     final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -254,7 +258,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
           Icon(
             Icons.people_outline,
             size: 80,
-            color: Colors.grey[300],
+            color: ThemedScreenSections.emptyIcon(context),
           ),
           const SizedBox(height: 16),
           Text(
@@ -262,7 +266,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.grey[600],
+              color: colors.onSurface,
             ),
           ),
           const SizedBox(height: 8),
@@ -270,7 +274,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
             l10n.addFirstCustomerHint,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[500],
+              color: colors.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 24),
@@ -369,7 +373,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
       cancelText: l10n.cancel,
     );
 
-    if (confirm && context.mounted) {
+    if (confirm && mounted) {
       final customerProvider = Provider.of<CustomerProvider>(
         context,
         listen: false,
@@ -377,7 +381,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
 
       final success = await customerProvider.deleteCustomer(customerId);
 
-      if (context.mounted) {
+      if (mounted) {
         final loc = AppLocalizations.of(context);
         if (success) {
           Helpers.showSnackBar(context, loc.customerDeleteSuccess);

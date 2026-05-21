@@ -7,6 +7,7 @@ import '../../../core/localization/app_localizations.dart';
 import '../../../core/utils/currency_formatter.dart';
 
 import '../../../data/models/debt_model.dart';
+import '../../shared/themed_screen_sections.dart';
 
 class DebtCard extends StatelessWidget {
   final DebtModel debt;
@@ -14,18 +15,19 @@ class DebtCard extends StatelessWidget {
   final VoidCallback onAddPayment;
 
   const DebtCard({
-    Key? key,
+    super.key,
     required this.debt,
     required this.onTap,
     required this.onAddPayment,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: _getStatusColor().withOpacity(0.3),
@@ -33,7 +35,9 @@ class DebtCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.black.withOpacity(
+              Theme.of(context).brightness == Brightness.dark ? 0.22 : 0.08,
+            ),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -71,9 +75,10 @@ class DebtCard extends StatelessWidget {
                           // Customer Name
                           Text(
                             debt.customerName ?? l10n.unknownCustomer,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
+                              color: colors.onSurface,
                             ),
                           ),
 
@@ -85,7 +90,7 @@ class DebtCard extends StatelessWidget {
                               Icon(
                                 Icons.receipt,
                                 size: 14,
-                                color: Colors.grey[600],
+                                color: colors.onSurfaceVariant,
                               ),
                               const SizedBox(width: 4),
                               Text(
@@ -93,21 +98,21 @@ class DebtCard extends StatelessWidget {
                                     l10n.invoiceHashId(debt.saleId),
                                 style: TextStyle(
                                   fontSize: 13,
-                                  color: Colors.grey[700],
+                                  color: colors.onSurfaceVariant,
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Icon(
                                 Icons.calendar_today,
                                 size: 14,
-                                color: Colors.grey[600],
+                                color: colors.onSurfaceVariant,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 DateFormatter.formatDate(debt.createdAt),
                                 style: TextStyle(
                                   fontSize: 13,
-                                  color: Colors.grey[600],
+                                  color: colors.onSurfaceVariant,
                                 ),
                               ),
                             ],
@@ -153,6 +158,7 @@ class DebtCard extends StatelessWidget {
                     // Total Amount
                     Expanded(
                       child: _buildAmountInfo(
+                        context,
                         l10n.total,
                         debt.totalAmount,
                         AppColors.error,
@@ -162,12 +168,13 @@ class DebtCard extends StatelessWidget {
                     Container(
                       width: 1,
                       height: 40,
-                      color: Colors.grey[200],
+                      color: Theme.of(context).dividerColor,
                     ),
 
                     // Paid Amount
                     Expanded(
                       child: _buildAmountInfo(
+                        context,
                         l10n.paid,
                         debt.paidAmount,
                         AppColors.success,
@@ -177,12 +184,13 @@ class DebtCard extends StatelessWidget {
                     Container(
                       width: 1,
                       height: 40,
-                      color: Colors.grey[200],
+                      color: Theme.of(context).dividerColor,
                     ),
 
                     // Remaining Amount
                     Expanded(
                       child: _buildAmountInfo(
+                        context,
                         l10n.remainingAmount,
                         debt.remainingAmount,
                         Colors.orange,
@@ -214,14 +222,19 @@ class DebtCard extends StatelessWidget {
     );
   }
 
-  Widget _buildAmountInfo(String label, double amount, Color color) {
+  Widget _buildAmountInfo(
+    BuildContext context,
+    String label,
+    double amount,
+    Color color,
+  ) {
     return Column(
       children: [
         Text(
           label,
           style: TextStyle(
             fontSize: 12,
-            color: Colors.grey[600],
+            color: ThemedScreenSections.mutedText(context),
           ),
         ),
         const SizedBox(height: 4),

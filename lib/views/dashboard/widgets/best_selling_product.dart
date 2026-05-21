@@ -3,12 +3,13 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/localization/app_localizations.dart';
+import '../../shared/themed_screen_sections.dart';
 
 import 'package:provider/provider.dart';
 import '../../../providers/dashborad_provider.dart'; // note the typo
 
 class BestSellingProducts extends StatelessWidget {
-  const BestSellingProducts({Key? key}) : super(key: key);
+  const BestSellingProducts({super.key});
 
   // Map index → color (same palette as before)
   static const _rankColors = [
@@ -23,11 +24,17 @@ class BestSellingProducts extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final products = context.watch<DashboardProvider>().bestSellingProducts;
+    final colors = Theme.of(context).colorScheme;
 
     // ... keep your Container/Column header the same ...
 
     return Container(
-      // ... same decoration ...
+      padding: const EdgeInsets.all(24),
+      decoration: ThemedScreenSections.cardDecoration(
+        context,
+        radius: 12,
+        borderColor: Colors.transparent,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -40,7 +47,7 @@ class BestSellingProducts extends StatelessWidget {
             Center(
               child: Text(
                 l10n.noData, // or any empty-state string you have
-                style: TextStyle(color: Colors.grey[500]),
+                style: TextStyle(color: colors.onSurfaceVariant),
               ),
             )
           else
@@ -49,7 +56,7 @@ class BestSellingProducts extends StatelessWidget {
               final p = entry.value;
               final maxQty = (products.first['totalSold'] as num).toDouble();
 
-              return _buildProductItem({
+              return _buildProductItem(context, {
                 'rank': i + 1,
                 'name': p['name'] ?? '',
                 'brand': p['brand'] ?? '',
@@ -57,13 +64,14 @@ class BestSellingProducts extends StatelessWidget {
                 'color': _rankColors[i % _rankColors.length],
                 'maxQuantity': maxQty,
               });
-            }).toList(),
+            }),
         ],
       ),
     );
   }
 
-  Widget _buildProductItem(Map<String, dynamic> product) {
+  Widget _buildProductItem(BuildContext context, Map<String, dynamic> product) {
+    final colors = Theme.of(context).colorScheme;
     final maxQuantity = (product['maxQuantity'] as double?) ?? 1.0;
     // final quantity = (product['quantity'] as num?)?.toDouble() ?? 0;
 
@@ -105,9 +113,10 @@ class BestSellingProducts extends StatelessWidget {
               children: [
                 Text(
                   product['name'],
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
+                    color: colors.onSurface,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -117,7 +126,7 @@ class BestSellingProducts extends StatelessWidget {
                   product['brand'],
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: colors.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -126,7 +135,7 @@ class BestSellingProducts extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
                     value: product['quantity'] / maxQuantity,
-                    backgroundColor: Colors.grey[200],
+                    backgroundColor: colors.surfaceVariant,
                     valueColor: AlwaysStoppedAnimation<Color>(
                       product['color'],
                     ),
@@ -142,9 +151,10 @@ class BestSellingProducts extends StatelessWidget {
           // Quantity
           Text(
             '${product['quantity']}',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
+              color: colors.onSurface,
             ),
           ),
         ],
